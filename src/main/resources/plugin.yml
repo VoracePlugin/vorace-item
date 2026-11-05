@@ -1,0 +1,9 @@
+name: VoraceItem
+version: '${version}'
+main: fr.vorace.item.VoraceItem
+api-version: '1.21'
+description: Objets RPG pour Vorace (stats, rareté, armes modulaires, forge, métiers) - en préparation
+authors: [ORA-KUN]
+website: https://github.com/VoracePlugin/vorace-item
+depend: [Vorace]
+softdepend: [VoraceMob]
