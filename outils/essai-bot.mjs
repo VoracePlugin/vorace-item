@@ -45,12 +45,7 @@ bot.on('windowOpen', (w) => {
   fenetres++;
   console.log('BOT MENU ' + fenetres + ' : ' + JSON.stringify(w.title).slice(0, 200) + ' (' + w.slots.filter((x, i) => x && i < w.inventoryStart).length + ' cases remplies)');
   if (atelier) { sertir(w); return; }
-  if (fenetres === 1) {
-    // l'épée modulaire : on la cherche dans le menu (sa place dépend des autres objets à fabriquer)
-    const epee = w.slots.findIndex((x, i) => x && i < w.inventoryStart && JSON.stringify(x).includes('voraceitem:kit/epee'));
-    if (epee < 0) console.log('BOT FORGE : épée modulaire introuvable dans le menu');
-    cliquer(epee < 0 ? 0 : epee, 600);
-  }
+  if (fenetres === 1) cliquer(0, 600);        // l'épée modulaire
   else if (fenetres === 2) cliquer(49, 600);  // « Forger », sans matériaux : refus
 });
 // atelier : l'épée Rare (elle a un emplacement de gemme libre) dans la case 11, le rubis dans la case 15, puis « Sertir » (33)

@@ -12,14 +12,12 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
-import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -190,8 +188,9 @@ public final class Exemplaires {
         Catalogue c = plugin.catalogue();
         List<String> possibles = new ArrayList<>(m.lignesBonus());
         int palier = Calcul.palier(c, m, ex);
+        Map<String, Double> poids = c.poidsBonus(m, ex);
         for (int i = 0; i < rang.lignesBonus() && !possibles.isEmpty(); i++) {
-            String id = possibles.remove(hasard.nextInt(possibles.size()));
+            String id = tirer(possibles, poids);
             double v = c.modificateurs().tirerBonus(id, palier, hasard, rang.multiplicateur() / c.raretes().premier().multiplicateur());
             if (v != 0) ex.bonus.put(id, v);
         }
@@ -211,8 +210,9 @@ public final class Exemplaires {
         List<String> possibles = new ArrayList<>(m.lignesBonus());
         possibles.removeAll(ex.bonus.keySet());
         Rarete rang = c.raretes().parId(ex.rang);
+        Map<String, Double> poids = c.poidsBonus(m, ex);
         while (!possibles.isEmpty()) {
-            String id = possibles.remove(hasard.nextInt(possibles.size()));
+            String id = tirer(possibles, poids);
             double v = c.modificateurs().tirerBonus(id, Calcul.palier(c, m, ex), hasard,
                 (rang == null ? m.rang() : rang).multiplicateur() / c.raretes().premier().multiplicateur());
             if (v == 0) continue;
@@ -221,6 +221,18 @@ public final class Exemplaires {
             return id;
         }
         return null;
+    }
+
+    /** Tire (et retire de la liste) un modificateur au hasard, pondéré par le matériau (poids 1 par défaut). */
+    private String tirer(List<String> possibles, Map<String, Double> poids) {
+        double total = 0;
+        for (String id : possibles) total += poids.getOrDefault(id, 1.0);
+        double r = hasard.nextDouble() * total;
+        for (int i = 0; i < possibles.size(); i++) {
+            r -= poids.getOrDefault(possibles.get(i), 1.0);
+            if (r <= 0) return possibles.remove(i);
+        }
+        return possibles.remove(possibles.size() - 1);
     }
 
     private ItemStack base(ModeleObjet m) {
@@ -299,13 +311,18 @@ public final class Exemplaires {
             else if (m.apparence().cmd() != null) meta.setCustomModelData(m.apparence().cmd());
         }
         if (m.apparence().brillance() != null) meta.setEnchantmentGlintOverride(m.apparence().brillance());
-        // armure : ce que l'on voit sur le joueur quand la pièce est portée
-        EquipmentSlot place = place(m.type().emplacement());
-        if (m.apparence().armure() != null && place != null) {
-            EquippableComponent porte = meta.getEquippable();
-            porte.setSlot(place);
-            porte.setModel(cle(m.apparence().armure()));
-            meta.setEquippable(porte);
+        org.bukkit.inventory.EquipmentSlot place = place(m.type().emplacement());
+        if (m.apparence().equipement() != null && place != null) {    // armure : son dessin porté sur le joueur
+            org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+            eq.setSlot(place);
+            eq.setModel(cle(m.apparence().equipement()));
+            meta.setEquippable(eq);
+        } else if (place == org.bukkit.inventory.EquipmentSlot.HEAD && m.apparence().modele() != null && m.kit() == null) {
+            // casque en 3D : porté sans dessin d'armure, le jeu montre alors le modèle de l'objet sur la tête
+            org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+            eq.setSlot(org.bukkit.inventory.EquipmentSlot.HEAD);
+            eq.setModel(null);
+            meta.setEquippable(eq);
         }
 
         // attributs du jeu de base : remplacés (les dégâts et l'armure viennent des stats de vorace-item)
@@ -348,17 +365,6 @@ public final class Exemplaires {
         }
     }
 
-    /** Emplacement d'armure du jeu (tête, torse, jambes, pieds), ou null pour le reste. */
-    public static EquipmentSlot place(String emplacement) {
-        return switch (emplacement) {
-            case "tete" -> EquipmentSlot.HEAD;
-            case "torse" -> EquipmentSlot.CHEST;
-            case "jambes" -> EquipmentSlot.LEGS;
-            case "pieds" -> EquipmentSlot.FEET;
-            default -> null;
-        };
-    }
-
     public static EquipmentSlotGroup groupe(String emplacement) {
         return switch (emplacement) {
             case "seconde-main" -> EquipmentSlotGroup.OFFHAND;
@@ -367,6 +373,17 @@ public final class Exemplaires {
             case "jambes" -> EquipmentSlotGroup.LEGS;
             case "pieds" -> EquipmentSlotGroup.FEET;
             default -> EquipmentSlotGroup.MAINHAND;
+        };
+    }
+
+    /** L'emplacement où l'objet se porte (null : il ne se porte pas). */
+    public static org.bukkit.inventory.EquipmentSlot place(String emplacement) {
+        return switch (emplacement) {
+            case "tete" -> org.bukkit.inventory.EquipmentSlot.HEAD;
+            case "torse" -> org.bukkit.inventory.EquipmentSlot.CHEST;
+            case "jambes" -> org.bukkit.inventory.EquipmentSlot.LEGS;
+            case "pieds" -> org.bukkit.inventory.EquipmentSlot.FEET;
+            default -> null;
         };
     }
 

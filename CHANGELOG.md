@@ -1,15 +1,47 @@
 # Journal des changements
 
-## 0.11.0 (novembre 2026) : armures
+## 0.11.1 (novembre 2026) : armures refaites, casques en 3D
 
-- **Apparence d'une armure portée** : `apparence.armure: <chemin>` dans un modèle d'objet. vorace-item lit
-  `ressources/armures/<chemin>.png` (tête, torse, bras, pieds) et `<chemin>_jambes.png` (jambes), les met dans le
-  pack (`equipment/<chemin>.json`) et les relie à l'objet. Les pièces d'un ensemble partagent le même chemin.
-- **Trois ensembles d'exemple** assortis aux épées, quatre pièces chacun (`objets/armures.yml`) : cuivre (plaques de
-  légionnaire et lanières de cuir), fer (plates et mailles), acier (acier sombre bordé d'or). Chaque pièce a son
-  icône d'inventaire et sa recette à la forge. Dessinés par `outils/exemples-armures.py`.
-- L'apparence portée n'a pas encore été vue en jeu : à regarder avec un vrai client.
-- Sur un serveur déjà lancé, les exemples ne sont pas réinstallés : repars d'un dossier `plugins/VoraceItem` vide.
+- **Casques en 3D** : un casque avec un modèle (`apparence.modele`) et sans dessin d'armure se porte sur la tête comme
+  son modèle (objet de la tête sans dessin d'armure : le jeu affiche le modèle). L'emplacement du dessin d'armure est
+  maintenant toujours fixé par le type d'objet (tête, torse, jambes, pieds).
+- **Armures d'exemple refaites** comme celles des packs des serveurs : casque sculpté en 3D (16 pixels par bloc),
+  corps dessiné pixel par pixel comme les armures du jeu. Cuivre : hoplite (casque corinthien à crête de crin rouge,
+  cuirasse musclée, ptéryges, cnémides). Fer : chevalier de la Tour (grand heaume à croix de laiton et panache,
+  haubert, cotte d'armes rouge à la tour). Acier : gardien (heaume à bec et ailes, plates d'acier noirci bordées d'or,
+  drap bleu nuit).
+- Aperçu calculé : `python3 outils/exemples-armures.py apercu.png` (mannequin vu de face et de dos, gros plan des casques).
+
+## 0.11.0 (novembre 2026) : lignes bonus orientées par le matériau, armures portées
+
+- **Lignes bonus orientées par le matériau** : elles restent tirées au hasard dans la liste du type d'objet, mais
+  `lignes-bonus` d'un matériau (`materiaux/*.yml`, modificateur → poids) fait sortir certaines plus souvent. Une arme
+  prend les poids du matériau de sa lame ; un objet simple, ceux de son champ `materiau`. Les pièces d'exemple n'ont
+  plus de modificateur fixe : cuivre (vitesse, critique, déplacement, esquive), fer (dégâts physiques, usure, armure,
+  vie), acier (pénétration, dégâts critiques, réduction de dégâts, ténacité).
+- **Armures portées** : `apparence.equipement: <chemin>` donne à une armure son dessin sur le joueur
+  (`ressources/equipement/<chemin>/humanoid.png` et `humanoid_leggings.png`, disposition des armures du jeu) ;
+  vorace-item l'écrit dans le pack (`equipment/`, `textures/entity/equipment/`, Minecraft 1.21.4) et le pose sur
+  l'objet (composant « equippable »).
+- **Armures d'exemple** (`outils/exemples-armures.py`, aperçu `outils/apercu-armures.png`) : cuivre (casque à nasal
+  et coiffe de cuir, gambison matelassé et plastron de lamelles), fer (chapel de fer et camail, cotte de mailles,
+  brigandine rivetée), acier (heaume à visière et bavière, plates bordées d'or, braconnière, épaulières à lames).
+  Casque, cuirasse, jambières et bottes pour chaque matériau ; elles se forgent avec Matsuri Métier.
+
+## 0.10.3 (novembre 2026) : stats rondes, modificateurs logiques, cimeterre dans le bon sens
+
+- **Stats de rang arrondies à l'unité** (attaque physique, puissance magique, armures) : « 19 » au lieu de « 18,9 ».
+  Les objets déjà fabriqués suivent, puisque leurs stats sont recalculées depuis les fichiers.
+- **Modificateurs logiques** : une arme ne donne plus d'armure. Exemples : la garde droite donne +5 % de dégâts
+  critiques (au lieu de +2 d'armure) ; la lame large frappe plus fort (+3 dégâts physiques) mais plus lentement
+  (−6 % de vitesse d'attaque). Lignes bonus des épées, haches et marteaux : plus de points de vie, de résistance au
+  recul ni de réduction de dégâts.
+- **Plus de compétence sur les objets d'exemple** (épée, dague, bâton, Lame du Veilleur) : les compétences d'armes
+  de Babel viendront avec la liste d'Antoine. Le système (`competences.yml`) reste en place.
+- **Cimeterre de cuivre** (`cuivre/lame_large`) : la courbe part maintenant vers l'arrière une fois en main (dos à
+  droite, tranchant à gauche dans le dessin).
+- Sur un serveur déjà lancé, les exemples ne sont pas réinstallés : supprimer `materiaux/exemples.yml`,
+  `objets/exemples.yml` et `ressources/modeles/exemple`, `ressources/textures/exemple` pour les recevoir.
 
 ## 0.10.2 (novembre 2026) : pièces muettes, qualité cachée par pièce
 

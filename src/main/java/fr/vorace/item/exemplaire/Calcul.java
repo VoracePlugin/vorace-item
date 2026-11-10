@@ -37,7 +37,7 @@ public final class Calcul {
     }
 
     /**
-     * Toutes les stats de l'exemplaire : stats de rang (à leur place dans la fourchette, avec l'amélioration),
+     * Toutes les stats de l'exemplaire : stats de rang (à leur place dans la fourchette, avec l'amélioration, arrondies à l'unité),
      * modificateurs fixes du modèle et des pièces, lignes bonus, gemmes.
      *
      * @param bonusAmelioration part ajoutée aux stats de rang par niveau d'amélioration (0,03 = +3 % par niveau)
@@ -50,7 +50,8 @@ public final class Calcul {
         if (rang == null) rang = m.rang();
         double amelioration = 1 + Math.max(0, ex.amelioration) * bonusAmelioration;
         for (Map.Entry<String, Double> e : references(c, m, ex).entrySet()) {
-            total.merge(e.getKey(), c.raretes().valeur(e.getValue(), rang, ex.rebut, ex.position) * amelioration, Double::sum);
+            // stats de rang (attaque, puissance, armures) : arrondies à l'unité, plus lisibles (demande d'Antoine)
+            total.merge(e.getKey(), (double) Math.round(c.raretes().valeur(e.getValue(), rang, ex.rebut, ex.position) * amelioration), Double::sum);
         }
         m.modificateurs().forEach((k, v) -> total.merge(k, v, Double::sum));
         for (String idPiece : ex.pieces.values()) {

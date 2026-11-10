@@ -91,7 +91,7 @@ public final class Essai {
                 "un exemplaire garde son modèle, son rang, son identifiant et son fabricant après enregistrement");
             double[] f = Calcul.fourchette(c, dague, ex, Modificateurs.ATTAQUE, rare, false);
             double attaque = plugin.exemplaires().stats(ex).getOrDefault(Modificateurs.ATTAQUE, 0.0);
-            verifier(f != null && Math.abs(attaque - (f[0] + f[1]) / 2) < 1e-6, "l'attaque est au milieu de la fourchette Rare (" + Textes.nombre(attaque) + ")");
+            verifier(f != null && Math.abs(attaque - Math.round((f[0] + f[1]) / 2)) < 1e-6, "l'attaque est au milieu de la fourchette Rare, arrondie à l'unité (" + Textes.nombre(attaque) + ")");
             double[] dessous = Calcul.fourchette(c, dague, ex, Modificateurs.ATTAQUE, c.raretes().precedent(rare), false);
             verifier(f != null && dessous != null && Math.abs(dessous[1] - f[0]) < 1e-9, "les fourchettes de deux rangs voisins se touchent");
             ItemMeta meta = relu.getItemMeta();
@@ -140,7 +140,7 @@ public final class Essai {
                 Exemplaire ex = plugin.exemplaires().lire(arme);
                 double attendu = 15 + 3 * c.raretes().multiplicateurPalier(2) + 1 + 1;
                 double attaque = plugin.exemplaires().stats(ex).getOrDefault(Modificateurs.ATTAQUE, 0.0);
-                verifier(Math.abs(attaque - attendu) < 1e-6, "son attaque est la somme de ses pièces, la garde d'acier comptant son palier (" + Textes.nombre(attaque) + ")");
+                verifier(Math.abs(attaque - Math.round(attendu)) < 1e-6, "son attaque est la somme de ses pièces, la garde d'acier comptant son palier (" + Textes.nombre(attaque) + ")");
                 String nom = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(meta.displayName());
                 verifier(nom.equals("Épée de fer"), "elle s'appelle « " + nom + " », d'après le matériau de sa lame");
             }
@@ -260,7 +260,8 @@ public final class Essai {
             Competences.Lancer second = plugin.competences().lancer(p, "entaille", p.getInventory().getItemInMainHand(), true);
             verifier(premier == Competences.Lancer.FAIT && second == Competences.Lancer.RECHARGE && plugin.ressources().stamina(p) < staminaAvant,
                 "une compétence coûte de la stamina puis se recharge");
-            verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
+            if (!epee.competences().isEmpty())                       // les objets d'exemple n'ont plus de compétence (0.10.3)
+                verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
 
             // usure : l'arme perd de la durabilité, comptée comme usure de combat
             Exemplaire avantUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
@@ -277,22 +278,21 @@ public final class Essai {
                 p.getInventory().setItemInMainHand(objet);
                 plugin.equipementChange(p);
                 double attaque = plugin.equipement().bilan(p).total(Modificateurs.ATTAQUE);
-                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - 19 * (1 + plugin.reglages().ameliorationBonus)) < 1e-6,
+                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - Math.round(19 * (1 + plugin.reglages().ameliorationBonus))) < 1e-6,
                     "une pierre d'amélioration passe l'épée à +1 (attaque " + Textes.nombre(attaque) + ")");
             }
 
-            // armure : un coup reçu d'une créature est réduit par la défense du joueur
-            ModeleObjet heaume = c.modele("heaume_d_acier");
-            if (heaume != null) {
-                ItemStack objet = plugin.exemplaires().creer(heaume, heaume.rang(), false, 0, null, Signature.AUCUNE, 1);
-                ItemMeta mh = objet == null ? null : objet.getItemMeta();
-                verifier(mh != null && mh.hasEquippable() && mh.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.HEAD
-                    && mh.getEquippable().getModel() != null && mh.getEquippable().getModel().toString().equals("voraceitem:exemple/acier")
-                    && mh.hasItemModel() && mh.getItemModel().toString().equals("voraceitem:objet/heaume_d_acier"),
-                    "le heaume d'acier se porte sur la tête, avec l'apparence de son ensemble et son icône");
-                verifier(Files.isRegularFile(plugin.core().packs().racineServeur().resolve(plugin.reglages().dossierPack).resolve("assets/voraceitem/equipment/exemple/acier.json")),
-                    "l'ensemble d'acier est dans le pack");
+            // casque 3D : porté sur la tête sans dessin d'armure ; plastron d'exemple : son dessin, sur le torse
+            ModeleObjet casque3d = c.modele("casque_acier"), cuirasse = c.modele("plastron_acier");
+            if (casque3d != null && cuirasse != null) {
+                org.bukkit.inventory.meta.ItemMeta mc = plugin.exemplaires().creer(casque3d, casque3d.rang(), false, 0, null, Signature.AUCUNE, 1).getItemMeta();
+                org.bukkit.inventory.meta.ItemMeta mp = plugin.exemplaires().creer(cuirasse, cuirasse.rang(), false, 0, null, Signature.AUCUNE, 1).getItemMeta();
+                verifier(mc.hasEquippable() && mc.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.HEAD && mc.getEquippable().getModel() == null,
+                    "le casque 3D se porte sur la tête, sans dessin d'armure (le jeu montre son modèle)");
+                verifier(mp.hasEquippable() && mp.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.CHEST && mp.getEquippable().getModel() != null,
+                    "la cuirasse d'exemple se porte sur le torse avec son dessin");
             }
+            // armure : un coup reçu d'une créature est réduit par la défense du joueur
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
             org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();
             if (plastron != null && p.getGameMode() == org.bukkit.GameMode.SURVIVAL && difficulte != org.bukkit.Difficulty.PEACEFUL) {

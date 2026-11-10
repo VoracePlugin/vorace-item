@@ -20,9 +20,17 @@ C'est le rôle de MMOItems, en libre et gratuit.
 2. Il faut **Paper 1.21.4 ou plus** : les armes assemblées et le temps de recharge visible sur les objets
    n'existent pas avant.
 3. Lance le serveur. Le dossier `plugins/VoraceItem` est créé avec des exemples : une épée modulaire en cuivre, fer
-   et acier, une dague, un bâton, deux pièces d'armure, deux gemmes, une pierre d'amélioration.
+   et acier, une dague, un bâton, deux pièces d'armure, trois armures complètes (hoplite de cuivre, chevalier de
+   fer, gardien d'acier : casque en 3D, corps dessiné comme les armures du jeu), deux gemmes, une pierre
+   d'amélioration.
 4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple, `/vitem forge` pour forger, `/vitem atelier` pour
    réparer, améliorer et sertir.
+
+**Casques en 3D** : un casque (`type: casque`) avec `apparence.modele` et sans `apparence.equipement` est porté
+sur la tête comme son modèle (comme une citrouille), sans dessin d'armure. Le modèle se fait dans Blockbench, l'avant
+de la tête vers le nord, la tête du joueur au centre (16 unités = 10 pixels du joueur) ; le réglage d'affichage
+`head` le place. Les armures complètes font comme les packs des serveurs : casque en 3D, reste en dessin d'armure de
+16 pixels par bloc (`ressources/equipement/<chemin>/humanoid.png`, 64 x 32).
 
 vorace-item écrit sa partie du pack de ressources dans `plugins/Vorace/pack/sources/voraceitem`, que vorace-core
 fusionne tout seul avec les autres packs. Si tu as changé les `sources` dans `plugins/Vorace/config.yml`, garde
@@ -58,7 +66,6 @@ Tout se règle dans `plugins/VoraceItem`, puis `/vitem recharger`. Chaque fichie
 | `competences.yml` | Les compétences d'armes. |
 | `butins.yml` | Les tables de butin et les monstres qui les utilisent. |
 | `ressources/modeles`, `ressources/textures` | Les modèles 3D (`.json` de Blockbench) et les textures (`.png`). |
-| `ressources/armures` | Les textures des armures portées (`.png` de 64 x 32). |
 
 ### Un modèle d'objet
 
@@ -85,30 +92,6 @@ dague_de_chasse:
 L'apparence se choisit avec `apparence:` : `materiau` (un objet du jeu de base), `objet-vorace` (un objet de
 `plugins/Vorace/objets`, avec sa texture ou son modèle 3D), `modele` (un `.json` de `ressources/modeles`) ou
 `texture` (un `.png` de `ressources/textures`).
-
-#### Armures
-
-Une armure a deux apparences : son icône dans l'inventaire (`texture` ou `modele`) et ce que l'on voit sur le joueur
-quand elle est portée (`armure`).
-
-```yaml
-plastron_de_fer:
-  nom: "Plastron de fer"
-  type: plastron
-  rang: peu_commun
-  apparence: { materiau: iron_chestplate, texture: exemple/armure/fer_plastron, armure: exemple/fer }
-  stats: { armor: 19, magic-armor: 3 }
-```
-
-- `armure: exemple/fer` lit `ressources/armures/exemple/fer.png` (tête, torse, bras, pieds) et
-  `ressources/armures/exemple/fer_jambes.png` (jambes). Ce sont des textures de 64 x 32, au format des armures du jeu.
-- Les quatre pièces d'un ensemble donnent le même chemin. Le jeu affiche la bonne partie selon l'emplacement du type
-  (casque, plastron, jambières, bottes).
-- Une armure portée n'est pas un modèle 3D : Minecraft la dessine sur le corps du joueur à partir de cette texture.
-- Sans `armure`, la pièce portée a l'apparence de l'objet de base (`materiau`).
-
-Trois ensembles d'exemple sont fournis dans `objets/armures.yml` (cuivre, fer, acier), dessinés par
-[outils/exemples-armures.py](outils/exemples-armures.py).
 
 ### Rangs et fourchettes de stats
 
@@ -267,6 +250,7 @@ entaille:
 
 Effets : `degats`, `projectile`, `ruee`, `saut`, `soin`, `effet` (de potion), `son`, `particules`, `message`,
 `commande`. Ce sont des compétences simples, attachées à un objet ; celles des classes viendront du plugin des classes.
+Les objets d'exemple n'ont pas de compétence : celles de Babel viendront avec la liste d'Antoine.
 
 ### Butin
 

@@ -18,7 +18,7 @@ epee:
   type-attaque: Cutting
   scales: { force: B, agilite: D }
   vitesse-attaque: 1.6
-  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, physical-penetration, attack-speed, lifesteal, max-health, durability-loss-reduction]
+  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, physical-penetration, attack-speed, lifesteal, durability-loss-reduction]
 dague:
   nom: "Dague"
   categorie: arme
@@ -34,7 +34,7 @@ hache:
   type-attaque: Destruction
   scales: { force: A, constitution: E }
   vitesse-attaque: 1.0
-  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, max-health, knockback-resistance, lifesteal]
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, lifesteal, durability-loss-reduction]
 marteau:
   nom: "Marteau"
   categorie: arme
@@ -42,7 +42,7 @@ marteau:
   type-attaque: Impact
   scales: { force: S }
   vitesse-attaque: 0.8
-  lignes-bonus: [physical-damage, physical-penetration, max-health, knockback-resistance, damage-reduction]
+  lignes-bonus: [physical-damage, physical-penetration, critical-strike-power, durability-loss-reduction]
 lance:
   nom: "Lance"
   categorie: arme

@@ -4,12 +4,16 @@
 #   nom, complement : « Fer », « de fer » (le complément suit le nom de l'arme : « Épée de fer »)
 #   etage           : étage du donjon du matériau. Son palier (tranche de 10 étages) multiplie la base de ses pièces :
 #                     x 1 aux étages 1 à 10, x 1,12 aux étages 11 à 20, x 1,25 aux étages 21 à 30...
+#   lignes-bonus    : modificateur → poids. Les lignes bonus (leur nombre dépend du rang) restent tirées au hasard dans
+#                     la liste du type d'objet, mais celles-ci sortent plus souvent avec ce matériau (poids 1 sinon).
+#                     Vaut pour les armes dont la lame est de ce matériau et pour les objets qui déclarent « materiau ».
 #   pieces          : pour chaque pièce,
 #     kit, emplacement : le modèle modulaire et la place de la pièce (lame, garde, poignee, pommeau)
 #     nom              : nom de la pièce
 #     modele           : modèle 3D dans plugins/VoraceItem/ressources/modeles (sans « .json »), fait avec Blockbench
 #     base             : stats de référence apportées (rang Commun, avant le palier)
-#     modificateurs    : modificateurs fixes apportés
+#     modificateurs    : modificateurs fixes apportés (facultatif ; les exemples n'en ont pas : les modificateurs
+#                        viennent des lignes bonus tirées au hasard, orientées par « lignes-bonus » du matériau)
 #     cout             : ce que la forge demande pour cette pièce
 #     durabilite       : durabilité apportée à l'arme
 #
@@ -19,6 +23,7 @@ cuivre:
   nom: "Cuivre"
   complement: "de cuivre"
   etage: 1
+  lignes-bonus: { attack-speed: 3, critical-strike-chance: 3, movement-speed: 3, dodge-rating: 2 }
   pieces:
     lame_droite:
       kit: epee
@@ -34,7 +39,6 @@ cuivre:
       nom: "Lame large"
       modele: exemple/cuivre/lame_large
       base: { attaque: 14 }
-      modificateurs: { attack-speed: -6 }
       cout: { COPPER_INGOT: 3 }
       durabilite: 130
     garde_droite:
@@ -43,7 +47,6 @@ cuivre:
       nom: "Garde droite"
       modele: exemple/cuivre/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -52,7 +55,6 @@ cuivre:
       nom: "Garde en croissant"
       modele: exemple/cuivre/garde_croissant
       base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 25
     poignee_cuir:
@@ -76,6 +78,7 @@ fer:
   nom: "Fer"
   complement: "de fer"
   etage: 5
+  lignes-bonus: { physical-damage: 3, durability-loss-reduction: 3, armor: 3, max-health: 2 }
   pieces:
     lame_droite:
       kit: epee
@@ -91,7 +94,6 @@ fer:
       nom: "Lame large"
       modele: exemple/fer/lame_large
       base: { attaque: 17 }
-      modificateurs: { attack-speed: -6 }
       cout: { IRON_INGOT: 3 }
       durabilite: 170
     garde_droite:
@@ -100,7 +102,6 @@ fer:
       nom: "Garde droite"
       modele: exemple/fer/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { IRON_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -109,7 +110,6 @@ fer:
       nom: "Garde en croissant"
       modele: exemple/fer/garde_croissant
       base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { IRON_INGOT: 1 }
       durabilite: 25
     poignee_cuir:
@@ -133,6 +133,7 @@ acier:
   nom: "Acier"
   complement: "d'acier"
   etage: 15
+  lignes-bonus: { physical-penetration: 3, critical-strike-power: 3, damage-reduction: 3, tenacity: 2 }
   pieces:
     lame_droite:
       kit: epee
@@ -148,7 +149,6 @@ acier:
       nom: "Lame large"
       modele: exemple/acier/lame_large
       base: { attaque: 19 }
-      modificateurs: { attack-speed: -6 }
       cout: { IRON_INGOT: 3, COAL: 1 }
       durabilite: 220
     garde_droite:
@@ -157,7 +157,6 @@ acier:
       nom: "Garde droite"
       modele: exemple/acier/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { IRON_INGOT: 1, COAL: 1 }
       durabilite: 30
     garde_croissant:
@@ -166,7 +165,6 @@ acier:
       nom: "Garde en croissant"
       modele: exemple/acier/garde_croissant
       base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { IRON_INGOT: 1, COAL: 1 }
       durabilite: 25
     poignee_cuir:

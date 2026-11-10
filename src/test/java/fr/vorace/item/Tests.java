@@ -178,7 +178,7 @@ public final class Tests {
         // 62 d'attaque au rang Légendaire = 62 / 1,5 au rang Commun
         verifier(lame != null && proche(lame.stats().get("attaque"), 62 / 1.5), "les stats du fichier sont celles du rang de base du modèle");
         ModeleObjet baton = c.modele("baton_d_apprenti");
-        verifier(baton != null && baton.magique() && baton.competences().get("accroupi-clic-droit").equals("second_souffle"), "bâton magique et ses deux compétences");
+        verifier(baton != null && baton.magique(), "bâton magique");
         verifier(c.modele("rubis_taille").empilable() && !c.modele("dague_de_chasse").empilable(), "les gemmes s'empilent, pas les armes");
         verifier(c.modele("dague_de_chasse").recette().materiaux().equals(Map.of("iron_ingot", 1, "leather", 1, "stick", 1)), "recette de la dague");
         verifier(c.materiau("acier").palier() == 2 && c.materiau("fer").palier() == 1, "paliers des matériaux");
@@ -201,14 +201,21 @@ public final class Tests {
         double reference = 15 + 3 * 1.12 + 1 + 1;
         verifier(proche(Calcul.references(c, epee, ex).get("attaque"), reference), "référence d'une épée : somme des pièces, chacune avec le palier de son matériau");
         Map<String, Double> stats = Calcul.stats(c, ex, 0.03);
-        verifier(proche(stats.get("attaque"), reference), "en bas de la fourchette Commune : la référence");
-        verifier(proche(stats.get("critical-strike-chance"), 2), "le modificateur fixe de la garde est compté");
+        verifier(proche(stats.get("attaque"), Math.round(reference)), "en bas de la fourchette Commune : la référence");
+        verifier(stats.get("critical-strike-chance") == null, "les pièces d'exemple n'ont plus de modificateur fixe");
+        verifier(proche(c.poidsBonus(epee, ex).getOrDefault("physical-damage", 0.0), 3) && c.poidsBonus(epee, ex).getOrDefault("attack-speed", 1.0) == 1.0,
+            "lignes bonus orientées par le matériau de la lame (fer : dégâts physiques plus souvent)");
+        ModeleObjet casque = c.modele("casque_acier"), cuirasse = c.modele("plastron_acier");
+        verifier(cuirasse != null && cuirasse.apparence().equipement() != null && proche(c.poidsBonus(cuirasse, null).getOrDefault("damage-reduction", 0.0), 3),
+            "armure d'exemple : dessin porté et matériau déclaré");
+        verifier(casque != null && casque.apparence().equipement() == null && "exemple/armure/casque_acier".equals(casque.apparence().modele()),
+            "casque d'exemple : un modèle 3D porté sur la tête, sans dessin d'armure");
         ex.position = 1;
-        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), reference * 1.1), "en haut de la fourchette Commune : le bas de la Peu commune");
+        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), Math.round(reference * 1.1)), "en haut de la fourchette Commune : le bas de la Peu commune");
         ex.rang = "rare";
         ex.position = 0;
         ex.amelioration = 5;
-        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), reference * 1.2 * 1.15), "rang Rare et amélioration +5 (+15 %)");
+        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), Math.round(reference * 1.2 * 1.15)), "rang Rare et amélioration +5 (+15 %)");
         ex.amelioration = 0;
         ex.bonus.put("physical-damage", 3.0);
         ex.gemmes.add("rubis_taille");
@@ -222,7 +229,7 @@ public final class Tests {
         ex.position = 0;
         ex.bonus.clear();
         ex.gemmes.clear();
-        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), reference * 0.85), "rebut : 85 % de la référence au plus bas");
+        verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), Math.round(reference * 0.85)), "rebut : 85 % de la référence au plus bas");
     }
 
     private static void description(Catalogue c) {
@@ -241,11 +248,10 @@ public final class Tests {
         String tout = String.join("\n", l);
         verifier(l.get(0).contains("◆ Rare") && l.get(0).contains("Épée"), "première ligne : rang et type");
         verifier(tout.contains("Qualité : ") && tout.contains("Fine"), "qualité");
-        verifier(tout.contains("Attaque physique <white>" + Textes.nombre1((15 + 3 * 1.12 + 2) * 1.2 * 1.06)), "attaque avec le rang et l'amélioration");
+        verifier(tout.contains("Attaque physique <white>" + Textes.nombre(Math.round((15 + 3 * 1.12 + 2) * 1.2 * 1.06))), "attaque avec le rang et l'amélioration");
         verifier(tout.contains("Scale <white>FOR B") && tout.contains("AGI D") && tout.contains("Type <white>Cutting"), "scale et type d'attaque");
-        verifier(tout.contains("+2 % Chance de coup critique") && tout.contains("◇ +1,2 % Vol de vie"), "modificateur fixe et ligne bonus");
+        verifier(tout.contains("◇ +1,2 % Vol de vie"), "ligne bonus");
         verifier(tout.contains("❖ Rubis taillé") && tout.contains("+4 Dégâts physiques"), "gemme sertie");
-        verifier(tout.contains("Clic droit : Entaille (6 s)"), "compétence");
         verifier(tout.contains("Durabilité : <white>150") && tout.contains("Forgé par") && tout.contains("Antoine"), "durabilité et fabricant");
         verifier(!l.get(0).isEmpty() && !l.get(l.size() - 1).isEmpty() && !tout.contains("\n\n\n"), "pas de ligne vide en trop");
         ex.durabilite = 0;
@@ -288,23 +294,10 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        // armures : 3 ensembles (1 définition et 2 textures portées chacun), 12 pièces (1 objet, 1 modèle, 1 icône chacune)
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 3 * 3 + 12 * 3, "épées (73 fichiers) et armures (45 fichiers) : " + fichiers.size() + " fichiers");
-        byte[] ensemble = fichiers.get("assets/voraceitem/equipment/exemple/fer.json");
-        verifier(ensemble != null && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid/exemple/fer.png")
-            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid_leggings/exemple/fer.png"), "l'ensemble de fer a sa définition et ses deux textures portées");
-        if (ensemble != null) {
-            JsonObject couches = JsonParser.parseString(new String(ensemble, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("layers");
-            verifier(couches.getAsJsonArray("humanoid").get(0).getAsJsonObject().get("texture").getAsString().equals("voraceitem:exemple/fer")
-                && couches.getAsJsonArray("humanoid_leggings").get(0).getAsJsonObject().get("texture").getAsString().equals("voraceitem:exemple/fer"),
-                "définition d'armure portée : une couche pour le haut, une pour les jambes");
-        }
-        byte[] icone = fichiers.get("assets/voraceitem/models/item/objet/plastron_de_fer.json");
-        verifier(icone != null && new String(icone, StandardCharsets.UTF_8).contains("voraceitem:item/exemple/armure/fer_plastron")
-            && fichiers.containsKey("assets/voraceitem/items/objet/plastron_de_fer.json"), "le plastron de fer a son icône d'inventaire");
-        ModeleObjet heaume = c.modele("heaume_d_acier");
-        verifier(heaume != null && "exemple/acier".equals(heaume.apparence().armure()) && heaume.type().emplacement().equals("tete")
-            && c.modele("dague_de_chasse").apparence().armure() == null, "le heaume d'acier porte l'ensemble « exemple/acier », une dague n'a pas d'armure portée");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 3 * 3, "épée (73 fichiers) et 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition) avec leurs 3 dessins portés (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.containsKey("assets/voraceitem/equipment/exemple/armure_acier.json")
+            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid/exemple/armure_acier.png")
+            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid_leggings/exemple/armure_acier.png"), "dessin d'armure porté écrit dans le pack (1.21.4)");
         byte[] seule = fichiers.get("assets/voraceitem/models/item/piece_seule/fer/pommeau_rond.json");
         verifier(seule != null && fichiers.containsKey("assets/voraceitem/items/piece/fer/pommeau_rond.json"), "le pommeau a son objet à lui");
         if (seule != null) {
@@ -337,7 +330,6 @@ public final class Tests {
         Path d = Files.createTempDirectory("vorace-item-tests");
         for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml", "competences.yml", "butins.yml")) copier(f, d.resolve(f));
         copier("exemples/objets/exemples.yml", d.resolve("objets/exemples.yml"));
-        copier("exemples/objets/armures.yml", d.resolve("objets/armures.yml"));
         copier("exemples/materiaux/exemples.yml", d.resolve("materiaux/exemples.yml"));
         try (InputStream index = Tests.class.getResourceAsStream("/exemples/ressources.txt")) {
             if (index == null) throw new IOException("exemples/ressources.txt introuvable");

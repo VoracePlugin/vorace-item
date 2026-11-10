@@ -49,7 +49,7 @@ public final class VoraceItem extends JavaPlugin implements Listener {
     private static final List<String> FICHIERS = List.of("raretes.yml", "modificateurs.yml", "types.yml", "competences.yml", "butins.yml");
 
     /** Exemples installés une seule fois : ressource du .jar → fichier dans plugins/VoraceItem. */
-    private static final List<String> EXEMPLES = List.of("objets/exemples.yml", "objets/armures.yml", "materiaux/exemples.yml");
+    private static final List<String> EXEMPLES = List.of("objets/exemples.yml", "materiaux/exemples.yml");
 
     private Vorace core;
     private Reglages reglages;

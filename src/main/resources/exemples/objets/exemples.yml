@@ -8,7 +8,6 @@
 #   etage          : étage du donjon du modèle (son palier fixe la force des lignes bonus)
 #   apparence      : materiau (objet du jeu de base), ou objet-vorace (un objet de plugins/Vorace/objets), ou modele
 #                    (ressources/modeles/<chemin>.json), ou texture (ressources/textures/<chemin>.png) ; brillance
-#                    armure : apparence d'une armure portée (voir objets/armures.yml)
 #   stats          : stats de rang, à leur valeur au RANG DE BASE du modèle (bas de la fourchette)
 #   modificateurs  : modificateurs fixes (voir modificateurs.yml)
 #   lignes-bonus   : modificateurs qui peuvent être tirés en plus (sinon ceux du type)
@@ -16,7 +15,8 @@
 #   element        : fire, wind, water, earth, ice, lightning, light, dark, holy, corruption (ou en français)
 #   durabilite     : 0 ou absent = l'objet ne s'use pas
 #   conditions     : niveau, classes (l'objet ne compte que si le joueur les remplit)
-#   competences    : clic-droit, clic-gauche, accroupi-clic-droit, accroupi-clic-gauche → compétence (competences.yml)
+#   competences    : clic-droit, clic-gauche, accroupi-clic-droit, accroupi-clic-gauche → compétence (competences.yml).
+#                    Les objets d'exemple n'en ont pas : les compétences d'armes de Babel viendront avec la liste d'Antoine.
 #   gemmes         : nombre d'emplacements de gemmes (sinon celui du rang)
 #   recette        : ce que la forge demande : IRON_INGOT (jeu de base), "vorace:lingot" (vorace-core), "item:gemme" (vorace-item)
 #   description    : lignes de texte libres
@@ -28,8 +28,6 @@
 epee:
   nom: "Épée"
   type: epee
-  competences:
-    clic-droit: entaille
   modulaire:
     emplacements: [lame, garde, poignee, pommeau]
     # rang le plus haut d'une épée assemblée ; au-dessus, ce sont des modèles faits à la main
@@ -55,8 +53,6 @@ dague_de_chasse:
   modificateurs:
     critical-strike-chance: 4
   durabilite: 180
-  competences:
-    clic-droit: ruee
   recette:
     IRON_INGOT: 1
     LEATHER: 1
@@ -76,9 +72,6 @@ baton_d_apprenti:
   modificateurs:
     max-mana: 10
   durabilite: 150
-  competences:
-    clic-droit: trait_arcanique
-    accroupi-clic-droit: second_souffle
   recette:
     STICK: 2
     AMETHYST_SHARD: 1
@@ -138,8 +131,6 @@ lame_du_veilleur:
   conditions:
     niveau: 40
     classes: [guerrier, spadassin]
-  competences:
-    clic-droit: entaille_tournoyante
   gemmes: 2
   description:
     - "Elle a gardé la Grande Porte plus longtemps"
@@ -176,3 +167,185 @@ pierre_d_amelioration:
     brillance: true
   description:
     - "À utiliser à l'atelier : l'objet gagne un niveau."
+
+# ----------------------------------------------------------------- armures de métal (forgées par le Forgeron, aux gestes)
+# Trois ensembles : cuivre martelé, lames de fer rivetées, plates d'acier bordées d'or. « equipement » : le dessin porté
+# sur le joueur (ressources/equipement/<chemin>/humanoid.png et humanoid_leggings.png) ; « texture » : l'icône.
+# « materiau » : le matériau de l'objet, qui oriente le tirage de ses lignes bonus (materiaux/exemples.yml).
+
+casque_cuivre:
+  nom: "Casque de cuivre"
+  type: casque
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_helmet
+    modele: exemple/armure/casque_cuivre
+  stats:
+    armor: 3
+    magic-armor: 1
+  durabilite: 150
+
+plastron_cuivre:
+  nom: "Cuirasse de cuivre"
+  type: plastron
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/cuivre_plastron
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 7
+    magic-armor: 2
+  durabilite: 220
+
+jambieres_cuivre:
+  nom: "Jambières de cuivre"
+  type: jambieres
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/cuivre_jambieres
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 5
+    magic-armor: 1
+  durabilite: 190
+
+bottes_cuivre:
+  nom: "Bottes de cuivre"
+  type: bottes
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/cuivre_bottes
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 2
+    magic-armor: 1
+  durabilite: 130
+
+casque_fer:
+  nom: "Casque de fer"
+  type: casque
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_helmet
+    modele: exemple/armure/casque_fer
+  stats:
+    armor: 4
+    magic-armor: 1
+  durabilite: 220
+
+plastron_fer:
+  nom: "Cuirasse de fer"
+  type: plastron
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/fer_plastron
+    equipement: exemple/armure_fer
+  stats:
+    armor: 9
+    magic-armor: 2
+  durabilite: 320
+
+jambieres_fer:
+  nom: "Jambières de fer"
+  type: jambieres
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/fer_jambieres
+    equipement: exemple/armure_fer
+  stats:
+    armor: 7
+    magic-armor: 2
+  durabilite: 280
+
+bottes_fer:
+  nom: "Bottes de fer"
+  type: bottes
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/fer_bottes
+    equipement: exemple/armure_fer
+  stats:
+    armor: 3
+    magic-armor: 1
+  durabilite: 190
+
+casque_acier:
+  nom: "Casque d'acier"
+  type: casque
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_helmet
+    modele: exemple/armure/casque_acier
+  stats:
+    armor: 5
+    magic-armor: 1
+  durabilite: 300
+
+plastron_acier:
+  nom: "Cuirasse d'acier"
+  type: plastron
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/acier_plastron
+    equipement: exemple/armure_acier
+  stats:
+    armor: 11
+    magic-armor: 3
+  durabilite: 420
+
+jambieres_acier:
+  nom: "Jambières d'acier"
+  type: jambieres
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/acier_jambieres
+    equipement: exemple/armure_acier
+  stats:
+    armor: 8
+    magic-armor: 2
+  durabilite: 360
+
+bottes_acier:
+  nom: "Bottes d'acier"
+  type: bottes
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/acier_bottes
+    equipement: exemple/armure_acier
+  stats:
+    armor: 4
+    magic-armor: 1
+  durabilite: 260
