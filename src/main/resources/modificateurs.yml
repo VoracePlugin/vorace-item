@@ -1,0 +1,290 @@
+# Stats d'objet et modificateurs d'équipement (les 38 modificateurs de Babel, en 9 familles).
+#
+#   nom        : texte affiché sur l'objet
+#   famille    : pour s'y retrouver (elle ne change rien au calcul)
+#   pourcent   : true = la valeur est en points de % (chances, conversions, vitesses)
+#   bonus      : [minimum, maximum] d'une ligne bonus au palier 1 (étages 1 à 10). Sans « bonus », le modificateur
+#                ne peut pas être tiré comme ligne bonus.
+#   par-palier : croissance de la ligne bonus par palier de 10 étages (0.12 = +12 %)
+#   alias      : autres noms acceptés dans les fichiers d'objets
+#
+# Sauf « pourcent: true », les valeurs sont en flat : une quantité ajoutée, pas un % de la stat de l'objet.
+#
+# Ce que vorace-item applique lui-même est noté [appliqué]. Le reste est additionné sur l'équipement et laissé aux
+# autres plugins (classes, métiers), qui le lisent avec VoraceItemAPI.total(joueur, "...").
+
+# ------------------------------------------------------------ stats d'objet (elles suivent le rang et la qualité)
+attaque:
+  nom: "Attaque physique"            # [appliqué] base de la Puissance d'un coup physique
+  famille: objet
+  alias: [attaque-physique]
+puissance:
+  nom: "Puissance magique"           # [appliqué] base de la Puissance d'un coup magique
+  famille: objet
+  alias: [puissance-magique]
+armor:
+  nom: "Armure physique"             # [appliqué] s'ajoute à la Résistance physique
+  famille: defense
+  bonus: [2, 5]
+  alias: [armure, armure-physique]
+magic-armor:
+  nom: "Armure magique"              # [appliqué] s'ajoute à la Résistance magique (x coefficient-armure-magique)
+  famille: defense
+  bonus: [1, 3]
+  alias: [armure-magique]
+
+# ------------------------------------------------------------ dégâts généraux (4)
+physical-damage:
+  nom: "Dégâts physiques"            # [appliqué] ajouté à la Puissance des coups physiques
+  famille: degats
+  bonus: [2, 5]
+  alias: [degats-physiques]
+magic-damage:
+  nom: "Dégâts magiques"             # [appliqué] ajouté à la Puissance des coups magiques
+  famille: degats
+  bonus: [2, 5]
+  alias: [degats-magiques]
+aoe-damage:
+  nom: "Dégâts de zone"
+  famille: degats
+  bonus: [2, 4]
+dot-damage:
+  nom: "Dégâts sur la durée"
+  famille: degats
+  bonus: [1, 3]
+
+# ------------------------------------------------------------ critique, physique uniquement (2)
+critical-strike-chance:
+  nom: "Chance de coup critique"     # [appliqué]
+  famille: critique
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+  alias: [critique, chance-critique]
+critical-strike-power:
+  nom: "Dégâts critiques"            # [appliqué] ajouté au multiplicateur de critique (10 = x 1,35 au lieu de x 1,25)
+  famille: critique
+  pourcent: true
+  bonus: [3, 8]
+  par-palier: 0.05
+  alias: [degats-critiques]
+
+# ------------------------------------------------------------ dégâts bruts, élémentaires et pénétration (7)
+true-damage-chance:
+  nom: "Chance de dégâts bruts"      # [appliqué] le coup ignore la défense
+  famille: bruts
+  pourcent: true
+  bonus: [1, 2]
+  par-palier: 0.05
+true-damage-conversion:
+  nom: "Dégâts convertis en bruts"
+  famille: bruts
+  pourcent: true
+elemental-damage-conversion:
+  nom: "Dégâts convertis en élémentaires"
+  famille: bruts
+  pourcent: true
+physical-penetration:
+  nom: "Pénétration d'armure physique"   # [appliqué] retirée de la défense de la cible
+  famille: bruts
+  bonus: [1, 4]
+  alias: [penetration-physique]
+magic-penetration:
+  nom: "Pénétration d'armure magique"    # [appliqué]
+  famille: bruts
+  bonus: [1, 4]
+  alias: [penetration-magique]
+elemental-proc-chance:
+  nom: "Chance d'altération élémentaire"
+  famille: bruts
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+# Dégâts d'un élément précis : [appliqué] un second coup magique, contre la défense magique de la cible.
+fire-damage:
+  nom: "Dégâts de feu"
+  famille: elements
+  bonus: [2, 4]
+  alias: [feu, degats-de-feu]
+wind-damage:
+  nom: "Dégâts de vent"
+  famille: elements
+  bonus: [2, 4]
+  alias: [vent, degats-de-vent]
+water-damage:
+  nom: "Dégâts d'eau"
+  famille: elements
+  bonus: [2, 4]
+  alias: [eau, degats-d-eau]
+earth-damage:
+  nom: "Dégâts de terre"
+  famille: elements
+  bonus: [2, 4]
+  alias: [terre, degats-de-terre]
+ice-damage:
+  nom: "Dégâts de glace"
+  famille: elements
+  bonus: [2, 4]
+  alias: [glace, degats-de-glace]
+lightning-damage:
+  nom: "Dégâts de foudre"
+  famille: elements
+  bonus: [2, 4]
+  alias: [foudre, degats-de-foudre]
+light-damage:
+  nom: "Dégâts de lumière"
+  famille: elements
+  alias: [lumiere, degats-de-lumiere]
+dark-damage:
+  nom: "Dégâts de ténèbres"
+  famille: elements
+  alias: [tenebres, degats-de-tenebres]
+holy-damage:
+  nom: "Dégâts sacrés"
+  famille: elements
+  alias: [sacre, degats-sacres]
+corruption-damage:
+  nom: "Dégâts de corruption"
+  famille: elements
+  alias: [corruption, degats-de-corruption]
+
+# ------------------------------------------------------------ défense (7, avec armor et magic-armor plus haut)
+damage-reduction:
+  nom: "Réduction des dégâts"        # [appliqué] en % des dégâts reçus, 80 % au plus
+  famille: defense
+  pourcent: true
+  bonus: [1, 2]
+  par-palier: 0.05
+knockback-resistance:
+  nom: "Résistance au recul"         # [appliqué]
+  famille: defense
+  pourcent: true
+  bonus: [3, 8]
+  par-palier: 0.05
+critical-damage-reduction:
+  nom: "Réduction des dégâts critiques"   # [appliqué] retirée du multiplicateur de critique de l'attaquant
+  famille: defense
+  pourcent: true
+  bonus: [2, 5]
+  par-palier: 0.05
+tenacity:
+  nom: "Ténacité"
+  famille: defense
+  pourcent: true
+  bonus: [2, 5]
+  par-palier: 0.05
+damage-reflect:
+  nom: "Renvoi de dégâts"            # [appliqué] part des dégâts reçus renvoyée à l'attaquant
+  famille: defense
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+
+# ------------------------------------------------------------ esquive (1)
+dodge-rating:
+  nom: "Esquive"                     # [appliqué] ajoutée à l'esquive du joueur (plafond : combat.esquive-max)
+  famille: esquive
+  pourcent: true
+  bonus: [0.5, 1.5]
+  par-palier: 0.05
+
+# ------------------------------------------------------------ vitesse (3)
+movement-speed:
+  nom: "Vitesse de déplacement"      # [appliqué]
+  famille: vitesse
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+cooldown-reduction:
+  nom: "Réduction des temps de recharge"   # [appliqué] aux compétences d'armes, 75 % au plus
+  famille: vitesse
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+attack-speed:
+  nom: "Vitesse d'attaque"           # [appliqué]
+  famille: vitesse
+  pourcent: true
+  bonus: [1, 4]
+  par-palier: 0.05
+
+# ------------------------------------------------------------ vie et ressources (9)
+max-health:
+  nom: "Vie max"                     # [appliqué]
+  famille: ressources
+  bonus: [4, 10]
+  alias: [vie, vie-max]
+max-mana:
+  nom: "Mana max"                    # [appliqué] aux jauges de vorace-item
+  famille: ressources
+  bonus: [4, 10]
+  alias: [mana, mana-max]
+mana-regeneration:
+  nom: "Régénération de mana"        # [appliqué] par seconde
+  famille: ressources
+  bonus: [0.2, 0.6]
+max-stamina:
+  nom: "Stamina max"                 # [appliqué]
+  famille: ressources
+  bonus: [4, 10]
+  alias: [stamina, stamina-max]
+stamina-regeneration:
+  nom: "Régénération de stamina"     # [appliqué] par seconde
+  famille: ressources
+  bonus: [0.3, 1]
+health-regeneration:
+  nom: "Régénération de vie"         # [appliqué] rendue toutes les 5 secondes
+  famille: ressources
+  bonus: [1, 3]
+lifesteal:
+  nom: "Vol de vie"                  # [appliqué] part des dégâts infligés rendue en vie
+  famille: ressources
+  pourcent: true
+  bonus: [0.5, 1.5]
+  par-palier: 0.05
+manasteal:
+  nom: "Vol de mana"                 # [appliqué]
+  famille: ressources
+  pourcent: true
+  bonus: [0.5, 1.5]
+  par-palier: 0.05
+healing-power:
+  nom: "Puissance des soins"         # [appliqué] aux soins des compétences d'armes
+  famille: ressources
+  pourcent: true
+  bonus: [2, 5]
+  par-palier: 0.05
+
+# ------------------------------------------------------------ progression (3)
+additional-experience:
+  nom: "Expérience supplémentaire"
+  famille: progression
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+profession-experience:
+  nom: "Expérience de métier"
+  famille: progression
+  pourcent: true
+  bonus: [1, 3]
+  par-palier: 0.05
+luck:
+  nom: "Chance"                      # [appliqué] +1 % de chance de butin par point (butins.yml), attribut « chance » du jeu
+  famille: progression
+  bonus: [1, 3]
+  par-palier: 0.05
+  alias: [chance]
+
+# ------------------------------------------------------------ durabilité (2)
+durability-loss-reduction:
+  nom: "Réduction de la perte de durabilité"   # [appliqué] 90 % au plus
+  famille: durabilite
+  pourcent: true
+  bonus: [3, 8]
+  par-palier: 0.05
+unbreaking-chance:
+  nom: "Chance de ne pas user l'objet"         # [appliqué]
+  famille: durabilite
+  pourcent: true
+  bonus: [2, 5]
+  par-palier: 0.05

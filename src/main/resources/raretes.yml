@@ -1,0 +1,76 @@
+# Rangs de rareté, du plus courant au plus prestigieux (les 7 rangs de Babel).
+#
+# Chaque stat de rang d'un objet (Attaque, Puissance, Armure) a une valeur de référence au premier rang.
+# La fourchette d'un rang va de « référence x son multiplicateur » à « référence x le multiplicateur du rang suivant » :
+# les fourchettes de deux rangs voisins se touchent. La qualité de fabrication place l'objet dans sa fourchette.
+#
+#   nom / feminin  : « Commun » / « Commune » (le féminin est affiché sur les objets)
+#   couleur        : couleur du nom de l'objet
+#   lignes-bonus   : modificateurs tirés en plus sur un objet de ce rang
+#   gemmes         : emplacements de gemmes par défaut
+#   score-exige    : score de fabrication sous lequel l'objet sort au rang du dessous
+
+# Bas de la fourchette « rebut » (objets Bruts de matériau Commun) et haut de la fourchette du dernier rang.
+rebut: 0.85
+sommet: 2.1
+
+# Force des matériaux : multiplicateur par palier de 10 étages (1,12 = +12 % par palier).
+palier-multiplicateur: 1.12
+
+rangs:
+  commun:
+    nom: "Commun"
+    feminin: "Commune"
+    couleur: "#c8c8c8"
+    multiplicateur: 1.0
+    lignes-bonus: 0
+    gemmes: 0
+    score-exige: 30
+  peu_commun:
+    nom: "Peu commun"
+    feminin: "Peu commune"
+    couleur: "#3a9e5c"
+    multiplicateur: 1.1
+    lignes-bonus: 1
+    gemmes: 0
+    score-exige: 30
+  rare:
+    nom: "Rare"
+    feminin: "Rare"
+    couleur: "#4d8dff"
+    multiplicateur: 1.2
+    lignes-bonus: 1
+    gemmes: 1
+    score-exige: 30
+  epique:
+    nom: "Épique"
+    feminin: "Épique"
+    couleur: "#b05cff"
+    multiplicateur: 1.35
+    lignes-bonus: 2
+    gemmes: 1
+    score-exige: 30
+  legendaire:
+    nom: "Légendaire"
+    feminin: "Légendaire"
+    couleur: "#ffa42e"
+    multiplicateur: 1.5
+    lignes-bonus: 3
+    gemmes: 2
+    score-exige: 70
+  mythique:
+    nom: "Mythique"
+    feminin: "Mythique"
+    couleur: "#ff4d5e"
+    multiplicateur: 1.7
+    lignes-bonus: 3
+    gemmes: 2
+    score-exige: 70
+  divin:
+    nom: "Divin"
+    feminin: "Divine"
+    couleur: "#ffe680"
+    multiplicateur: 1.9
+    lignes-bonus: 4
+    gemmes: 3
+    score-exige: 85

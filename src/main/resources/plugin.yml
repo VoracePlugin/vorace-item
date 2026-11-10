@@ -1,9 +1,27 @@
 name: VoraceItem
 version: '${version}'
 main: fr.vorace.item.VoraceItem
-api-version: '1.21'
-description: Objets RPG pour Vorace (stats, rareté, armes modulaires, forge, métiers) - en préparation
-authors: [ORA-KUN]
+api-version: '1.21.4'
+description: Objets RPG pour Vorace (stats, rareté, armes modulaires, forge, compétences d'armes, butin)
+authors: [ORA-KUN, AntoineJarnoux]
 website: https://github.com/VoracePlugin/vorace-item
 depend: [Vorace]
 softdepend: [VoraceMob]
+commands:
+  vitem:
+    description: Objets RPG de vorace-item
+    usage: /vitem [forge|atelier|donner|assembler|catalogue|info|reparer|nommer|profil|butin|competence|pack|recharger|essai]
+    aliases: [voraceitem, vi]
+permissions:
+  voraceitem.admin:
+    description: Toutes les commandes de vorace-item
+    default: op
+  voraceitem.forge:
+    description: Ouvrir la forge avec /vitem forge
+    default: true
+  voraceitem.atelier:
+    description: Ouvrir l'atelier (réparer, améliorer, sertir) avec /vitem atelier
+    default: true
+  voraceitem.forge.tout:
+    description: Fabriquer à la forge les objets au-dessus du rang maximal (forge.rang-max)
+    default: false

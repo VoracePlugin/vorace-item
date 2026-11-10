@@ -1,0 +1,187 @@
+# Matériaux d'exemple et leurs pièces pour l'épée modulaire (objets/exemples.yml, « epee »).
+# Tu peux modifier ou supprimer ce fichier : il ne reviendra pas.
+#
+#   nom, complement : « Fer », « de fer » (le complément suit le nom de l'arme : « Épée de fer »)
+#   etage           : étage du donjon du matériau. Son palier (tranche de 10 étages) multiplie la base de ses pièces :
+#                     x 1 aux étages 1 à 10, x 1,12 aux étages 11 à 20, x 1,25 aux étages 21 à 30...
+#   pieces          : pour chaque pièce,
+#     kit, emplacement : le modèle modulaire et la place de la pièce (lame, garde, poignee, pommeau)
+#     nom              : nom de la pièce
+#     modele           : modèle 3D dans plugins/VoraceItem/ressources/modeles (sans « .json »), fait avec Blockbench
+#     base             : stats de référence apportées (rang Commun, avant le palier)
+#     modificateurs    : modificateurs fixes apportés
+#     cout             : ce que la forge demande pour cette pièce
+#     durabilite       : durabilité apportée à l'arme
+#
+# Les pièces d'exemple sont dessinées par outils/exemples-pieces.py (dépôt vorace-item).
+
+cuivre:
+  nom: "Cuivre"
+  complement: "de cuivre"
+  etage: 1
+  pieces:
+    lame_droite:
+      kit: epee
+      emplacement: lame
+      nom: "Lame droite"
+      modele: exemple/cuivre/lame_droite
+      base: { attaque: 12 }
+      cout: { COPPER_INGOT: 2 }
+      durabilite: 100
+    lame_large:
+      kit: epee
+      emplacement: lame
+      nom: "Lame large"
+      modele: exemple/cuivre/lame_large
+      base: { attaque: 14 }
+      modificateurs: { attack-speed: -6 }
+      cout: { COPPER_INGOT: 3 }
+      durabilite: 130
+    garde_droite:
+      kit: epee
+      emplacement: garde
+      nom: "Garde droite"
+      modele: exemple/cuivre/garde_droite
+      base: { attaque: 2 }
+      modificateurs: { armor: 2 }
+      cout: { COPPER_INGOT: 1 }
+      durabilite: 30
+    garde_croissant:
+      kit: epee
+      emplacement: garde
+      nom: "Garde en croissant"
+      modele: exemple/cuivre/garde_croissant
+      base: { attaque: 3 }
+      modificateurs: { critical-strike-chance: 2 }
+      cout: { COPPER_INGOT: 1 }
+      durabilite: 25
+    poignee_cuir:
+      kit: epee
+      emplacement: poignee
+      nom: "Poignée de cuir"
+      modele: exemple/cuivre/poignee_cuir
+      base: { attaque: 1 }
+      cout: { LEATHER: 1, STICK: 1 }
+      durabilite: 20
+    pommeau_rond:
+      kit: epee
+      emplacement: pommeau
+      nom: "Pommeau rond"
+      modele: exemple/cuivre/pommeau_rond
+      base: { attaque: 1 }
+      cout: { COPPER_INGOT: 1 }
+      durabilite: 15
+
+fer:
+  nom: "Fer"
+  complement: "de fer"
+  etage: 5
+  pieces:
+    lame_droite:
+      kit: epee
+      emplacement: lame
+      nom: "Lame droite"
+      modele: exemple/fer/lame_droite
+      base: { attaque: 15 }
+      cout: { IRON_INGOT: 2 }
+      durabilite: 140
+    lame_large:
+      kit: epee
+      emplacement: lame
+      nom: "Lame large"
+      modele: exemple/fer/lame_large
+      base: { attaque: 17 }
+      modificateurs: { attack-speed: -6 }
+      cout: { IRON_INGOT: 3 }
+      durabilite: 170
+    garde_droite:
+      kit: epee
+      emplacement: garde
+      nom: "Garde droite"
+      modele: exemple/fer/garde_droite
+      base: { attaque: 2 }
+      modificateurs: { armor: 2 }
+      cout: { IRON_INGOT: 1 }
+      durabilite: 30
+    garde_croissant:
+      kit: epee
+      emplacement: garde
+      nom: "Garde en croissant"
+      modele: exemple/fer/garde_croissant
+      base: { attaque: 3 }
+      modificateurs: { critical-strike-chance: 2 }
+      cout: { IRON_INGOT: 1 }
+      durabilite: 25
+    poignee_cuir:
+      kit: epee
+      emplacement: poignee
+      nom: "Poignée de cuir"
+      modele: exemple/fer/poignee_cuir
+      base: { attaque: 1 }
+      cout: { LEATHER: 1, STICK: 1 }
+      durabilite: 20
+    pommeau_rond:
+      kit: epee
+      emplacement: pommeau
+      nom: "Pommeau rond"
+      modele: exemple/fer/pommeau_rond
+      base: { attaque: 1 }
+      cout: { IRON_NUGGET: 3 }
+      durabilite: 15
+
+acier:
+  nom: "Acier"
+  complement: "d'acier"
+  etage: 15
+  pieces:
+    lame_droite:
+      kit: epee
+      emplacement: lame
+      nom: "Lame droite"
+      modele: exemple/acier/lame_droite
+      base: { attaque: 17 }
+      cout: { IRON_INGOT: 2, COAL: 1 }
+      durabilite: 190
+    lame_large:
+      kit: epee
+      emplacement: lame
+      nom: "Lame large"
+      modele: exemple/acier/lame_large
+      base: { attaque: 19 }
+      modificateurs: { attack-speed: -6 }
+      cout: { IRON_INGOT: 3, COAL: 1 }
+      durabilite: 220
+    garde_droite:
+      kit: epee
+      emplacement: garde
+      nom: "Garde droite"
+      modele: exemple/acier/garde_droite
+      base: { attaque: 2 }
+      modificateurs: { armor: 2 }
+      cout: { IRON_INGOT: 1, COAL: 1 }
+      durabilite: 30
+    garde_croissant:
+      kit: epee
+      emplacement: garde
+      nom: "Garde en croissant"
+      modele: exemple/acier/garde_croissant
+      base: { attaque: 3 }
+      modificateurs: { critical-strike-chance: 2 }
+      cout: { IRON_INGOT: 1, COAL: 1 }
+      durabilite: 25
+    poignee_cuir:
+      kit: epee
+      emplacement: poignee
+      nom: "Poignée de cuir"
+      modele: exemple/acier/poignee_cuir
+      base: { attaque: 1 }
+      cout: { LEATHER: 1, STICK: 1 }
+      durabilite: 20
+    pommeau_rond:
+      kit: epee
+      emplacement: pommeau
+      nom: "Pommeau rond"
+      modele: exemple/acier/pommeau_rond
+      base: { attaque: 1 }
+      cout: { IRON_NUGGET: 3 }
+      durabilite: 15

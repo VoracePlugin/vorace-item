@@ -1,0 +1,67 @@
+# Compétences d'armes : un clic avec l'arme lance la compétence (voir « competences » dans objets/*.yml).
+#
+#   nom       : texte affiché sur l'objet
+#   recharge  : en secondes ; elle s'affiche sur l'objet (voile blanc qui descend, comme sur une perle de l'Ender)
+#   mana      : mana dépensé (MP)
+#   stamina   : stamina dépensée (SP)
+#   effets    : ce que fait la compétence, dans l'ordre. Types d'effets :
+#
+#   degats      multiplicateur (de compétence, dans la formule de dégâts), cible : visee | zone | cone,
+#               portee (visee), rayon et angle (zone, cone), cibles-max, nature : physique | magique (sinon celle de l'arme)
+#   projectile  multiplicateur, vitesse, nature, gravite : true | false
+#   ruee        force (élan vers l'avant), hauteur
+#   saut        force
+#   soin        valeur (points de vie) et / ou pourcent (de la vie max)
+#   effet       potion (nom du jeu : speed, strength, slowness...), duree (secondes), niveau, sur : soi | cibles
+#   son         son (nom du jeu), volume, hauteur
+#   particules  particule (nom du jeu), nombre, etendue, distance, sur : soi | cibles
+#   message     texte (MiniMessage)
+#   commande    commande (« console: ... » ou « joueur: ... » ; %joueur% est remplacé)
+#
+# « sur: cibles » vise les créatures touchées par le dernier effet « degats ».
+
+entaille:
+  nom: "Entaille"
+  recharge: 6
+  stamina: 15
+  effets:
+    - { type: son, son: entity.player.attack.sweep, hauteur: 0.9 }
+    - { type: particules, particule: SWEEP_ATTACK, nombre: 3, etendue: 0.5, distance: 1.6 }
+    - { type: degats, cible: cone, rayon: 3.5, angle: 100, multiplicateur: 1.6, cibles-max: 4 }
+
+entaille_tournoyante:
+  nom: "Entaille tournoyante"
+  recharge: 12
+  stamina: 30
+  effets:
+    - { type: son, son: entity.player.attack.sweep, hauteur: 0.7 }
+    - { type: particules, particule: SWEEP_ATTACK, nombre: 10, etendue: 1.5, distance: 0 }
+    - { type: degats, cible: zone, rayon: 4, multiplicateur: 2.2, cibles-max: 8 }
+    - { type: effet, potion: slowness, duree: 2, niveau: 2, sur: cibles }
+
+ruee:
+  nom: "Ruée"
+  recharge: 8
+  stamina: 20
+  effets:
+    - { type: son, son: entity.breeze.wind_burst, hauteur: 1.2 }
+    - { type: ruee, force: 1.4, hauteur: 0.2 }
+    - { type: degats, cible: cone, rayon: 3, angle: 60, multiplicateur: 1.2, cibles-max: 1 }
+
+trait_arcanique:
+  nom: "Trait arcanique"
+  recharge: 2
+  mana: 8
+  effets:
+    - { type: son, son: entity.illusioner.cast_spell, hauteur: 1.5, volume: 0.6 }
+    - { type: projectile, nature: magique, multiplicateur: 1.2, vitesse: 2.2, gravite: false }
+
+second_souffle:
+  nom: "Second souffle"
+  recharge: 30
+  mana: 20
+  effets:
+    - { type: son, son: block.amethyst_block.chime, hauteur: 1.2 }
+    - { type: particules, particule: HEART, nombre: 6, etendue: 0.5, distance: 0 }
+    - { type: soin, pourcent: 15 }
+    - { type: effet, potion: regeneration, duree: 4, niveau: 1 }

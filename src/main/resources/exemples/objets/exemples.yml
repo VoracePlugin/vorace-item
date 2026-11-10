@@ -1,0 +1,176 @@
+# Objets d'exemple de vorace-item. Tu peux les modifier ou supprimer ce fichier : il ne reviendra pas.
+# Chaque entrée est un MODÈLE d'objet ; chaque objet créé à partir d'un modèle est un exemplaire, avec son rang,
+# sa place dans la fourchette de stats, sa qualité, son fabricant, ses gemmes et son usure.
+#
+#   nom            : nom affiché (à la couleur du rang)
+#   type           : voir types.yml (il donne les valeurs par défaut : emplacement, scales, vitesse, lignes bonus)
+#   rang           : rang de base du modèle. Un modèle n'existe qu'à ce rang, au rang du dessous ou au rang du dessus.
+#   etage          : étage du donjon du modèle (son palier fixe la force des lignes bonus)
+#   apparence      : materiau (objet du jeu de base), ou objet-vorace (un objet de plugins/Vorace/objets), ou modele
+#                    (ressources/modeles/<chemin>.json), ou texture (ressources/textures/<chemin>.png) ; brillance
+#   stats          : stats de rang, à leur valeur au RANG DE BASE du modèle (bas de la fourchette)
+#   modificateurs  : modificateurs fixes (voir modificateurs.yml)
+#   lignes-bonus   : modificateurs qui peuvent être tirés en plus (sinon ceux du type)
+#   scales, nature, type-attaque, vitesse-attaque : sinon ceux du type
+#   element        : fire, wind, water, earth, ice, lightning, light, dark, holy, corruption (ou en français)
+#   durabilite     : 0 ou absent = l'objet ne s'use pas
+#   conditions     : niveau, classes (l'objet ne compte que si le joueur les remplit)
+#   competences    : clic-droit, clic-gauche, accroupi-clic-droit, accroupi-clic-gauche → compétence (competences.yml)
+#   gemmes         : nombre d'emplacements de gemmes (sinon celui du rang)
+#   recette        : ce que la forge demande : IRON_INGOT (jeu de base), "vorace:lingot" (vorace-core), "item:gemme" (vorace-item)
+#   description    : lignes de texte libres
+#   modulaire      : arme assemblée pièce par pièce (les pièces sont dans materiaux/*.yml)
+
+# ----------------------------------------------------------------- arme modulaire
+# Une épée = une lame, une garde, une poignée et un pommeau, chacun dans le matériau de son choix.
+# Ses stats sont la somme de celles de ses pièces ; son nom vient du matériau de sa première pièce (la lame).
+epee:
+  nom: "Épée"
+  type: epee
+  competences:
+    clic-droit: entaille
+  modulaire:
+    emplacements: [lame, garde, poignee, pommeau]
+    # rang le plus haut d'une épée assemblée ; au-dessus, ce sont des modèles faits à la main
+    rang-max: epique
+    nom: "<type> <materiau>"
+    # réglages d'affichage communs à toutes les pièces (les modèles sont dessinés debout, centrés en x = 8, z = 8)
+    affichage:
+      thirdperson_righthand: { rotation: [0, -90, 10], translation: [0, 4, 0.5], scale: [0.85, 0.85, 0.85] }
+      firstperson_righthand: { rotation: [0, -90, -20], translation: [1.13, 3.2, 1.13], scale: [0.68, 0.68, 0.68] }
+      gui: { rotation: [0, 0, -45], translation: [-1.2, -1.2, 0], scale: [0.62, 0.62, 0.62] }
+      ground: { translation: [0, 2, 0], scale: [0.5, 0.5, 0.5] }
+      fixed: { rotation: [0, 180, 45], translation: [1.2, -1.2, 0], scale: [0.62, 0.62, 0.62] }
+
+# ----------------------------------------------------------------- modèles simples (avec recette : la forge sait les faire)
+dague_de_chasse:
+  nom: "Dague de chasse"
+  type: dague
+  rang: peu_commun
+  etage: 4
+  stats:
+    attaque: 16
+  modificateurs:
+    critical-strike-chance: 4
+  durabilite: 180
+  competences:
+    clic-droit: ruee
+  recette:
+    IRON_INGOT: 1
+    LEATHER: 1
+    STICK: 1
+  description:
+    - "Courte, légère, faite pour finir le travail."
+
+baton_d_apprenti:
+  nom: "Bâton d'apprenti"
+  type: baton
+  rang: commun
+  etage: 2
+  apparence:
+    materiau: blaze_rod
+  stats:
+    puissance: 18
+  modificateurs:
+    max-mana: 10
+  durabilite: 150
+  competences:
+    clic-droit: trait_arcanique
+    accroupi-clic-droit: second_souffle
+  recette:
+    STICK: 2
+    AMETHYST_SHARD: 1
+  description:
+    - "Le premier bâton de tout mage d'Orario."
+
+plastron_cuir_cloute:
+  nom: "Plastron de cuir clouté"
+  type: plastron
+  rang: commun
+  etage: 3
+  apparence:
+    materiau: leather_chestplate
+  stats:
+    armor: 14
+    magic-armor: 2
+  modificateurs:
+    max-health: 6
+  durabilite: 300
+  recette:
+    LEATHER: 6
+    IRON_NUGGET: 4
+
+bottes_d_eclaireur:
+  nom: "Bottes d'éclaireur"
+  type: bottes
+  rang: peu_commun
+  etage: 6
+  apparence:
+    materiau: leather_boots
+  stats:
+    armor: 6
+  modificateurs:
+    movement-speed: 4
+    dodge-rating: 1
+  durabilite: 220
+  recette:
+    LEATHER: 4
+    FEATHER: 2
+
+# ----------------------------------------------------------------- modèle fait main (Légendaire : au-dessus de ce que fait la forge)
+lame_du_veilleur:
+  nom: "Lame du Veilleur"
+  type: epee
+  rang: legendaire
+  etage: 45
+  apparence:
+    materiau: netherite_sword
+    brillance: true
+  stats:
+    attaque: 62
+  scales: { force: A, agilite: E }
+  modificateurs:
+    critical-strike-chance: 6
+    physical-penetration: 8
+  durabilite: 900
+  conditions:
+    niveau: 40
+    classes: [guerrier, spadassin]
+  competences:
+    clic-droit: entaille_tournoyante
+  gemmes: 2
+  description:
+    - "Elle a gardé la Grande Porte plus longtemps"
+    - "que n'importe quel aventurier."
+
+# ----------------------------------------------------------------- gemmes et pierre d'amélioration (objets empilables)
+rubis_taille:
+  nom: "Rubis taillé"
+  type: gemme
+  rang: rare
+  apparence:
+    materiau: redstone
+    brillance: true
+  modificateurs:
+    physical-damage: 4
+
+saphir_taille:
+  nom: "Saphir taillé"
+  type: gemme
+  rang: rare
+  apparence:
+    materiau: lapis_lazuli
+    brillance: true
+  modificateurs:
+    max-mana: 15
+    magic-damage: 2
+
+pierre_d_amelioration:
+  nom: "Pierre d'amélioration"
+  type: pierre
+  rang: peu_commun
+  apparence:
+    materiau: amethyst_shard
+    brillance: true
+  description:
+    - "À utiliser à l'atelier : l'objet gagne un niveau."

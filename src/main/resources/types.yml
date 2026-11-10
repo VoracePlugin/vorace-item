@@ -1,0 +1,123 @@
+# Types d'objets : les valeurs par défaut de tous les objets d'un type (chaque objet peut les remplacer).
+#
+#   categorie      : arme, armure, gemme, pierre (d'amélioration) ou materiau
+#   emplacement    : main, seconde-main, tete, torse, jambes, pieds ou aucun. Un objet ne compte que porté à sa place.
+#   materiau       : objet du jeu de base qui sert de support (il décide de l'animation, pas des stats)
+#   nature         : physique ou magique (un coup magique utilise la Puissance magique et ne fait jamais de critique)
+#   type-attaque   : Destruction, Impact, Cutting, Piercing ou Shock (affiché sur l'objet, donné aux autres plugins)
+#   scales         : les deux stats de scale et leur lettre. S 1,5 ; A 1,2 ; B 1,0 ; C 0,75 ; D 0,5 ; E 0,25.
+#                    Total visé par arme : environ 1,5 (B + D, A + E, S seul).
+#   vitesse-attaque: coups par seconde (4 = aucun temps de recharge entre deux coups)
+#   lignes-bonus   : modificateurs qui peuvent être tirés comme lignes bonus (voir modificateurs.yml)
+#   empilable      : true = objet sans exemplaire (gemmes, pierres, matériaux) : il s'empile et n'a ni qualité ni usure
+
+epee:
+  nom: "Épée"
+  categorie: arme
+  materiau: iron_sword
+  type-attaque: Cutting
+  scales: { force: B, agilite: D }
+  vitesse-attaque: 1.6
+  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, physical-penetration, attack-speed, lifesteal, max-health, durability-loss-reduction]
+dague:
+  nom: "Dague"
+  categorie: arme
+  materiau: iron_sword
+  type-attaque: Piercing
+  scales: { agilite: B, force: D }
+  vitesse-attaque: 2.4
+  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, true-damage-chance, attack-speed, dodge-rating, movement-speed]
+hache:
+  nom: "Hache"
+  categorie: arme
+  materiau: iron_axe
+  type-attaque: Destruction
+  scales: { force: A, constitution: E }
+  vitesse-attaque: 1.0
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, max-health, knockback-resistance, lifesteal]
+marteau:
+  nom: "Marteau"
+  categorie: arme
+  materiau: mace
+  type-attaque: Impact
+  scales: { force: S }
+  vitesse-attaque: 0.8
+  lignes-bonus: [physical-damage, physical-penetration, max-health, knockback-resistance, damage-reduction]
+lance:
+  nom: "Lance"
+  categorie: arme
+  materiau: trident
+  type-attaque: Piercing
+  scales: { force: B, agilite: D }
+  vitesse-attaque: 1.3
+  lignes-bonus: [physical-damage, critical-strike-chance, physical-penetration, attack-speed, max-stamina]
+arc:
+  nom: "Arc"
+  categorie: arme
+  materiau: bow
+  type-attaque: Piercing
+  scales: { agilite: A, force: E }
+  vitesse-attaque: 0
+  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, physical-penetration, movement-speed, luck]
+baton:
+  nom: "Bâton"
+  categorie: arme
+  materiau: blaze_rod
+  nature: magique
+  type-attaque: Shock
+  scales: { intelligence: A, agilite: E }
+  vitesse-attaque: 1.2
+  lignes-bonus: [magic-damage, magic-penetration, max-mana, mana-regeneration, cooldown-reduction, elemental-proc-chance]
+baguette:
+  nom: "Baguette"
+  categorie: arme
+  materiau: stick
+  nature: magique
+  type-attaque: Shock
+  scales: { intelligence: B, agilite: D }
+  vitesse-attaque: 1.8
+  lignes-bonus: [magic-damage, magic-penetration, max-mana, mana-regeneration, cooldown-reduction]
+
+bouclier:
+  nom: "Bouclier"
+  categorie: armure
+  emplacement: seconde-main
+  materiau: shield
+  lignes-bonus: [armor, magic-armor, damage-reduction, knockback-resistance, max-health, damage-reflect]
+casque:
+  nom: "Casque"
+  categorie: armure
+  emplacement: tete
+  materiau: leather_helmet
+  lignes-bonus: [armor, magic-armor, max-health, max-mana, critical-damage-reduction, tenacity]
+plastron:
+  nom: "Plastron"
+  categorie: armure
+  emplacement: torse
+  materiau: leather_chestplate
+  lignes-bonus: [armor, magic-armor, max-health, damage-reduction, health-regeneration, damage-reflect]
+jambieres:
+  nom: "Jambières"
+  categorie: armure
+  emplacement: jambes
+  materiau: leather_leggings
+  lignes-bonus: [armor, magic-armor, max-health, max-stamina, stamina-regeneration, tenacity]
+bottes:
+  nom: "Bottes"
+  categorie: armure
+  emplacement: pieds
+  materiau: leather_boots
+  lignes-bonus: [armor, magic-armor, movement-speed, dodge-rating, max-stamina, knockback-resistance]
+
+gemme:
+  nom: "Gemme"
+  categorie: gemme
+  materiau: emerald
+pierre:
+  nom: "Pierre d'amélioration"
+  categorie: pierre
+  materiau: amethyst_shard
+materiau:
+  nom: "Matériau"
+  categorie: materiau
+  materiau: paper

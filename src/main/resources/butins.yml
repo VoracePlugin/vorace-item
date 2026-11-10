@@ -1,0 +1,33 @@
+# Butin des monstres.
+#
+# tables : pour chaque table,
+#   chance  : chance (0 à 1) que le monstre lâche un objet de cette table. La Chance du joueur (modificateur « luck »)
+#             l'augmente de 1 % par point.
+#   rangs   : poids des rangs pour les armes modulaires (Babel : 90 % Commune, 10 % Peu commune)
+#   entrees : une entrée est tirée selon son poids. Trois sortes d'entrées :
+#     - { poids: 10, kit: epee, materiaux: [cuivre, fer] }   arme assemblée avec les pièces de ces matériaux
+#     - { poids: 1, modele: dague_de_chasse }                un modèle précis de objets/*.yml
+#     - { poids: 5, objet: IRON_NUGGET, quantite: 1-3 }      un objet du jeu de base ou de vorace-core (« vorace:... »)
+#
+# mobs : quel monstre utilise quelle table. Un mob de vorace-mob s'écrit « vorace:<identifiant> », un monstre du jeu
+# de base par son type (« zombie »). Seuls les monstres tués par un joueur lâchent ce butin.
+
+tables:
+  etage_1:
+    chance: 0.08
+    rangs: { commun: 90, peu_commun: 10 }
+    entrees:
+      - { poids: 10, kit: epee, materiaux: [cuivre] }
+      - { poids: 4, objet: COPPER_INGOT, quantite: 1-2 }
+  etage_5:
+    chance: 0.08
+    rangs: { commun: 90, peu_commun: 10 }
+    entrees:
+      - { poids: 10, kit: epee, materiaux: [cuivre, fer] }
+      - { poids: 1, modele: dague_de_chasse }
+      - { poids: 4, objet: IRON_NUGGET, quantite: 2-5 }
+
+mobs:
+  zombie: etage_1
+  skeleton: etage_5
+  # "vorace:kobold": etage_1

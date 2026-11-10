@@ -21,6 +21,9 @@ val core: Any = if (voraceCore.isPresent) files(voraceCore.get())
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$paperApi")
     compileOnly(core)
+
+    testImplementation("io.papermc.paper:paper-api:$paperApi")
+    testImplementation(core)
 }
 
 java {
@@ -40,7 +43,16 @@ tasks.processResources {
     filesMatching("plugin.yml") { expand("version" to v) }
 }
 
+// Les tests sont des programmes simples lancés par la tâche "tests" (pas JUnit)
 tasks.test { enabled = false }
+
+// Tests sans serveur (rangs, qualité, formule de dégâts, fichiers d'exemple, pack) : gradle tests
+tasks.register<JavaExec>("tests") {
+    group = "verification"
+    description = "Lance les tests sans serveur"
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass = "fr.vorace.item.Tests"
+}
 
 tasks.jar { archiveFileName = "VoraceItem-${project.version}.jar" }
 
