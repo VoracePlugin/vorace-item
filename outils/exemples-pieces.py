@@ -2,7 +2,7 @@
 """Dessine les pièces d'exemple de l'épée modulaire (src/main/resources/exemples/ressources).
 
 Trois ensembles, un par matériau : deux lames, deux gardes, une poignée, un pommeau.
-  cuivre : épée courte (lame en feuille ou fauchon), cuivre qui verdit, manche de bois
+  cuivre : lame en feuille ou cimeterre, cuivre qui verdit, manche de bois
   fer    : épée d'armes (lame droite ou large), garde de fer, cuir brun
   acier  : épée longue d'acier sombre, garde et pommeau d'or, cuir noir
 Toutes les pièces partagent la même grille : n'importe quelle lame va sur n'importe quelle garde.
@@ -130,14 +130,25 @@ def pointe(w, i, n, fin):
 
 def profil_feuille(i, n):
     u = i / (n - 1)
-    w = 2 if u < 0.2 else 2 + round(2 * min(1, (u - 0.2) / 0.3)) if u < 0.65 else round(4 * (1 - ((u - 0.65) / 0.35) ** 1.5))
+    if u < 0.15:
+        w = 2
+    elif u < 0.5:
+        v = (u - 0.15) / 0.35
+        w = 2 + 2 * v * v * (3 - 2 * v)
+    elif u < 0.7:
+        w = 4
+    else:
+        w = 4 * (1 - ((u - 0.7) / 0.3) ** 1.6)
+    w = round(w)
     return w, w
 
 
 def profil_fauchon(i, n):
-    droite = 2 + round(3 * i / (n - 1))
-    k = i - (n - 10)
-    return (2 if k < 0 else 2 - round((droite + 2) * (k + 1) / 10)), droite
+    """Cimeterre : dos à gauche, la lame se courbe vers la gauche, s'élargit, puis le tranchant remonte vers la pointe."""
+    u = i / (n - 1)
+    gauche = 3 + 7 * u * u
+    large = 6 + 2 * min(1, u / 0.7) if u < 0.8 else 8 * ((1 - u) / 0.2) ** 0.7
+    return round(gauche), round(large - gauche)
 
 
 def profil_droite(i, n):
@@ -268,8 +279,8 @@ def ensembles():
     bloc = rectangle(-3, 3, 42, 46)
     return {
         "cuivre": {
-            "lame_droite": lame(profil_feuille, 52, CUIVRE, h, gouttiere=0.5, oxyde=OXYDE),
-            "lame_large": lame(profil_fauchon, 50, CUIVRE, h, fauchon=True, oxyde=OXYDE),
+            "lame_droite": lame(profil_feuille, 66, CUIVRE, h, gouttiere=0.5, oxyde=OXYDE),
+            "lame_large": lame(profil_fauchon, 64, CUIVRE, h, fauchon=True, oxyde=OXYDE),
             "garde_droite": garde([rectangle(-8, 8, 43, 45)], CUIVRE, h, centre=bloc),
             "garde_croissant": garde([bras(lambda a: 43 + round(3 * (a / 9) ** 2), 9)], CUIVRE, h, centre=bloc),
             "poignee_cuir": poignee(BOIS, 5),

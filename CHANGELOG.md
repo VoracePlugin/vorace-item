@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.9.3 (novembre 2026) : lames de cuivre
+
+- Les deux lames de cuivre sont plus longues (elles étaient trop courtes par rapport au manche).
+- La lame large de cuivre devient un cimeterre : dos à gauche, lame courbe qui s'élargit avant la pointe.
+- La lame en feuille a une silhouette plus régulière.
+
 ## 0.9.2 (novembre 2026) : pièces d'exemple dans le style de Minecraft
 
 Les pièces de la 0.9.1 ressemblaient à des épées de jeu 2D (lames larges, contours noirs, reflets en biais, grosses
