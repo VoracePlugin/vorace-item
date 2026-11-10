@@ -83,7 +83,7 @@ def lame(profil, longueur, palette, hasard, fauchon=False, arete=False, gouttier
     """Lame peinte ligne par ligne. profil(i, longueur) donne (gauche, droite) : la lame va de CX - gauche à CX + droite.
 
     Deux bandes : la moitié gauche claire, la moitié droite plus sombre. arete : un filet clair au milieu ;
-    gouttiere : part de la longueur creusée d'une rainure sombre ; fauchon : dos épais à gauche, tranchant à droite.
+    gouttiere : part de la longueur creusée d'une rainure sombre ; fauchon : dos épais à droite, tranchant à gauche.
     """
     d = Dessin()
     usure = taches(hasard, CX - 6, CX + 6, PIED_LAME, PIED_LAME + longueur, longueur // 4)
@@ -97,9 +97,9 @@ def lame(profil, longueur, palette, hasard, fauchon=False, arete=False, gouttier
         large = xd - xg + 1
         for x in range(xg, xd + 1):
             o, a, b = x - CX, x - xg, xd - x     # écart au milieu, distance au bord gauche, au bord droit
-            if fauchon:
-                t = 1 if a <= 1 else 4 if b == 0 else 3 if b <= 2 else 2
-                ep = 4 if a <= 1 else 1 if b == 0 else 2 if b <= 2 else 3
+            if fauchon:                          # dos épais à droite, tranchant à gauche
+                t = 1 if b <= 1 else 4 if a == 0 else 3 if a <= 2 else 2
+                ep = 4 if b <= 1 else 1 if a == 0 else 2 if a <= 2 else 3
             else:
                 t, ep = (3 if o < 0 else 2), 3
                 if arete and o == 0:
@@ -144,11 +144,12 @@ def profil_feuille(i, n):
 
 
 def profil_fauchon(i, n):
-    """Cimeterre : dos à gauche, la lame se courbe vers la gauche, s'élargit, puis le tranchant remonte vers la pointe."""
+    """Cimeterre : dos à droite, la lame se courbe vers la droite (vers l'arrière une fois en main), s'élargit, puis le
+    tranchant remonte vers la pointe. (Avant la 0.10.3, la courbe partait à gauche : en main, elle allait vers l'avant.)"""
     u = i / (n - 1)
-    gauche = 3 + 7 * u * u
+    dos = 3 + 7 * u * u
     large = 6 + 2 * min(1, u / 0.7) if u < 0.8 else 8 * ((1 - u) / 0.2) ** 0.7
-    return round(gauche), round(large - gauche)
+    return round(large - dos), round(dos)
 
 
 def profil_droite(i, n):

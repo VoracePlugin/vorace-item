@@ -242,6 +242,7 @@ entaille:
 
 Effets : `degats`, `projectile`, `ruee`, `saut`, `soin`, `effet` (de potion), `son`, `particules`, `message`,
 `commande`. Ce sont des compétences simples, attachées à un objet ; celles des classes viendront du plugin des classes.
+Les objets d'exemple n'ont pas de compétence : celles de Babel viendront avec la liste d'Antoine.
 
 ### Butin
 

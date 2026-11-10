@@ -1,5 +1,20 @@
 # Journal des changements
 
+## 0.10.3 (novembre 2026) : stats rondes, modificateurs logiques, cimeterre dans le bon sens
+
+- **Stats de rang arrondies à l'unité** (attaque physique, puissance magique, armures) : « 19 » au lieu de « 18,9 ».
+  Les objets déjà fabriqués suivent, puisque leurs stats sont recalculées depuis les fichiers.
+- **Modificateurs logiques** : une arme ne donne plus d'armure. Exemples : la garde droite donne +5 % de dégâts
+  critiques (au lieu de +2 d'armure) ; la lame large frappe plus fort (+3 dégâts physiques) mais plus lentement
+  (−6 % de vitesse d'attaque). Lignes bonus des épées, haches et marteaux : plus de points de vie, de résistance au
+  recul ni de réduction de dégâts.
+- **Plus de compétence sur les objets d'exemple** (épée, dague, bâton, Lame du Veilleur) : les compétences d'armes
+  de Babel viendront avec la liste d'Antoine. Le système (`competences.yml`) reste en place.
+- **Cimeterre de cuivre** (`cuivre/lame_large`) : la courbe part maintenant vers l'arrière une fois en main (dos à
+  droite, tranchant à gauche dans le dessin).
+- Sur un serveur déjà lancé, les exemples ne sont pas réinstallés : supprimer `materiaux/exemples.yml`,
+  `objets/exemples.yml` et `ressources/modeles/exemple`, `ressources/textures/exemple` pour les recevoir.
+
 ## 0.10.2 (novembre 2026) : pièces muettes, qualité cachée par pièce
 
 - **Rien n'est écrit sur une pièce**, à part son nom, lame comprise : ni stats, ni qualité, ni fabricant. On ne peut

@@ -9,7 +9,8 @@
 #     nom              : nom de la pièce
 #     modele           : modèle 3D dans plugins/VoraceItem/ressources/modeles (sans « .json »), fait avec Blockbench
 #     base             : stats de référence apportées (rang Commun, avant le palier)
-#     modificateurs    : modificateurs fixes apportés
+#     modificateurs    : modificateurs fixes apportés (logiques pour la pièce : une lame lourde frappe plus fort mais
+#                        plus lentement, une garde aide à placer le coup ; jamais d'armure sur une arme)
 #     cout             : ce que la forge demande pour cette pièce
 #     durabilite       : durabilité apportée à l'arme
 #
@@ -34,7 +35,7 @@ cuivre:
       nom: "Lame large"
       modele: exemple/cuivre/lame_large
       base: { attaque: 14 }
-      modificateurs: { attack-speed: -6 }
+      modificateurs: { physical-damage: 3, attack-speed: -6 }
       cout: { COPPER_INGOT: 3 }
       durabilite: 130
     garde_droite:
@@ -43,7 +44,7 @@ cuivre:
       nom: "Garde droite"
       modele: exemple/cuivre/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
+      modificateurs: { critical-strike-power: 5 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -91,7 +92,7 @@ fer:
       nom: "Lame large"
       modele: exemple/fer/lame_large
       base: { attaque: 17 }
-      modificateurs: { attack-speed: -6 }
+      modificateurs: { physical-damage: 3, attack-speed: -6 }
       cout: { IRON_INGOT: 3 }
       durabilite: 170
     garde_droite:
@@ -100,7 +101,7 @@ fer:
       nom: "Garde droite"
       modele: exemple/fer/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
+      modificateurs: { critical-strike-power: 5 }
       cout: { IRON_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -148,7 +149,7 @@ acier:
       nom: "Lame large"
       modele: exemple/acier/lame_large
       base: { attaque: 19 }
-      modificateurs: { attack-speed: -6 }
+      modificateurs: { physical-damage: 3, attack-speed: -6 }
       cout: { IRON_INGOT: 3, COAL: 1 }
       durabilite: 220
     garde_droite:
@@ -157,7 +158,7 @@ acier:
       nom: "Garde droite"
       modele: exemple/acier/garde_droite
       base: { attaque: 2 }
-      modificateurs: { armor: 2 }
+      modificateurs: { critical-strike-power: 5 }
       cout: { IRON_INGOT: 1, COAL: 1 }
       durabilite: 30
     garde_croissant:
