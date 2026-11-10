@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
@@ -25,14 +26,18 @@ import java.util.UUID;
 
 /**
  * Les pièces d'armes modulaires en tant qu'objets : une lame, une garde, une poignée ou un pommeau que l'on tient
- * dans son inventaire. Une pièce ne porte que son nom, et ses stats quand elle en a (dans les exemples, seule la
- * lame en a). Elle n'a pas de qualité : la qualité de l'arme se décide à la fin, à l'assemblage.
+ * dans son inventaire. Rien n'est écrit sur une pièce, à part son nom : ni stats, ni qualité. Sa qualité existe
+ * pourtant (un score de 0 à 100, gardé caché dans l'objet) : le joueur ne la découvre qu'en finissant l'arme, qui
+ * prend la moyenne des scores de ses pièces.
  * <p>
- * vorace-item ne décide pas comment une pièce se fabrique ni comment le score final s'obtient (gestes, mini-jeux,
- * niveaux de métier) : le plugin des métiers appelle {@link #creer} quand la pièce est faite et {@link #assembler},
- * avec le score, quand le joueur monte son arme.
+ * vorace-item ne décide pas comment une pièce se fabrique ni quel score elle mérite (gestes, mini-jeux, niveaux de
+ * métier) : le plugin des métiers appelle {@link #creer} avec le score quand la pièce est faite, et
+ * {@link #assembler} quand le joueur monte son arme.
  */
 public final class Pieces {
+
+    /** Ce que porte une pièce tenue en objet : son identifiant et son score caché. */
+    public record PieceObjet(String id, double score) {}
 
     /**
      * Résultat d'un assemblage.
@@ -44,73 +49,74 @@ public final class Pieces {
     public record Assemblage(ItemStack objet, Qualite.Resultat qualite, String erreur) {}
 
     private final VoraceItem plugin;
-    private final NamespacedKey kPiece = Exemplaires.cle("piece");
+    private final NamespacedKey kPiece = Exemplaires.cle("piece"), kScore = Exemplaires.cle("piece_score");
 
     public Pieces(VoraceItem plugin) {
         this.plugin = plugin;
     }
 
-    /** Crée l'objet d'une pièce. Deux pièces identiques s'empilent. */
-    public ItemStack creer(Piece piece) {
+    /**
+     * Crée l'objet d'une pièce : son nom, son apparence, et rien d'autre de visible.
+     *
+     * @param score score de fabrication de la pièce, de 0 à 100 (caché : il ne compte qu'à l'assemblage)
+     */
+    public ItemStack creer(Piece piece, double score) {
         if (piece == null) return null;
-        Catalogue c = plugin.catalogue();
         ItemStack objet = new ItemStack(Material.PAPER);
         ItemMeta meta = objet.getItemMeta();
         if (meta == null) return null;
-        Materiau materiau = c.materiau(piece.materiau());
+        Materiau materiau = plugin.catalogue().materiau(piece.materiau());
         meta.displayName(Textes.objet("<white>" + Textes.echapper(piece.nom() + (materiau == null ? "" : " " + materiau.complement()))));
-        List<Component> lignes = new ArrayList<>();
-        double palier = materiau == null ? 1 : c.raretes().multiplicateurPalier(materiau.palier());
-        for (Map.Entry<String, Double> e : piece.base().entrySet()) {
-            lignes.add(Textes.objet("<#d9c9a8>" + Textes.echapper(c.modificateurs().afficher(e.getKey(), e.getValue() * palier))));
-        }
-        for (Map.Entry<String, Double> e : piece.modificateurs().entrySet()) {
-            lignes.add(Textes.objet("<#7db8ff>" + Textes.echapper(c.modificateurs().afficher(e.getKey(), e.getValue()))));
-        }
-        if (!lignes.isEmpty()) meta.lore(lignes);
         meta.setItemModel(Exemplaires.cle("piece/" + piece.id()));
-        meta.getPersistentDataContainer().set(kPiece, PersistentDataType.STRING, piece.id());
+        // une seule par case : deux pièces qui s'empileraient trahiraient qu'elles ont le même score
+        meta.setMaxStackSize(1);
+        PersistentDataContainer d = meta.getPersistentDataContainer();
+        d.set(kPiece, PersistentDataType.STRING, piece.id());
+        d.set(kScore, PersistentDataType.DOUBLE, Math.max(0, Math.min(100, score)));
         objet.setItemMeta(meta);
         return objet;
     }
 
-    /** Identifiant de la pièce que porte cet objet (« fer/lame_droite »), ou null si ce n'est pas une pièce. */
-    public String lire(ItemStack objet) {
+    /** Ce que porte cet objet s'il est une pièce, sinon null. */
+    public PieceObjet lire(ItemStack objet) {
         if (objet == null || objet.getType().isAir() || !objet.hasItemMeta()) return null;
         ItemMeta meta = objet.getItemMeta();
-        return meta == null ? null : meta.getPersistentDataContainer().get(kPiece, PersistentDataType.STRING);
+        if (meta == null) return null;
+        PersistentDataContainer d = meta.getPersistentDataContainer();
+        String id = d.get(kPiece, PersistentDataType.STRING);
+        return id == null ? null : new PieceObjet(id, d.getOrDefault(kScore, PersistentDataType.DOUBLE, 0.0));
     }
 
     /**
-     * Assemble une arme à partir de ses pièces. Il faut exactement une pièce par emplacement du kit. La qualité se
-     * décide ici : le score donne le grade de l'arme, son rang et sa place dans la fourchette (règles de
-     * {@link Qualite#calculer}). Les objets des pièces ne sont pas retirés : c'est à l'appelant d'en retirer un de
-     * chaque quand l'assemblage a réussi.
+     * Assemble une arme à partir de ses pièces. Il faut exactement une pièce par emplacement du kit. Le score de
+     * l'arme est la moyenne des scores des pièces ; il donne son grade, son rang et sa place dans la fourchette
+     * (mêmes règles que {@link Qualite#calculer}). Les objets des pièces ne sont pas retirés : c'est à l'appelant de
+     * le faire quand l'assemblage a réussi.
      *
-     * @param score         score final de fabrication, de 0 à 100
      * @param rangMateriau  rang du matériau principal (null : le premier rang)
      * @param chanceRangSup chance (0 à 1) qu'un Chef-d'œuvre gagne un rang
      * @param ecart         étages entre la recette et le bas du rang de maîtrise du fabricant
      * @param fabricant     nom de celui qui assemble (null : pas de fabricant sur l'arme)
      */
-    public Assemblage assembler(ModeleObjet kit, Collection<ItemStack> objets, double score, Rarete rangMateriau, double chanceRangSup,
+    public Assemblage assembler(ModeleObjet kit, Collection<ItemStack> objets, Rarete rangMateriau, double chanceRangSup,
                                 double ecart, String fabricant, UUID fabricantUuid, Random hasard) {
         if (kit == null || kit.kit() == null) return new Assemblage(null, null, "Ce modèle n'est pas une arme à assembler.");
         Catalogue c = plugin.catalogue();
         Map<String, String> pieces = new LinkedHashMap<>();
+        double somme = 0;
         for (ItemStack objet : objets) {
-            Piece piece = c.piece(lire(objet));
+            PieceObjet lue = lire(objet);
+            Piece piece = lue == null ? null : c.piece(lue.id());
             if (piece == null) return new Assemblage(null, null, "Un de ces objets n'est pas une pièce d'arme.");
             if (!piece.kit().equals(kit.id())) return new Assemblage(null, null, piece.nom() + " ne va pas sur : " + kit.nom() + ".");
             if (pieces.put(piece.emplacement(), piece.id()) != null) return new Assemblage(null, null, "Il y a deux pièces pour : " + piece.emplacement() + ".");
+            somme += lue.score();
         }
         for (String e : kit.kit().emplacements()) if (!pieces.containsKey(e)) return new Assemblage(null, null, "Il manque une pièce : " + e + ".");
-        // les pièces dans l'ordre des emplacements du kit
-        Map<String, String> rangees = new LinkedHashMap<>();
-        for (String e : kit.kit().emplacements()) rangees.put(e, pieces.get(e));
+        double score = somme / pieces.size();
         Qualite.Resultat q = plugin.qualite().calculer(score, rangMateriau == null ? c.raretes().premier() : rangMateriau,
             chanceRangSup, ecart, hasard == null ? new Random() : hasard);
-        ItemStack arme = plugin.exemplaires().creer(kit, q.rang(), q.rebut(), q.position(), rangees,
+        ItemStack arme = plugin.exemplaires().creer(kit, q.rang(), q.rebut(), q.position(), pieces,
             new Signature(fabricant, fabricantUuid, q.grade().id(), q.score(), null), 1);
         if (arme == null) return new Assemblage(null, null, "Ces pièces ne vont pas ensemble.");
         return new Assemblage(arme, q, null);

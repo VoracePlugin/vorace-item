@@ -198,15 +198,11 @@ public final class Tests {
     private static void calcul(Catalogue c) {
         ModeleObjet epee = c.modele("epee");
         Exemplaire ex = epeeMixte();
-        double reference = 19;
-        verifier(proche(Calcul.references(c, epee, ex).get("attaque"), reference), "référence d'une épée : somme des pièces (ici la lame de fer seule en apporte)");
+        double reference = 15 + 3 * 1.12 + 1 + 1;
+        verifier(proche(Calcul.references(c, epee, ex).get("attaque"), reference), "référence d'une épée : somme des pièces, chacune avec le palier de son matériau");
         Map<String, Double> stats = Calcul.stats(c, ex, 0.03);
         verifier(proche(stats.get("attaque"), reference), "en bas de la fourchette Commune : la référence");
-        verifier(!stats.containsKey("critical-strike-chance") && !stats.containsKey("armor"), "dans les exemples, la garde, la poignée et le pommeau n'apportent aucune stat");
-        Exemplaire large = epeeMixte();
-        large.pieces.put("lame", "acier/lame_large");
-        verifier(proche(Calcul.references(c, epee, large).get("attaque"), 23 * 1.12) && proche(Calcul.stats(c, large, 0.03).get("attack-speed"), -6),
-            "une lame d'acier compte le palier de son matériau, et son modificateur fixe est compté");
+        verifier(proche(stats.get("critical-strike-chance"), 2), "le modificateur fixe de la garde est compté");
         ex.position = 1;
         verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), reference * 1.1), "en haut de la fourchette Commune : le bas de la Peu commune");
         ex.rang = "rare";
@@ -245,9 +241,9 @@ public final class Tests {
         String tout = String.join("\n", l);
         verifier(l.get(0).contains("◆ Rare") && l.get(0).contains("Épée"), "première ligne : rang et type");
         verifier(tout.contains("Qualité : ") && tout.contains("Fine"), "qualité");
-        verifier(tout.contains("Attaque physique <white>" + Textes.nombre1(19 * 1.2 * 1.06)), "attaque avec le rang et l'amélioration");
+        verifier(tout.contains("Attaque physique <white>" + Textes.nombre1((15 + 3 * 1.12 + 2) * 1.2 * 1.06)), "attaque avec le rang et l'amélioration");
         verifier(tout.contains("Scale <white>FOR B") && tout.contains("AGI D") && tout.contains("Type <white>Cutting"), "scale et type d'attaque");
-        verifier(tout.contains("◇ +1,2 % Vol de vie"), "ligne bonus");
+        verifier(tout.contains("+2 % Chance de coup critique") && tout.contains("◇ +1,2 % Vol de vie"), "modificateur fixe et ligne bonus");
         verifier(tout.contains("❖ Rubis taillé") && tout.contains("+4 Dégâts physiques"), "gemme sertie");
         verifier(tout.contains("Clic droit : Entaille (6 s)"), "compétence");
         verifier(tout.contains("Durabilité : <white>150") && tout.contains("Forgé par") && tout.contains("Antoine"), "durabilité et fabricant");

@@ -167,18 +167,19 @@ Dans le pack, le kit devient un objet « composite » qui choisit une pièce par
 Une pièce peut aussi exister seule, comme objet d'inventaire : une « Lame droite de fer », une « Garde en croissant
 d'acier ». On fabrique chaque pièce à part, puis on monte l'arme avec une pièce par emplacement.
 
-- Une pièce ne porte que **son nom**, et ses stats quand elle en a. Dans les exemples, seule la lame en a : la garde,
-  la poignée et le pommeau n'ont qu'un nom et une apparence.
-- Une pièce n'a **pas de qualité**. La qualité se décide à la fin, à l'assemblage : le score donné à ce moment fixe
-  le grade de l'arme, son rang et sa place dans la fourchette.
-- Deux pièces identiques s'empilent. Une arme montée ne se démonte pas.
+- **Rien n'est écrit sur une pièce**, à part son nom : ni stats, ni qualité. On ne peut pas trier ses pièces et jeter
+  les moins bonnes : il faut finir l'arme pour savoir ce qu'elle vaut.
+- Chaque pièce a pourtant **sa propre qualité** : un score de 0 à 100, gardé caché dans l'objet. Une pièce ne
+  s'empile pas (deux pièces empilées trahiraient qu'elles ont le même score).
+- L'arme montée prend la **moyenne des scores** de ses pièces. Ce score donne son grade, son rang et sa place dans la
+  fourchette, avec les mêmes règles que la qualité de fabrication. C'est sur l'arme que tout est écrit.
+- Une arme montée ne se démonte pas.
 - Dans le pack, chaque pièce a son objet (`assets/voraceitem/items/piece/<matériau>/<pièce>.json`) : le modèle de la
   pièce, recentré et agrandi dans sa case d'inventaire.
 
-vorace-item ne décide pas **comment** une pièce se fabrique ni comment le score s'obtient : c'est le plugin des
-métiers qui appelle `VoraceItemAPI.creerPiece` quand la pièce est faite, puis `VoraceItemAPI.assemblerPieces`, avec
-le score, quand le joueur monte son arme. Pour essayer sans lui : `/vitem piece <joueur> <pièce>` puis
-`/vitem monter <joueur> [kit] [score]`.
+vorace-item ne décide pas **comment** une pièce se fabrique : c'est le plugin des métiers qui appelle
+`VoraceItemAPI.creerPiece` quand la pièce est faite, puis `VoraceItemAPI.assemblerPieces` quand le joueur monte son
+arme. Pour essayer sans lui : `/vitem piece <joueur> <pièce> [score]` puis `/vitem monter <joueur>`.
 
 ### Combat
 
@@ -268,8 +269,8 @@ Seuls les monstres tués par un joueur lâchent ce butin. La Chance du joueur au
 | `/vitem atelier` | Réparer, améliorer, sertir | `voraceitem.atelier` (tous) |
 | `/vitem donner <joueur> <modèle> [rang] [place 0-100] [quantité]` | Donner un objet | `voraceitem.admin` |
 | `/vitem assembler <joueur> <kit> <hasard\|pièce,pièce,...> [rang] [place]` | Donner une arme modulaire (`hasard:fer+cuivre` limite les matériaux) | `voraceitem.admin` |
-| `/vitem piece <joueur> <pièce> [quantité]` | Donner une pièce seule (`fer/lame_droite`) | `voraceitem.admin` |
-| `/vitem monter <joueur> [kit] [score 0-100]` | Monter l'arme avec les pièces de l'inventaire du joueur (la première trouvée par emplacement) ; le score fixe sa qualité (50 par défaut) | `voraceitem.admin` |
+| `/vitem piece <joueur> <pièce> [score 0-100]` | Donner une pièce seule (`fer/lame_droite`) ; son score de qualité reste caché | `voraceitem.admin` |
+| `/vitem monter <joueur> [kit]` | Monter l'arme avec les pièces de l'inventaire du joueur (la première trouvée par emplacement) | `voraceitem.admin` |
 | `/vitem catalogue` | Tous les modèles, un clic pour en prendre un | `voraceitem.admin` |
 | `/vitem info` | Données de l'objet tenu en main, avec ses fourchettes | `voraceitem.admin` |
 | `/vitem reparer`, `/vitem nommer <nom>` | Réparer ou nommer l'objet tenu en main | `voraceitem.admin` |
@@ -292,13 +293,13 @@ Qualite.Resultat q = VoraceItemAPI.qualite(82, "rare", 0.33, 0, new Random());
 ItemStack epee = VoraceItemAPI.assembler("epee", pieces, q.rang().id(), q.position(), null,
     new Signature(joueur.getName(), joueur.getUniqueId(), q.grade().id(), q.score(), null));
 
-// pièces fabriquées une à une, puis montées : la qualité se décide au montage, avec le score final
-ItemStack lame = VoraceItemAPI.creerPiece("fer/lame_droite");
+// pièces fabriquées une à une, puis montées : l'arme prend la moyenne des scores de ses pièces
+ItemStack lame = VoraceItemAPI.creerPiece("fer/lame_droite", 78);          // le score reste caché
 Map<String, Integer> cout = VoraceItemAPI.coutPiece("fer/lame_droite");          // iron_ingot → 2
-String id = VoraceItemAPI.piece(lame);                                           // « fer/lame_droite », ou null
-Pieces.Assemblage montage = VoraceItemAPI.assemblerPieces("epee", List.of(lame, garde, poignee, pommeau), 82,
+Pieces.PieceObjet lue = VoraceItemAPI.piece(lame);                               // identifiant, score caché
+Pieces.Assemblage montage = VoraceItemAPI.assemblerPieces("epee", List.of(lame, garde, poignee, pommeau),
     "commun", 0, 0, joueur, new Random());
-if (montage.objet() != null) { /* retirer une pièce de chaque, donner montage.objet() */ } else joueur.sendMessage(montage.erreur());
+if (montage.objet() != null) { /* retirer les quatre pièces, donner montage.objet() */ } else joueur.sendMessage(montage.erreur());
 
 double[] fourchette = VoraceItemAPI.fourchette("dague_de_chasse", null, "attaque", "rare");   // ou « rebut »
 Exemplaire ex = VoraceItemAPI.exemplaire(objet);       // rang, qualité, fabricant, pièces, gemmes, usure de combat

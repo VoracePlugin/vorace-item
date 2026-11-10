@@ -1,5 +1,16 @@
 # Journal des changements
 
+## 0.10.2 (novembre 2026) : pièces muettes, qualité cachée par pièce
+
+- **Rien n'est écrit sur une pièce**, à part son nom, lame comprise : ni stats, ni qualité, ni fabricant. On ne peut
+  pas trier ses pièces et jeter les moins bonnes : il faut finir l'arme pour savoir ce qu'elle vaut.
+- **La qualité revient sur chaque pièce, mais cachée** : `VoraceItemAPI.creerPiece(pièce, score)` garde le score
+  dans l'objet, et `VoraceItemAPI.assemblerPieces(kit, pièces, ...)` donne à l'arme la moyenne des scores de ses
+  pièces (comme en 0.10.0). `/vitem piece <joueur> <pièce> [score]`, `/vitem monter <joueur> [kit]`.
+- Une pièce ne s'empile pas.
+- **Exemples** : les stats des pièces reviennent à celles de la 0.10.0 (le déplacement de l'attaque sur les lames,
+  fait en 0.10.1, est annulé).
+
 ## 0.10.1 (novembre 2026) : des pièces sans qualité, des stats sur la lame seulement
 
 - **Une pièce ne porte plus que son nom**, et ses stats quand elle en a. Plus de ligne de qualité, de type ni de

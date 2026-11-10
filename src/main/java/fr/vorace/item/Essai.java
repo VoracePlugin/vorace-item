@@ -138,9 +138,9 @@ public final class Essai {
                     && chaines.get(0).equals("fer/lame_droite") && chaines.get(1).equals("acier/garde_croissant"),
                     "l'épée porte le modèle composé et une chaîne par pièce " + chaines);
                 Exemplaire ex = plugin.exemplaires().lire(arme);
-                double attendu = 19;
+                double attendu = 15 + 3 * c.raretes().multiplicateurPalier(2) + 1 + 1;
                 double attaque = plugin.exemplaires().stats(ex).getOrDefault(Modificateurs.ATTAQUE, 0.0);
-                verifier(Math.abs(attaque - attendu) < 1e-6, "son attaque est celle de sa lame, seule pièce d'exemple à porter des stats (" + Textes.nombre(attaque) + ")");
+                verifier(Math.abs(attaque - attendu) < 1e-6, "son attaque est la somme de ses pièces, la garde d'acier comptant son palier (" + Textes.nombre(attaque) + ")");
                 String nom = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(meta.displayName());
                 verifier(nom.equals("Épée de fer"), "elle s'appelle « " + nom + " », d'après le matériau de sa lame");
             }
@@ -148,30 +148,32 @@ public final class Essai {
             incomplet.remove("pommeau");
             verifier(plugin.exemplaires().creer(epee, commun, false, 0, incomplet, Signature.AUCUNE, 1) == null, "une épée sans pommeau est refusée");
 
-            // les pièces en objets : fabriquées une à une, puis assemblées ; la qualité se décide à l'assemblage
+            // les pièces en objets : fabriquées une à une, puis assemblées
             List<ItemStack> objets = new java.util.ArrayList<>();
-            for (String id : pieces.values()) objets.add(plugin.pieces().creer(c.piece(id)));
-            ItemMeta metaLame = objets.get(0).getItemMeta(), metaGarde = objets.get(1).getItemMeta();
-            verifier("fer/lame_droite".equals(plugin.pieces().lire(objets.get(0))) && metaLame.hasItemModel()
-                && metaLame.getItemModel().toString().equals("voraceitem:piece/fer/lame_droite"), "une lame seule est un objet, avec sa pièce et son apparence");
-            String texteLame = metaLame.lore() == null ? "" : net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(metaLame.lore().get(0));
-            verifier(metaLame.lore() != null && metaLame.lore().size() == 1 && texteLame.equals("+19 Attaque physique"), "la lame ne montre que son attaque (« " + texteLame + " »)");
-            verifier(!metaGarde.hasLore() && net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(metaGarde.displayName()).equals("Garde en croissant d'acier"),
-                "une garde n'a que son nom : ni stats, ni qualité");
-            verifier(objets.get(1).isSimilar(plugin.pieces().creer(c.piece("acier/garde_croissant"))), "deux pièces identiques s'empilent");
+            double[] scores = {90, 80, 60, 50};
+            int n = 0;
+            for (String id : pieces.values()) objets.add(plugin.pieces().creer(c.piece(id), scores[n++]));
+            fr.vorace.item.exemplaire.Pieces.PieceObjet lue = plugin.pieces().lire(objets.get(0));
+            ItemMeta metaLame = objets.get(0).getItemMeta();
+            verifier(lue != null && lue.id().equals("fer/lame_droite") && Math.abs(lue.score() - 90) < 1e-9
+                && metaLame.hasItemModel() && metaLame.getItemModel().toString().equals("voraceitem:piece/fer/lame_droite")
+                && objets.get(0).getMaxStackSize() == 1, "une lame seule est un objet : elle garde sa pièce, son score caché et son apparence");
+            boolean rienEcrit = true;
+            for (ItemStack o : objets) rienEcrit &= !o.getItemMeta().hasLore();
+            String nomLame = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(metaLame.displayName());
+            verifier(rienEcrit && nomLame.equals("Lame droite de fer"), "rien n'est écrit sur une pièce à part son nom (« " + nomLame + " ») : ni stats, ni qualité");
             verifier(plugin.pieces().lire(arme) == null && plugin.exemplaires().lire(objets.get(0)) == null, "une pièce n'est pas une arme, une arme n'est pas une pièce");
-            fr.vorace.item.exemplaire.Pieces.Assemblage monte = plugin.pieces().assembler(epee, objets, 72, null, 0, 0, "Essai", null, new java.util.Random(1));
-            verifier(monte.objet() != null && Math.abs(monte.qualite().score() - 72) < 1e-9 && monte.qualite().grade().id().equals("excellente"),
-                "la qualité se décide à l'assemblage : un score de 72 donne une épée Excellente");
+            fr.vorace.item.exemplaire.Pieces.Assemblage monte = plugin.pieces().assembler(epee, objets, null, 0, 0, "Essai", null, new java.util.Random(1));
+            verifier(monte.objet() != null && Math.abs(monte.qualite().score() - 70) < 1e-9 && monte.qualite().grade().id().equals("excellente"),
+                "quatre pièces de 90, 80, 60 et 50 donnent une épée de score 70 (Excellente)");
             if (monte.objet() != null) {
                 Exemplaire ex = plugin.exemplaires().lire(monte.objet());
-                verifier(ex != null && ex.pieces.equals(pieces) && "Essai".equals(ex.fabricant) && "excellente".equals(ex.grade),
-                    "l'épée montée porte ses quatre pièces, sa qualité et le nom de celui qui l'a assemblée");
+                verifier(ex != null && ex.pieces.equals(pieces) && "Essai".equals(ex.fabricant), "l'épée montée porte ses quatre pièces et le nom de celui qui l'a assemblée");
             }
-            verifier(plugin.pieces().assembler(epee, objets.subList(0, 3), 50, null, 0, 0, null, null, null).objet() == null, "sans pommeau, pas d'assemblage");
+            verifier(plugin.pieces().assembler(epee, objets.subList(0, 3), null, 0, 0, null, null, null).objet() == null, "sans pommeau, pas d'assemblage");
             List<ItemStack> doublon = new java.util.ArrayList<>(objets);
-            doublon.add(plugin.pieces().creer(c.piece("cuivre/lame_large")));
-            verifier(plugin.pieces().assembler(epee, doublon, 50, null, 0, 0, null, null, null).objet() == null, "deux lames, pas d'assemblage");
+            doublon.add(plugin.pieces().creer(c.piece("cuivre/lame_large"), 40));
+            verifier(plugin.pieces().assembler(epee, doublon, null, 0, 0, null, null, null).objet() == null, "deux lames, pas d'assemblage");
             verifier(Files.isRegularFile(plugin.core().packs().racineServeur().resolve(plugin.reglages().dossierPack).resolve("assets/voraceitem/items/piece/fer/lame_droite.json")),
                 "chaque pièce a son objet dans le pack");
         }
