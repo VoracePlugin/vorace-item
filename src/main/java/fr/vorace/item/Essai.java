@@ -298,7 +298,11 @@ public final class Essai {
                 ItemStack it = plugin.exemplaires().creer(fer3d, fer3d.rang(), false, 0, null, Signature.AUCUNE, 1);
                 String comp = it.getItemMeta().getAsComponentString();
                 verifier(comp.contains("armor_model_api") && comp.contains("voraceitem:geo/exemple/fer_b.geo.json") && plugin.exemplaires().lire(it) != null,
-                    "armure 3D du fer : custom_data.armor_model_api posé, données de vorace-item gardées (" + comp.length() + " car.)");
+                    "armure 3D du fer : custom_data.armor_model_api posé, données de vorace-item gardées : "
+                    + comp.substring(0, Math.min(comp.length(), 400)));
+                ItemStack brut = org.bukkit.Bukkit.getUnsafe().modifyItemStack(new ItemStack(org.bukkit.Material.IRON_CHESTPLATE),
+                    "[minecraft:custom_data={armor_model_api:{model:\"a:b\"}}]");
+                plugin.getLogger().info("ESSAI INFO modifyItemStack seul : " + brut.getItemMeta().getAsComponentString());
             }
             // armure : un coup reçu d'une créature est réduit par la défense du joueur
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
