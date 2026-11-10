@@ -1,5 +1,18 @@
 # Journal des changements
 
+## 0.10.1 (novembre 2026) : des pièces sans qualité, des stats sur la lame seulement
+
+- **Une pièce ne porte plus que son nom**, et ses stats quand elle en a. Plus de ligne de qualité, de type ni de
+  fabricant sur une pièce.
+- **Plus de qualité par pièce** : la qualité se décide à la fin, à l'assemblage. `VoraceItemAPI.creerPiece(pièce)` ne
+  prend plus de score, `VoraceItemAPI.piece(objet)` renvoie l'identifiant de la pièce, et
+  `VoraceItemAPI.assemblerPieces(kit, pièces, score, ...)` reçoit le score final. `/vitem piece <joueur> <pièce>
+  [quantité]`, `/vitem monter <joueur> [kit] [score]`.
+- **Exemples** : seule la lame porte des stats. Les gardes, poignées et pommeaux n'ont plus qu'un nom et une
+  apparence (ils comptent encore pour la durabilité de l'arme) ; l'attaque qu'ils apportaient est passée sur les
+  lames (+4). Une pièce peut toujours recevoir des stats dans `materiaux/*.yml`.
+- Deux pièces identiques s'empilent.
+
 ## 0.10.0 (novembre 2026) : les pièces d'armes sont des objets
 
 - **Une pièce peut exister seule** dans l'inventaire (une lame, une garde, une poignée, un pommeau), avec son nom

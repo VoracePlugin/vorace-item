@@ -104,8 +104,8 @@ public final class Commande implements CommandExecutor, TabCompleter {
         for (String[] l : new String[][]{
             {"donner <joueur> <modèle> [rang] [place 0-100] [quantité]", "donner un objet"},
             {"assembler <joueur> <kit> <hasard|pièce,pièce,...> [rang] [place 0-100]", "donner une arme modulaire"},
-            {"piece <joueur> <pièce> [score 0-100]", "donner une pièce d'arme seule (une lame, une garde...)"},
-            {"monter <joueur> [kit]", "assembler l'arme avec les pièces de son inventaire"},
+            {"piece <joueur> <pièce> [quantité]", "donner une pièce d'arme seule (une lame, une garde...)"},
+            {"monter <joueur> [kit] [score 0-100]", "assembler l'arme avec les pièces de son inventaire"},
             {"catalogue [page]", "tous les modèles, un clic pour en prendre un"},
             {"info", "données de l'objet tenu en main"},
             {"reparer", "réparer l'objet tenu en main"},
@@ -158,36 +158,41 @@ public final class Commande implements CommandExecutor, TabCompleter {
     }
 
     private void piece(CommandSender s, String[] a) {
-        if (a.length < 3) { dire(s, "<red>/vitem piece <joueur> <pièce> [score 0-100]"); return; }
+        if (a.length < 3) { dire(s, "<red>/vitem piece <joueur> <pièce> [quantité]"); return; }
         Player p = Bukkit.getPlayerExact(a[1]);
         if (p == null) { dire(s, "<red>Joueur introuvable : " + Textes.echapper(a[1])); return; }
         Piece piece = plugin.catalogue().piece(a[2]);
         if (piece == null) { dire(s, "<red>Pièce inconnue : " + Textes.echapper(a[2]) + " (par exemple fer/lame_droite)."); return; }
-        double score = a.length > 3 ? Math.max(0, Math.min(100, nombre(a[3], 50))) : 50;
-        EcouteurMenus.rendre(p, plugin.pieces().creer(piece, score, null, null));
-        dire(s, "<green>Pièce donnée à " + p.getName() + " : " + piece.id() + " (score " + Textes.nombre(score) + ").");
+        ItemStack objet = plugin.pieces().creer(piece);
+        objet.setAmount(Math.max(1, Math.min(objet.getMaxStackSize(), a.length > 3 ? entier(a[3], 1) : 1)));
+        EcouteurMenus.rendre(p, objet);
+        dire(s, "<green>Pièce donnée à " + p.getName() + " : " + piece.id() + ".");
     }
 
     /** Assemble une arme avec les pièces que le joueur a dans son inventaire : la première trouvée pour chaque emplacement. */
     private void monter(CommandSender s, String[] a) {
-        if (a.length < 2) { dire(s, "<red>/vitem monter <joueur> [kit]"); return; }
+        if (a.length < 2) { dire(s, "<red>/vitem monter <joueur> [kit] [score 0-100]"); return; }
         Player p = Bukkit.getPlayerExact(a[1]);
         if (p == null) { dire(s, "<red>Joueur introuvable : " + Textes.echapper(a[1])); return; }
         Catalogue c = plugin.catalogue();
         ModeleObjet kit = c.modele(a.length > 2 ? a[2] : "epee");
         if (kit == null || kit.kit() == null) { dire(s, "<red>« " + Textes.echapper(a.length > 2 ? a[2] : "epee") + " » n'est pas une arme modulaire."); return; }
+        double score = a.length > 3 ? Math.max(0, Math.min(100, nombre(a[3], 50))) : 50;
         Map<String, Integer> cases = new LinkedHashMap<>();
         ItemStack[] contenu = p.getInventory().getStorageContents();
         for (int i = 0; i < contenu.length; i++) {
-            fr.vorace.item.exemplaire.Pieces.PieceObjet lue = plugin.pieces().lire(contenu[i]);
-            Piece piece = lue == null ? null : c.piece(lue.id());
+            Piece piece = c.piece(plugin.pieces().lire(contenu[i]));
             if (piece != null && piece.kit().equals(kit.id())) cases.putIfAbsent(piece.emplacement(), i);
         }
         List<ItemStack> objets = new ArrayList<>();
         for (int i : cases.values()) objets.add(contenu[i]);
-        fr.vorace.item.exemplaire.Pieces.Assemblage r = plugin.pieces().assembler(kit, objets, null, 0, 0, p.getName(), p.getUniqueId(), hasard);
+        fr.vorace.item.exemplaire.Pieces.Assemblage r = plugin.pieces().assembler(kit, objets, score, null, 0, 0, p.getName(), p.getUniqueId(), hasard);
         if (r.objet() == null) { dire(s, "<red>" + Textes.echapper(r.erreur())); return; }
-        for (int i : cases.values()) p.getInventory().setItem(i, null);
+        for (int i : cases.values()) {
+            if (contenu[i].getAmount() > 1) contenu[i].setAmount(contenu[i].getAmount() - 1);
+            else contenu[i] = null;
+            p.getInventory().setItem(i, contenu[i]);
+        }
         EcouteurMenus.rendre(p, r.objet());
         dire(s, "<green>Monté pour " + p.getName() + " : " + String.join(", ", plugin.exemplaires().lire(r.objet()).pieces.values())
             + " (qualité " + r.qualite().grade().nom() + ", score " + Textes.nombre(r.qualite().score()) + ").");

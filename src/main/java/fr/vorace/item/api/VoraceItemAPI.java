@@ -82,18 +82,18 @@ public final class VoraceItemAPI {
 
     /**
      * Crée l'objet d'une pièce d'arme (une lame, une garde...), que le joueur garde dans son inventaire jusqu'à
-     * l'assemblage. À appeler quand le joueur a fabriqué la pièce.
+     * l'assemblage. À appeler quand le joueur a fabriqué la pièce. Une pièce n'a pas de qualité : elle se décide à
+     * l'assemblage ({@link #assemblerPieces}).
      *
      * @param piece identifiant de la pièce (« fer/lame_droite »)
-     * @param score score de fabrication de la pièce, de 0 à 100 (il donne son grade)
      * @return l'objet, ou null si la pièce n'existe pas
      */
-    public static ItemStack creerPiece(String piece, double score, String fabricant, UUID fabricantUuid) {
-        return plugin == null ? null : plugin.pieces().creer(plugin.catalogue().piece(piece), score, fabricant, fabricantUuid);
+    public static ItemStack creerPiece(String piece) {
+        return plugin == null ? null : plugin.pieces().creer(plugin.catalogue().piece(piece));
     }
 
-    /** Ce que porte cet objet s'il est une pièce d'arme (identifiant, score, fabricant), sinon null. */
-    public static Pieces.PieceObjet piece(ItemStack objet) {
+    /** Identifiant de la pièce d'arme que porte cet objet (« fer/lame_droite »), ou null si ce n'est pas une pièce. */
+    public static String piece(ItemStack objet) {
         return plugin == null ? null : plugin.pieces().lire(objet);
     }
 
@@ -104,22 +104,23 @@ public final class VoraceItemAPI {
     }
 
     /**
-     * Assemble une arme à partir des objets de ses pièces : exactement une pièce par emplacement du kit. Le score de
-     * l'arme est la moyenne des scores des pièces. Les objets des pièces ne sont pas retirés : retire-les quand
-     * {@code objet()} n'est pas null.
+     * Assemble une arme à partir des objets de ses pièces : exactement une pièce par emplacement du kit. C'est ici
+     * que la qualité se décide : le score donne le grade, le rang et la place dans la fourchette. Les objets des
+     * pièces ne sont pas retirés : retires-en un de chaque quand {@code objet()} n'est pas null.
      *
      * @param kit           identifiant du modèle modulaire (« epee »)
+     * @param score         score final de fabrication, de 0 à 100
      * @param rangMateriau  rang du matériau principal (null : le premier rang)
      * @param chanceRangSup chance (0 à 1) qu'un Chef-d'œuvre gagne un rang
      * @param ecart         étages entre la recette et le bas du rang de maîtrise du fabricant
      * @param fabricant     celui qui assemble (son nom est gravé sur l'arme), ou null
      * @return l'arme et sa qualité, ou la raison du refus dans {@code erreur()}
      */
-    public static Pieces.Assemblage assemblerPieces(String kit, Collection<ItemStack> pieces, String rangMateriau,
+    public static Pieces.Assemblage assemblerPieces(String kit, Collection<ItemStack> pieces, double score, String rangMateriau,
                                                     double chanceRangSup, double ecart, Player fabricant, Random hasard) {
         if (plugin == null) return new Pieces.Assemblage(null, null, "vorace-item n'est pas chargé.");
         Rarete rang = rangMateriau == null ? null : plugin.catalogue().raretes().parId(rangMateriau);
-        return plugin.pieces().assembler(plugin.catalogue().modele(kit), pieces, rang, chanceRangSup, ecart,
+        return plugin.pieces().assembler(plugin.catalogue().modele(kit), pieces, score, rang, chanceRangSup, ecart,
             fabricant == null ? null : fabricant.getName(), fabricant == null ? null : fabricant.getUniqueId(), hasard);
     }
 

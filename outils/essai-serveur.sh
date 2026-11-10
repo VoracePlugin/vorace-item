@@ -53,8 +53,8 @@ sleep 2
 cmd "execute unless entity @e[tag=essai] run say COCHON MORT"
 cmd "kill @e[type=pig]"
 # les pièces en objets : quatre pièces données une à une, puis montées en épée
-for piece in fer/lame_large acier/garde_droite cuivre/poignee_cuir acier/pommeau_rond; do cmd "vitem piece Testeur $piece 80"; done
-cmd "vitem monter Testeur epee"
+for piece in fer/lame_large acier/garde_droite cuivre/poignee_cuir acier/pommeau_rond; do cmd "vitem piece Testeur $piece"; done
+cmd "vitem monter Testeur epee 80"
 cmd "vitem essai"
 attendre 'ESSAI VORACE-ITEM' journal.txt 30 || echo "L'essai n'a pas fini"
 # la forge : le faux joueur a cliqué « Forger » sans rien (refus), on lui donne de quoi faire une épée de cuivre

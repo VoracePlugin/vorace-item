@@ -8,10 +8,13 @@
 #     kit, emplacement : le modèle modulaire et la place de la pièce (lame, garde, poignee, pommeau)
 #     nom              : nom de la pièce
 #     modele           : modèle 3D dans plugins/VoraceItem/ressources/modeles (sans « .json »), fait avec Blockbench
-#     base             : stats de référence apportées (rang Commun, avant le palier)
-#     modificateurs    : modificateurs fixes apportés
+#     base             : stats de référence apportées (rang Commun, avant le palier). Facultatif.
+#     modificateurs    : modificateurs fixes apportés. Facultatif.
 #     cout             : ce que la forge demande pour cette pièce
 #     durabilite       : durabilité apportée à l'arme
+#
+# Dans ces exemples, seule la lame porte des stats : la garde, la poignée et le pommeau n'ont qu'un nom et une
+# apparence (ils comptent quand même pour la durabilité de l'arme). Rien n'empêche d'en donner à une autre pièce.
 #
 # Les pièces d'exemple sont dessinées par outils/exemples-pieces.py (dépôt vorace-item).
 
@@ -25,7 +28,7 @@ cuivre:
       emplacement: lame
       nom: "Lame droite"
       modele: exemple/cuivre/lame_droite
-      base: { attaque: 12 }
+      base: { attaque: 16 }
       cout: { COPPER_INGOT: 2 }
       durabilite: 100
     lame_large:
@@ -33,7 +36,7 @@ cuivre:
       emplacement: lame
       nom: "Lame large"
       modele: exemple/cuivre/lame_large
-      base: { attaque: 14 }
+      base: { attaque: 18 }
       modificateurs: { attack-speed: -6 }
       cout: { COPPER_INGOT: 3 }
       durabilite: 130
@@ -42,8 +45,6 @@ cuivre:
       emplacement: garde
       nom: "Garde droite"
       modele: exemple/cuivre/garde_droite
-      base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -51,8 +52,6 @@ cuivre:
       emplacement: garde
       nom: "Garde en croissant"
       modele: exemple/cuivre/garde_croissant
-      base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 25
     poignee_cuir:
@@ -60,7 +59,6 @@ cuivre:
       emplacement: poignee
       nom: "Poignée de cuir"
       modele: exemple/cuivre/poignee_cuir
-      base: { attaque: 1 }
       cout: { LEATHER: 1, STICK: 1 }
       durabilite: 20
     pommeau_rond:
@@ -68,7 +66,6 @@ cuivre:
       emplacement: pommeau
       nom: "Pommeau rond"
       modele: exemple/cuivre/pommeau_rond
-      base: { attaque: 1 }
       cout: { COPPER_INGOT: 1 }
       durabilite: 15
 
@@ -82,7 +79,7 @@ fer:
       emplacement: lame
       nom: "Lame droite"
       modele: exemple/fer/lame_droite
-      base: { attaque: 15 }
+      base: { attaque: 19 }
       cout: { IRON_INGOT: 2 }
       durabilite: 140
     lame_large:
@@ -90,7 +87,7 @@ fer:
       emplacement: lame
       nom: "Lame large"
       modele: exemple/fer/lame_large
-      base: { attaque: 17 }
+      base: { attaque: 21 }
       modificateurs: { attack-speed: -6 }
       cout: { IRON_INGOT: 3 }
       durabilite: 170
@@ -99,8 +96,6 @@ fer:
       emplacement: garde
       nom: "Garde droite"
       modele: exemple/fer/garde_droite
-      base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { IRON_INGOT: 1 }
       durabilite: 30
     garde_croissant:
@@ -108,8 +103,6 @@ fer:
       emplacement: garde
       nom: "Garde en croissant"
       modele: exemple/fer/garde_croissant
-      base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { IRON_INGOT: 1 }
       durabilite: 25
     poignee_cuir:
@@ -117,7 +110,6 @@ fer:
       emplacement: poignee
       nom: "Poignée de cuir"
       modele: exemple/fer/poignee_cuir
-      base: { attaque: 1 }
       cout: { LEATHER: 1, STICK: 1 }
       durabilite: 20
     pommeau_rond:
@@ -125,7 +117,6 @@ fer:
       emplacement: pommeau
       nom: "Pommeau rond"
       modele: exemple/fer/pommeau_rond
-      base: { attaque: 1 }
       cout: { IRON_NUGGET: 3 }
       durabilite: 15
 
@@ -139,7 +130,7 @@ acier:
       emplacement: lame
       nom: "Lame droite"
       modele: exemple/acier/lame_droite
-      base: { attaque: 17 }
+      base: { attaque: 21 }
       cout: { IRON_INGOT: 2, COAL: 1 }
       durabilite: 190
     lame_large:
@@ -147,7 +138,7 @@ acier:
       emplacement: lame
       nom: "Lame large"
       modele: exemple/acier/lame_large
-      base: { attaque: 19 }
+      base: { attaque: 23 }
       modificateurs: { attack-speed: -6 }
       cout: { IRON_INGOT: 3, COAL: 1 }
       durabilite: 220
@@ -156,8 +147,6 @@ acier:
       emplacement: garde
       nom: "Garde droite"
       modele: exemple/acier/garde_droite
-      base: { attaque: 2 }
-      modificateurs: { armor: 2 }
       cout: { IRON_INGOT: 1, COAL: 1 }
       durabilite: 30
     garde_croissant:
@@ -165,8 +154,6 @@ acier:
       emplacement: garde
       nom: "Garde en croissant"
       modele: exemple/acier/garde_croissant
-      base: { attaque: 3 }
-      modificateurs: { critical-strike-chance: 2 }
       cout: { IRON_INGOT: 1, COAL: 1 }
       durabilite: 25
     poignee_cuir:
@@ -174,7 +161,6 @@ acier:
       emplacement: poignee
       nom: "Poignée de cuir"
       modele: exemple/acier/poignee_cuir
-      base: { attaque: 1 }
       cout: { LEATHER: 1, STICK: 1 }
       durabilite: 20
     pommeau_rond:
@@ -182,6 +168,5 @@ acier:
       emplacement: pommeau
       nom: "Pommeau rond"
       modele: exemple/acier/pommeau_rond
-      base: { attaque: 1 }
       cout: { IRON_NUGGET: 3 }
       durabilite: 15
