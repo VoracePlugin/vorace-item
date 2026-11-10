@@ -258,13 +258,14 @@ public final class Essai {
             if (plastron != null && p.getGameMode() == org.bukkit.GameMode.SURVIVAL && difficulte != org.bukkit.Difficulty.PEACEFUL) {
                 ItemStack avantTorse = p.getInventory().getChestplate();
                 double vieAvant = p.getHealth();
+                double armureAvant = plugin.equipement().bilan(p).total(Modificateurs.ARMURE);
                 try {
                     p.getInventory().setChestplate(plugin.exemplaires().creer(plastron, plastron.rang(), false, 0, null, Signature.AUCUNE, 1));
                     plugin.equipementChange(p);
                     plugin.equipement().appliquerAttributs(p);
                     double vieMax = p.getAttribute(Attribute.MAX_HEALTH).getValue();
-                    verifier(Math.abs(plugin.equipement().bilan(p).total(Modificateurs.ARMURE) - 14) < 1e-6 && Math.abs(vieMax - (p.getAttribute(Attribute.MAX_HEALTH).getBaseValue() + 6)) < 1e-6,
-                        "le plastron porté donne son armure (14) et sa vie max (+6)");
+                    verifier(Math.abs(plugin.equipement().bilan(p).total(Modificateurs.ARMURE) - armureAvant - 14) < 1e-6 && Math.abs(vieMax - (p.getAttribute(Attribute.MAX_HEALTH).getBaseValue() + 6)) < 1e-6,
+                        "le plastron porté ajoute son armure (+14) et sa vie max (+6)");
                     p.setHealth(Math.min(vieMax, 20));
                     p.setNoDamageTicks(0);
                     double defense = plugin.combat().defense(p, false);
