@@ -56,6 +56,7 @@ public final class VoraceItem extends JavaPlugin implements Listener {
     private volatile Catalogue catalogue;
     private Qualite qualite;
     private Exemplaires exemplaires;
+    private fr.vorace.item.exemplaire.Pieces pieces;
     private Competences competences;
     private Butins butins;
     private Equipement equipement;
@@ -73,6 +74,7 @@ public final class VoraceItem extends JavaPlugin implements Listener {
     public Catalogue catalogue() { return catalogue; }
     public Qualite qualite() { return qualite; }
     public Exemplaires exemplaires() { return exemplaires; }
+    public fr.vorace.item.exemplaire.Pieces pieces() { return pieces; }
     public Competences competences() { return competences; }
     public Butins butins() { return butins; }
     public Equipement equipement() { return equipement; }
@@ -104,6 +106,7 @@ public final class VoraceItem extends JavaPlugin implements Listener {
         }
         core = v;
         exemplaires = new Exemplaires(this);
+        pieces = new fr.vorace.item.exemplaire.Pieces(this);
         competences = new Competences(this);
         butins = new Butins(this);
         equipement = new Equipement(this);

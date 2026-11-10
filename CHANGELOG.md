@@ -1,5 +1,17 @@
 # Journal des changements
 
+## 0.10.0 (novembre 2026) : les pièces d'armes sont des objets
+
+- **Une pièce peut exister seule** dans l'inventaire (une lame, une garde, une poignée, un pommeau), avec son nom
+  (« Lame droite de fer »), ses stats, son fabricant et son modèle 3D recentré dans sa case.
+- **Chaque pièce a sa propre qualité** (un score de 0 à 100). L'arme montée prend la moyenne des scores de ses pièces,
+  qui donne son grade, son rang et sa place dans la fourchette. Une arme montée ne se démonte pas.
+- **API** pour le plugin des métiers : `VoraceItemAPI.creerPiece`, `piece`, `coutPiece`, `assemblerPieces`.
+  vorace-item ne décide pas comment une pièce se fabrique.
+- **Commandes d'essai** : `/vitem piece <joueur> <pièce> [score]` et `/vitem monter <joueur> [kit]`.
+- Le pack contient un objet par pièce (`items/piece/...`). La forge au bouton (`/vitem forge`) ne change pas : elle
+  fabrique toujours l'arme entière d'un coup.
+
 ## 0.9.3 (novembre 2026) : lames de cuivre
 
 - Les deux lames de cuivre sont plus longues (elles étaient trop courtes par rapport au manche).

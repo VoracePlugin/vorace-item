@@ -147,6 +147,31 @@ public final class Essai {
             Map<String, String> incomplet = new LinkedHashMap<>(pieces);
             incomplet.remove("pommeau");
             verifier(plugin.exemplaires().creer(epee, commun, false, 0, incomplet, Signature.AUCUNE, 1) == null, "une épée sans pommeau est refusée");
+
+            // les pièces en objets : fabriquées une à une, puis assemblées
+            List<ItemStack> objets = new java.util.ArrayList<>();
+            double[] scores = {90, 80, 60, 50};
+            int n = 0;
+            for (String id : pieces.values()) objets.add(plugin.pieces().creer(c.piece(id), scores[n++], "Essai", null));
+            fr.vorace.item.exemplaire.Pieces.PieceObjet lue = plugin.pieces().lire(objets.get(0));
+            ItemMeta metaLame = objets.get(0).getItemMeta();
+            verifier(lue != null && lue.id().equals("fer/lame_droite") && Math.abs(lue.score() - 90) < 1e-9 && "Essai".equals(lue.fabricant())
+                && metaLame.hasItemModel() && metaLame.getItemModel().toString().equals("voraceitem:piece/fer/lame_droite")
+                && objets.get(0).getMaxStackSize() == 1, "une lame seule est un objet : elle garde sa pièce, son score, son fabricant et son apparence");
+            verifier(plugin.pieces().lire(arme) == null && plugin.exemplaires().lire(objets.get(0)) == null, "une pièce n'est pas une arme, une arme n'est pas une pièce");
+            fr.vorace.item.exemplaire.Pieces.Assemblage monte = plugin.pieces().assembler(epee, objets, null, 0, 0, "Essai", null, new java.util.Random(1));
+            verifier(monte.objet() != null && Math.abs(monte.qualite().score() - 70) < 1e-9 && monte.qualite().grade().id().equals("excellente"),
+                "quatre pièces de 90, 80, 60 et 50 donnent une épée de score 70 (Excellente)");
+            if (monte.objet() != null) {
+                Exemplaire ex = plugin.exemplaires().lire(monte.objet());
+                verifier(ex != null && ex.pieces.equals(pieces) && "Essai".equals(ex.fabricant), "l'épée montée porte ses quatre pièces et le nom de celui qui l'a assemblée");
+            }
+            verifier(plugin.pieces().assembler(epee, objets.subList(0, 3), null, 0, 0, null, null, null).objet() == null, "sans pommeau, pas d'assemblage");
+            List<ItemStack> doublon = new java.util.ArrayList<>(objets);
+            doublon.add(plugin.pieces().creer(c.piece("cuivre/lame_large"), 40, null, null));
+            verifier(plugin.pieces().assembler(epee, doublon, null, 0, 0, null, null, null).objet() == null, "deux lames, pas d'assemblage");
+            verifier(Files.isRegularFile(plugin.core().packs().racineServeur().resolve(plugin.reglages().dossierPack).resolve("assets/voraceitem/items/piece/fer/lame_droite.json")),
+                "chaque pièce a son objet dans le pack");
         }
 
         // qualité : un Brut de matériau Commun tombe dans la fourchette « rebut », un Chef-d'œuvre peut gagner un rang

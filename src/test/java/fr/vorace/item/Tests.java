@@ -288,7 +288,17 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18, "1 définition, 18 modèles, 18 textures (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18, "1 définition d'épée, 18 modèles, 18 textures, 18 pièces seules et leurs 18 définitions (" + fichiers.size() + " fichiers)");
+        byte[] seule = fichiers.get("assets/voraceitem/models/item/piece_seule/fer/pommeau_rond.json");
+        verifier(seule != null && fichiers.containsKey("assets/voraceitem/items/piece/fer/pommeau_rond.json"), "le pommeau a son objet à lui");
+        if (seule != null) {
+            JsonObject m = JsonParser.parseString(new String(seule, StandardCharsets.UTF_8)).getAsJsonObject();
+            JsonObject vue = m.getAsJsonObject("display").getAsJsonObject("gui");
+            // pommeau de fer : x de 7,625 à 8,5, y de 1,625 à 2,25 ; agrandi 4 fois (le maximum), ramené au milieu de la case
+            verifier(m.get("parent").getAsString().equals("voraceitem:item/piece/fer/pommeau_rond")
+                && proche(vue.getAsJsonArray("scale").get(0).getAsDouble(), 4)
+                && vue.getAsJsonArray("translation").get(1).getAsDouble() > 20, "seul, le pommeau est agrandi et recentré dans sa case");
+        }
 
         // écriture : rien ne change au second passage, un fichier en trop est retiré
         Path sortie = dossier.resolve("pack-genere");

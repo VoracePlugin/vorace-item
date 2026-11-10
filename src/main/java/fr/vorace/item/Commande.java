@@ -32,7 +32,7 @@ import java.util.Random;
 /** La commande /vitem. */
 public final class Commande implements CommandExecutor, TabCompleter {
 
-    private static final List<String> SOUS = List.of("donner", "assembler", "forge", "atelier", "catalogue", "info", "reparer",
+    private static final List<String> SOUS = List.of("donner", "assembler", "piece", "monter", "forge", "atelier", "catalogue", "info", "reparer",
         "nommer", "profil", "butin", "competence", "pack", "recharger", "essai");
 
     private final VoraceItem plugin;
@@ -61,6 +61,8 @@ public final class Commande implements CommandExecutor, TabCompleter {
             }
             case "donner", "give" -> { if (!admin) return refus(s); donner(s, a); }
             case "assembler" -> { if (!admin) return refus(s); assembler(s, a); }
+            case "piece" -> { if (!admin) return refus(s); piece(s, a); }
+            case "monter" -> { if (!admin) return refus(s); monter(s, a); }
             case "catalogue" -> {
                 if (!admin) return refus(s);
                 if (!(s instanceof Player p)) { dire(s, "<red>Cette commande s'utilise en jeu."); return true; }
@@ -102,6 +104,8 @@ public final class Commande implements CommandExecutor, TabCompleter {
         for (String[] l : new String[][]{
             {"donner <joueur> <modèle> [rang] [place 0-100] [quantité]", "donner un objet"},
             {"assembler <joueur> <kit> <hasard|pièce,pièce,...> [rang] [place 0-100]", "donner une arme modulaire"},
+            {"piece <joueur> <pièce> [score 0-100]", "donner une pièce d'arme seule (une lame, une garde...)"},
+            {"monter <joueur> [kit]", "assembler l'arme avec les pièces de son inventaire"},
             {"catalogue [page]", "tous les modèles, un clic pour en prendre un"},
             {"info", "données de l'objet tenu en main"},
             {"reparer", "réparer l'objet tenu en main"},
@@ -151,6 +155,42 @@ public final class Commande implements CommandExecutor, TabCompleter {
         if (objet == null) { dire(s, "<red>Ces pièces ne vont pas ensemble."); return; }
         EcouteurMenus.rendre(p, objet);
         dire(s, "<green>Donné à " + p.getName() + " : " + String.join(", ", pieces.values()) + " (" + rang.nom() + ").");
+    }
+
+    private void piece(CommandSender s, String[] a) {
+        if (a.length < 3) { dire(s, "<red>/vitem piece <joueur> <pièce> [score 0-100]"); return; }
+        Player p = Bukkit.getPlayerExact(a[1]);
+        if (p == null) { dire(s, "<red>Joueur introuvable : " + Textes.echapper(a[1])); return; }
+        Piece piece = plugin.catalogue().piece(a[2]);
+        if (piece == null) { dire(s, "<red>Pièce inconnue : " + Textes.echapper(a[2]) + " (par exemple fer/lame_droite)."); return; }
+        double score = a.length > 3 ? Math.max(0, Math.min(100, nombre(a[3], 50))) : 50;
+        EcouteurMenus.rendre(p, plugin.pieces().creer(piece, score, null, null));
+        dire(s, "<green>Pièce donnée à " + p.getName() + " : " + piece.id() + " (score " + Textes.nombre(score) + ").");
+    }
+
+    /** Assemble une arme avec les pièces que le joueur a dans son inventaire : la première trouvée pour chaque emplacement. */
+    private void monter(CommandSender s, String[] a) {
+        if (a.length < 2) { dire(s, "<red>/vitem monter <joueur> [kit]"); return; }
+        Player p = Bukkit.getPlayerExact(a[1]);
+        if (p == null) { dire(s, "<red>Joueur introuvable : " + Textes.echapper(a[1])); return; }
+        Catalogue c = plugin.catalogue();
+        ModeleObjet kit = c.modele(a.length > 2 ? a[2] : "epee");
+        if (kit == null || kit.kit() == null) { dire(s, "<red>« " + Textes.echapper(a.length > 2 ? a[2] : "epee") + " » n'est pas une arme modulaire."); return; }
+        Map<String, Integer> cases = new LinkedHashMap<>();
+        ItemStack[] contenu = p.getInventory().getStorageContents();
+        for (int i = 0; i < contenu.length; i++) {
+            fr.vorace.item.exemplaire.Pieces.PieceObjet lue = plugin.pieces().lire(contenu[i]);
+            Piece piece = lue == null ? null : c.piece(lue.id());
+            if (piece != null && piece.kit().equals(kit.id())) cases.putIfAbsent(piece.emplacement(), i);
+        }
+        List<ItemStack> objets = new ArrayList<>();
+        for (int i : cases.values()) objets.add(contenu[i]);
+        fr.vorace.item.exemplaire.Pieces.Assemblage r = plugin.pieces().assembler(kit, objets, null, 0, 0, p.getName(), p.getUniqueId(), hasard);
+        if (r.objet() == null) { dire(s, "<red>" + Textes.echapper(r.erreur())); return; }
+        for (int i : cases.values()) p.getInventory().setItem(i, null);
+        EcouteurMenus.rendre(p, r.objet());
+        dire(s, "<green>Monté pour " + p.getName() + " : " + String.join(", ", plugin.exemplaires().lire(r.objet()).pieces.values())
+            + " (qualité " + r.qualite().grade().nom() + ", score " + Textes.nombre(r.qualite().score()) + ").");
     }
 
     /** « hasard », « hasard:fer+cuivre » ou une liste de pièces dans l'ordre des emplacements. Null si invalide. */
@@ -359,7 +399,7 @@ public final class Commande implements CommandExecutor, TabCompleter {
             Catalogue c = plugin.catalogue();
             if (a.length == 2) {
                 switch (sous) {
-                    case "donner", "assembler", "profil", "forge", "atelier" -> Bukkit.getOnlinePlayers().forEach(p -> choix.add(p.getName()));
+                    case "donner", "assembler", "piece", "monter", "profil", "forge", "atelier" -> Bukkit.getOnlinePlayers().forEach(p -> choix.add(p.getName()));
                     case "butin" -> choix.addAll(plugin.butins().tables().keySet());
                     case "competence" -> choix.addAll(plugin.competences().toutes().keySet());
                     default -> { }
@@ -367,7 +407,8 @@ public final class Commande implements CommandExecutor, TabCompleter {
             } else if (a.length == 3) {
                 switch (sous) {
                     case "donner" -> c.modeles().forEach(m -> { if (m.kit() == null) choix.add(m.id()); });
-                    case "assembler" -> c.modeles().forEach(m -> { if (m.kit() != null) choix.add(m.id()); });
+                    case "assembler", "monter" -> c.modeles().forEach(m -> { if (m.kit() != null) choix.add(m.id()); });
+                    case "piece" -> c.modeles().forEach(m -> { if (m.kit() != null) for (String e : m.kit().emplacements()) c.pieces(m.id(), e).forEach(x -> choix.add(x.id())); });
                     case "profil" -> { choix.addAll(ProfilParDefaut.STATS); choix.add("classes"); choix.add("raz"); }
                     case "butin", "competence" -> Bukkit.getOnlinePlayers().forEach(p -> choix.add(p.getName()));
                     default -> { }

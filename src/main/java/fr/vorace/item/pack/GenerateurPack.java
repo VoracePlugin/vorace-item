@@ -65,6 +65,14 @@ public final class GenerateurPack {
                         relierTextures(modele, textures, sortie, problemes, "Pièce " + p.id());
                         sortie.put("assets/" + NS + "/models/item/piece/" + p.id() + ".json", octets(modele));
                         cas.add(cas(p.id(), NS + ":item/piece/" + p.id()));
+                        // la pièce tenue seule dans l'inventaire : le même modèle, recentré et agrandi dans sa case
+                        sortie.put("assets/" + NS + "/models/item/piece_seule/" + p.id() + ".json", octets(seule(modele, NS + ":item/piece/" + p.id())));
+                        JsonObject simple = new JsonObject();
+                        simple.addProperty("type", "minecraft:model");
+                        simple.addProperty("model", NS + ":item/piece_seule/" + p.id());
+                        JsonObject def = new JsonObject();
+                        def.add("model", simple);
+                        sortie.put("assets/" + NS + "/items/piece/" + p.id() + ".json", octets(def));
                     }
                     couches.add(selection(index++, cas));
                 }
@@ -121,6 +129,54 @@ public final class GenerateurPack {
             }
         }
         return sortie;
+    }
+
+    /**
+     * Modèle d'une pièce montrée seule (objet d'inventaire) : il hérite du modèle de la pièce et ne change que
+     * l'affichage dans l'inventaire et dans un cadre, où la pièce est recentrée et agrandie pour remplir la case.
+     * En main, elle garde les réglages du kit.
+     */
+    static JsonObject seule(JsonObject modele, String parent) {
+        double[] min = {Double.MAX_VALUE, Double.MAX_VALUE}, max = {-Double.MAX_VALUE, -Double.MAX_VALUE};
+        if (modele.has("elements") && modele.get("elements").isJsonArray()) {
+            for (JsonElement e : modele.getAsJsonArray("elements")) {
+                if (!e.isJsonObject()) continue;
+                for (String cote : List.of("from", "to")) {
+                    if (!e.getAsJsonObject().has(cote)) continue;
+                    JsonArray p = e.getAsJsonObject().getAsJsonArray(cote);
+                    for (int i = 0; i < 2 && i < p.size(); i++) {
+                        min[i] = Math.min(min[i], p.get(i).getAsDouble());
+                        max[i] = Math.max(max[i], p.get(i).getAsDouble());
+                    }
+                }
+            }
+        }
+        JsonObject sortie = new JsonObject();
+        sortie.addProperty("parent", parent);
+        if (min[0] > max[0] || min[1] > max[1]) return sortie;
+        double taille = Math.max(max[0] - min[0], max[1] - min[1]);
+        double echelle = Math.max(0.5, Math.min(4, 13 / Math.max(0.5, taille)));
+        JsonObject vue = new JsonObject();
+        vue.add("rotation", triplet(0, 0, 0));
+        vue.add("translation", triplet(arrondi(-((min[0] + max[0]) / 2 - 8) * echelle), arrondi(-((min[1] + max[1]) / 2 - 8) * echelle), 0));
+        vue.add("scale", triplet(arrondi(echelle), arrondi(echelle), arrondi(echelle)));
+        JsonObject affichage = new JsonObject();
+        affichage.add("gui", vue);
+        affichage.add("fixed", vue.deepCopy());
+        sortie.add("display", affichage);
+        return sortie;
+    }
+
+    private static double arrondi(double v) {
+        return Math.round(v * 100) / 100.0;
+    }
+
+    private static JsonArray triplet(double x, double y, double z) {
+        JsonArray a = new JsonArray();
+        a.add(x);
+        a.add(y);
+        a.add(z);
+        return a;
     }
 
     private static JsonObject cas(String quand, String modele) {

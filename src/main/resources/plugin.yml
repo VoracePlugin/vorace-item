@@ -10,7 +10,7 @@ softdepend: [VoraceMob]
 commands:
   vitem:
     description: Objets RPG de vorace-item
-    usage: /vitem [forge|atelier|donner|assembler|catalogue|info|reparer|nommer|profil|butin|competence|pack|recharger|essai]
+    usage: /vitem [forge|atelier|donner|assembler|piece|monter|catalogue|info|reparer|nommer|profil|butin|competence|pack|recharger|essai]
     aliases: [voraceitem, vi]
 permissions:
   voraceitem.admin:

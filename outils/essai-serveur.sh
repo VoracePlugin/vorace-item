@@ -52,6 +52,9 @@ attendre 'BOT ATTAQUE' bot.txt 30 || echo "Le faux joueur n'a pas attaqué"
 sleep 2
 cmd "execute unless entity @e[tag=essai] run say COCHON MORT"
 cmd "kill @e[type=pig]"
+# les pièces en objets : quatre pièces données une à une, puis montées en épée
+for piece in fer/lame_large acier/garde_droite cuivre/poignee_cuir acier/pommeau_rond; do cmd "vitem piece Testeur $piece 80"; done
+cmd "vitem monter Testeur epee"
 cmd "vitem essai"
 attendre 'ESSAI VORACE-ITEM' journal.txt 30 || echo "L'essai n'a pas fini"
 # la forge : le faux joueur a cliqué « Forger » sans rien (refus), on lui donne de quoi faire une épée de cuivre
@@ -85,6 +88,7 @@ grep -a 'BOT OBJET' bot.txt | grep -q 'fer/lame_droite' || { echo "ECHEC : l'ép
 grep -aq 'BOT REFUS' bot.txt || { echo "ECHEC : la forge n'a pas refusé de forger sans matériaux"; exit 1; }
 grep -aq 'BOT FORGE OK' bot.txt || { echo "ECHEC : la forge n'a pas fabriqué l'épée avec les matériaux"; exit 1; }
 grep -aq 'BOT SERTI OK' bot.txt || { echo "ECHEC : l'atelier n'a pas serti la gemme (cases libres du menu, objet rendu à la fermeture)"; exit 1; }
+grep -aq 'Monté pour Testeur : fer/lame_large, acier/garde_droite, cuivre/poignee_cuir, acier/pommeau_rond (qualité Excellente, score 80)' journal.txt || { echo "ECHEC : les quatre pièces données au joueur n'ont pas été montées en épée"; exit 1; }
 grep -aq 'COCHON VIVANT' journal.txt || { echo "ECHEC : le cochon n'a pas été posé"; exit 1; }
 grep -aq 'COCHON MORT' journal.txt || { echo "ECHEC : le coup d'épée du joueur n'a pas tué le cochon (formule de dégâts)"; exit 1; }
 ERREURS=$(grep -acE 'ERROR\]: \[VoraceItem\]|at fr\.vorace\.item\.|WARN\]: \[VoraceItem\]' journal.txt)
