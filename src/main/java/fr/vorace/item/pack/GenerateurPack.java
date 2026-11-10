@@ -130,12 +130,16 @@ public final class GenerateurPack {
                     tex.addProperty("layer0", t);
                     modele.add("textures", tex);
                 }
+                // un arc dessiné avec ses trois images de tension (<texture>_tension_0, _1, _2) : il se bande en main comme celui du jeu
+                boolean arc = m.apparence().modele() == null && m.apparence().texture() != null
+                    && Files.isRegularFile(textures.resolve(m.apparence().texture() + "_tension_0.png"));
+                if (arc) modele.addProperty("parent", "minecraft:item/bow");
                 sortie.put("assets/" + NS + "/models/item/objet/" + m.id() + ".json", octets(modele));
                 JsonObject simple = new JsonObject();
                 simple.addProperty("type", "minecraft:model");
                 simple.addProperty("model", NS + ":item/objet/" + m.id());
                 JsonObject def = new JsonObject();
-                def.add("model", simple);
+                def.add("model", arc ? arcQuiSeBande(m, simple, textures, sortie, problemes) : simple);
                 sortie.put("assets/" + NS + "/items/objet/" + m.id() + ".json", octets(def));
             }
         }
@@ -295,6 +299,51 @@ public final class GenerateurPack {
     }
 
     /** Copie ressources/textures/&lt;chemin&gt;.png dans le pack ; renvoie son nom dans le pack, ou null si elle n'existe pas. */
+    /**
+     * Définition d'un arc qui se bande (comme l'arc du jeu) : au repos son dessin, en main tirée les trois images de
+     * tension selon la durée du tir (0 ; 0,65 ; 0,9 seconde... en part de 20 ticks).
+     */
+    private static JsonObject arcQuiSeBande(ModeleObjet m, JsonObject repos, Path textures, Map<String, byte[]> sortie, List<String> problemes) {
+        JsonObject[] tension = new JsonObject[3];
+        for (int i = 0; i < 3; i++) {
+            String t = copierTexture(m.apparence().texture() + "_tension_" + i, textures, sortie);
+            if (t == null) {
+                problemes.add(m.id() + " : image de tension introuvable (ressources/textures/" + m.apparence().texture() + "_tension_" + i + ".png)");
+                return repos;
+            }
+            JsonObject mod = new JsonObject();
+            mod.addProperty("parent", "minecraft:item/bow");
+            JsonObject tex = new JsonObject();
+            tex.addProperty("layer0", t);
+            mod.add("textures", tex);
+            String chemin = "objet/" + m.id() + "_tension_" + i;
+            sortie.put("assets/" + NS + "/models/item/" + chemin + ".json", octets(mod));
+            tension[i] = new JsonObject();
+            tension[i].addProperty("type", "minecraft:model");
+            tension[i].addProperty("model", NS + ":item/" + chemin);
+        }
+        JsonArray paliers = new JsonArray();
+        double[] seuils = {0.65, 0.9};
+        for (int i = 0; i < 2; i++) {
+            JsonObject e = new JsonObject();
+            e.addProperty("threshold", seuils[i]);
+            e.add("model", tension[i + 1]);
+            paliers.add(e);
+        }
+        JsonObject tir = new JsonObject();
+        tir.addProperty("type", "minecraft:range_dispatch");
+        tir.addProperty("property", "minecraft:use_duration");
+        tir.addProperty("scale", 0.05);
+        tir.add("entries", paliers);
+        tir.add("fallback", tension[0]);
+        JsonObject c = new JsonObject();
+        c.addProperty("type", "minecraft:condition");
+        c.addProperty("property", "minecraft:using_item");
+        c.add("on_true", tir);
+        c.add("on_false", repos);
+        return c;
+    }
+
     static String copierTexture(String chemin, Path textures, Map<String, byte[]> sortie) {
         if (chemin == null) return null;
         Path png = textures.resolve(chemin + ".png");

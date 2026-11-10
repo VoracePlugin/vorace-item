@@ -183,3 +183,22 @@ acier:
       base: { attaque: 1 }
       cout: { IRON_NUGGET: 3 }
       durabilite: 15
+
+# ----------------------------------------------------------------- bois de l'Ébéniste (sans pièces d'épée)
+# Ces essences servent aux arcs, bâtons et flèches (objets/exemples.yml, champ « materiau ») : leurs lignes bonus
+# sortent plus souvent avec ce bois.
+if:
+  nom: "If"
+  complement: "d'if"
+  etage: 1
+  lignes-bonus: { critical-strike-chance: 3, critical-strike-power: 3, physical-penetration: 2, magic-penetration: 2 }
+frene:
+  nom: "Frêne"
+  complement: "de frêne"
+  etage: 1
+  lignes-bonus: { movement-speed: 3, attack-speed: 2, mana-regeneration: 3, cooldown-reduction: 2 }
+chene:
+  nom: "Chêne"
+  complement: "de chêne"
+  etage: 1
+  lignes-bonus: { physical-damage: 3, durability-loss-reduction: 3, magic-damage: 3, max-mana: 2 }

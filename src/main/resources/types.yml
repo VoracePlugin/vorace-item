@@ -118,6 +118,13 @@ outil:
   empilable: false
   lignes-bonus: [profession-experience, durability-loss-reduction, unbreaking-chance, luck]
 
+# Munitions (flèches, carreaux) : objets qui s'empilent, faits par lots ; l'arc qui les tire porte les stats.
+munition:
+  nom: "Munition"
+  categorie: materiau
+  materiau: arrow
+  empilable: true
+
 gemme:
   nom: "Gemme"
   categorie: gemme

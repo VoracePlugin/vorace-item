@@ -359,3 +359,100 @@ bottes_acier:
     armor: 4
     magic-armor: 1
   durabilite: 260
+
+# ----------------------------------------------------------------- objets de bois (l'Ébéniste de Matsuri Métier les fabrique)
+# Dessins : outils/exemples-bois.py. Un arc a ses trois images de tension (<texture>_tension_0, _1, _2) : il se bande
+# en main comme l'arc du jeu.
+arc_court_if:
+  nom: "Arc court d'if"
+  type: arc
+  rang: commun
+  etage: 2
+  materiau: if
+  apparence:
+    materiau: bow
+    texture: exemple/bois/arc_court_if
+  stats:
+    attaque: 15
+  durabilite: 220
+  description:
+    - "L'if plie sans casser : le bois des archers."
+arc_court_frene:
+  nom: "Arc court de frêne"
+  type: arc
+  rang: commun
+  etage: 1
+  materiau: frene
+  apparence:
+    materiau: bow
+    texture: exemple/bois/arc_court_frene
+  stats:
+    attaque: 13
+  durabilite: 200
+  description:
+    - "Léger et nerveux."
+arc_court_chene:
+  nom: "Arc court de chêne"
+  type: arc
+  rang: commun
+  etage: 1
+  materiau: chene
+  apparence:
+    materiau: bow
+    texture: exemple/bois/arc_court_chene
+  stats:
+    attaque: 14
+  durabilite: 260
+  description:
+    - "Lourd à tirer, dur à user."
+arc_long_if:
+  nom: "Arc long d'if"
+  type: arc
+  rang: peu_commun
+  etage: 12
+  materiau: if
+  apparence:
+    materiau: bow
+    texture: exemple/bois/arc_long_if
+  stats:
+    attaque: 24
+  durabilite: 320
+  description:
+    - "Aussi haut qu'un homme ; il faut un maître pour l'accorder."
+baton_chene:
+  nom: "Bâton de chêne"
+  type: baton
+  rang: commun
+  etage: 1
+  materiau: chene
+  apparence:
+    materiau: blaze_rod
+    texture: exemple/bois/baton_chene
+  stats:
+    puissance: 16
+  durabilite: 240
+  description:
+    - "Un bâton noueux, coiffé d'un éclat d'améthyste."
+baton_frene:
+  nom: "Bâton de frêne"
+  type: baton
+  rang: commun
+  etage: 1
+  materiau: frene
+  apparence:
+    materiau: blaze_rod
+    texture: exemple/bois/baton_frene
+  stats:
+    puissance: 15
+  durabilite: 200
+  description:
+    - "Droit comme un trait, bagué de laiton."
+fleche:
+  nom: "Flèche"
+  type: munition
+  rang: commun
+  apparence:
+    materiau: arrow
+    texture: exemple/bois/fleche
+  description:
+    - "Hampe de frêne, pointe de silex, trois plumes."
