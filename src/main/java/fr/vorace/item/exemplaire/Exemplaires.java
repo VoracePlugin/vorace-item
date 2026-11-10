@@ -311,9 +311,17 @@ public final class Exemplaires {
             else if (m.apparence().cmd() != null) meta.setCustomModelData(m.apparence().cmd());
         }
         if (m.apparence().brillance() != null) meta.setEnchantmentGlintOverride(m.apparence().brillance());
-        if (m.apparence().equipement() != null) {                      // armure : son dessin porté sur le joueur
+        org.bukkit.inventory.EquipmentSlot place = place(m.type().emplacement());
+        if (m.apparence().equipement() != null && place != null) {    // armure : son dessin porté sur le joueur
             org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+            eq.setSlot(place);
             eq.setModel(cle(m.apparence().equipement()));
+            meta.setEquippable(eq);
+        } else if (place == org.bukkit.inventory.EquipmentSlot.HEAD && m.apparence().modele() != null && m.kit() == null) {
+            // casque en 3D : porté sans dessin d'armure, le jeu montre alors le modèle de l'objet sur la tête
+            org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+            eq.setSlot(org.bukkit.inventory.EquipmentSlot.HEAD);
+            eq.setModel(null);
             meta.setEquippable(eq);
         }
 
@@ -365,6 +373,17 @@ public final class Exemplaires {
             case "jambes" -> EquipmentSlotGroup.LEGS;
             case "pieds" -> EquipmentSlotGroup.FEET;
             default -> EquipmentSlotGroup.MAINHAND;
+        };
+    }
+
+    /** L'emplacement où l'objet se porte (null : il ne se porte pas). */
+    public static org.bukkit.inventory.EquipmentSlot place(String emplacement) {
+        return switch (emplacement) {
+            case "tete" -> org.bukkit.inventory.EquipmentSlot.HEAD;
+            case "torse" -> org.bukkit.inventory.EquipmentSlot.CHEST;
+            case "jambes" -> org.bukkit.inventory.EquipmentSlot.LEGS;
+            case "pieds" -> org.bukkit.inventory.EquipmentSlot.FEET;
+            default -> null;
         };
     }
 

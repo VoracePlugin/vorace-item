@@ -181,8 +181,7 @@ casque_cuivre:
   materiau: cuivre
   apparence:
     materiau: iron_helmet
-    texture: exemple/armure/cuivre_casque
-    equipement: exemple/armure_cuivre
+    modele: exemple/armure/casque_cuivre
   stats:
     armor: 3
     magic-armor: 1
@@ -241,8 +240,7 @@ casque_fer:
   materiau: fer
   apparence:
     materiau: iron_helmet
-    texture: exemple/armure/fer_casque
-    equipement: exemple/armure_fer
+    modele: exemple/armure/casque_fer
   stats:
     armor: 4
     magic-armor: 1
@@ -301,8 +299,7 @@ casque_acier:
   materiau: acier
   apparence:
     materiau: iron_helmet
-    texture: exemple/armure/acier_casque
-    equipement: exemple/armure_acier
+    modele: exemple/armure/casque_acier
   stats:
     armor: 5
     magic-armor: 1

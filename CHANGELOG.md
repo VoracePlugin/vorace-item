@@ -1,5 +1,17 @@
 # Journal des changements
 
+## 0.11.1 (novembre 2026) : armures refaites, casques en 3D
+
+- **Casques en 3D** : un casque avec un modèle (`apparence.modele`) et sans dessin d'armure se porte sur la tête comme
+  son modèle (objet de la tête sans dessin d'armure : le jeu affiche le modèle). L'emplacement du dessin d'armure est
+  maintenant toujours fixé par le type d'objet (tête, torse, jambes, pieds).
+- **Armures d'exemple refaites** comme celles des packs des serveurs : casque sculpté en 3D (16 pixels par bloc),
+  corps dessiné pixel par pixel comme les armures du jeu. Cuivre : hoplite (casque corinthien à crête de crin rouge,
+  cuirasse musclée, ptéryges, cnémides). Fer : chevalier de la Tour (grand heaume à croix de laiton et panache,
+  haubert, cotte d'armes rouge à la tour). Acier : gardien (heaume à bec et ailes, plates d'acier noirci bordées d'or,
+  drap bleu nuit).
+- Aperçu calculé : `python3 outils/exemples-armures.py apercu.png` (mannequin vu de face et de dos, gros plan des casques).
+
 ## 0.11.0 (novembre 2026) : lignes bonus orientées par le matériau, armures portées
 
 - **Lignes bonus orientées par le matériau** : elles restent tirées au hasard dans la liste du type d'objet, mais

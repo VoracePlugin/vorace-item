@@ -282,6 +282,16 @@ public final class Essai {
                     "une pierre d'amélioration passe l'épée à +1 (attaque " + Textes.nombre(attaque) + ")");
             }
 
+            // casque 3D : porté sur la tête sans dessin d'armure ; plastron d'exemple : son dessin, sur le torse
+            ModeleObjet casque3d = c.modele("casque_acier"), cuirasse = c.modele("plastron_acier");
+            if (casque3d != null && cuirasse != null) {
+                org.bukkit.inventory.meta.ItemMeta mc = plugin.exemplaires().creer(casque3d, casque3d.rang(), false, 0, null, Signature.AUCUNE, 1).getItemMeta();
+                org.bukkit.inventory.meta.ItemMeta mp = plugin.exemplaires().creer(cuirasse, cuirasse.rang(), false, 0, null, Signature.AUCUNE, 1).getItemMeta();
+                verifier(mc.hasEquippable() && mc.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.HEAD && mc.getEquippable().getModel() == null,
+                    "le casque 3D se porte sur la tête, sans dessin d'armure (le jeu montre son modèle)");
+                verifier(mp.hasEquippable() && mp.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.CHEST && mp.getEquippable().getModel() != null,
+                    "la cuirasse d'exemple se porte sur le torse avec son dessin");
+            }
             // armure : un coup reçu d'une créature est réduit par la défense du joueur
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
             org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();

@@ -20,9 +20,17 @@ C'est le rôle de MMOItems, en libre et gratuit.
 2. Il faut **Paper 1.21.4 ou plus** : les armes assemblées et le temps de recharge visible sur les objets
    n'existent pas avant.
 3. Lance le serveur. Le dossier `plugins/VoraceItem` est créé avec des exemples : une épée modulaire en cuivre, fer
-   et acier, une dague, un bâton, deux pièces d'armure, deux gemmes, une pierre d'amélioration.
+   et acier, une dague, un bâton, deux pièces d'armure, trois armures complètes (hoplite de cuivre, chevalier de
+   fer, gardien d'acier : casque en 3D, corps dessiné comme les armures du jeu), deux gemmes, une pierre
+   d'amélioration.
 4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple, `/vitem forge` pour forger, `/vitem atelier` pour
    réparer, améliorer et sertir.
+
+**Casques en 3D** : un casque (`type: casque`) avec `apparence.modele` et sans `apparence.equipement` est porté
+sur la tête comme son modèle (comme une citrouille), sans dessin d'armure. Le modèle se fait dans Blockbench, l'avant
+de la tête vers le nord, la tête du joueur au centre (16 unités = 10 pixels du joueur) ; le réglage d'affichage
+`head` le place. Les armures complètes font comme les packs des serveurs : casque en 3D, reste en dessin d'armure de
+16 pixels par bloc (`ressources/equipement/<chemin>/humanoid.png`, 64 x 32).
 
 vorace-item écrit sa partie du pack de ressources dans `plugins/Vorace/pack/sources/voraceitem`, que vorace-core
 fusionne tout seul avec les autres packs. Si tu as changé les `sources` dans `plugins/Vorace/config.yml`, garde
