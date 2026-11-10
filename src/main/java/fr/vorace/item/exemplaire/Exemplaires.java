@@ -134,6 +134,19 @@ public final class Exemplaires {
      */
     public ItemStack creer(ModeleObjet m, Rarete rang, boolean rebut, double position, Map<String, String> pieces,
                            Signature signature, int quantite) {
+        return construire(m, rang, rebut, position, pieces, signature, quantite, false);
+    }
+
+    /**
+     * Objet d'aperçu pour un menu : comme {@link #creer}, au milieu de la fourchette, sans identifiant ni ligne bonus
+     * tirée (elles ne sont tirées qu'à la vraie création). Null si les pièces ne conviennent pas.
+     */
+    public ItemStack apercu(ModeleObjet m, Rarete rang, Map<String, String> pieces) {
+        return construire(m, rang, false, 0.5, pieces, Signature.AUCUNE, 1, true);
+    }
+
+    private ItemStack construire(ModeleObjet m, Rarete rang, boolean rebut, double position, Map<String, String> pieces,
+                                 Signature signature, int quantite, boolean apercu) {
         Catalogue c = plugin.catalogue();
         Exemplaire ex = new Exemplaire();
         ex.modele = m.id();
@@ -150,15 +163,17 @@ public final class Exemplaires {
         }
         Signature s = signature == null ? Signature.AUCUNE : signature;
         if (!m.empilable()) {
-            ex.id = s.exemplaireId() == null ? UUID.randomUUID() : s.exemplaireId();
-            ex.cree = System.currentTimeMillis();
-            ex.fabricant = s.fabricant();
-            ex.fabricantUuid = s.fabricantUuid();
-            ex.grade = s.grade();
-            ex.score = s.score();
             int durabilite = Calcul.durabiliteOrigine(c, m, ex);
             if (durabilite > 0) ex.durabiliteOrigine = ex.durabiliteMax = ex.durabilite = durabilite;
-            tirerBonus(m, ex, c.raretes().parId(ex.rang));
+            if (!apercu) {
+                ex.id = s.exemplaireId() == null ? UUID.randomUUID() : s.exemplaireId();
+                ex.cree = System.currentTimeMillis();
+                ex.fabricant = s.fabricant();
+                ex.fabricantUuid = s.fabricantUuid();
+                ex.grade = s.grade();
+                ex.score = s.score();
+                tirerBonus(m, ex, c.raretes().parId(ex.rang));
+            }
         }
         ItemStack objet = base(m);
         objet.setAmount(m.empilable() ? Math.max(1, Math.min(objet.getMaxStackSize(), quantite)) : 1);
@@ -178,6 +193,32 @@ public final class Exemplaires {
             double v = c.modificateurs().tirerBonus(id, palier, hasard, rang.multiplicateur() / c.raretes().premier().multiplicateur());
             if (v != 0) ex.bonus.put(id, v);
         }
+    }
+
+    /**
+     * Ajoute à l'objet une ligne bonus de plus, tirée parmi celles que permet son modèle et qu'il n'a pas encore
+     * (passifs de métier du genre « Lame veinée »).
+     *
+     * @return l'identifiant du modificateur ajouté, ou null si l'objet ne peut plus en recevoir
+     */
+    public String ajouterBonus(ItemStack objet) {
+        Exemplaire ex = lire(objet);
+        ModeleObjet m = ex == null ? null : plugin.catalogue().modele(ex.modele);
+        if (m == null || m.empilable()) return null;
+        Catalogue c = plugin.catalogue();
+        List<String> possibles = new ArrayList<>(m.lignesBonus());
+        possibles.removeAll(ex.bonus.keySet());
+        Rarete rang = c.raretes().parId(ex.rang);
+        while (!possibles.isEmpty()) {
+            String id = possibles.remove(hasard.nextInt(possibles.size()));
+            double v = c.modificateurs().tirerBonus(id, Calcul.palier(c, m, ex), hasard,
+                (rang == null ? m.rang() : rang).multiplicateur() / c.raretes().premier().multiplicateur());
+            if (v == 0) continue;
+            ex.bonus.put(id, v);
+            ecrire(objet, ex);
+            return id;
+        }
+        return null;
     }
 
     private ItemStack base(ModeleObjet m) {
@@ -264,7 +305,7 @@ public final class Exemplaires {
             meta.addAttributeModifier(Attribute.ATTACK_SPEED, new AttributeModifier(cle("vitesse"), m.vitesseAttaque() - 4.0,
                 AttributeModifier.Operation.ADD_NUMBER, groupe));
         } else if (m.type().estArme() || m.type().estArmure()) {
-            meta.addAttributeModifier(Attribute.ARMOR_TOUGHNESS, new AttributeModifier(cle("neutre"), 0,
+            meta.addAttributeModifier(Attribute.ARMOR_TOUGHNESS, new AttributeModifier(cle("neutre_" + m.type().emplacement().replace('-', '_')), 0,
                 AttributeModifier.Operation.ADD_NUMBER, groupe));
         }
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);

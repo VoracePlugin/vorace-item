@@ -1,6 +1,6 @@
 # Types d'objets : les valeurs par défaut de tous les objets d'un type (chaque objet peut les remplacer).
 #
-#   categorie      : arme, armure, gemme, pierre (d'amélioration) ou materiau
+#   categorie      : arme, armure, outil, gemme, pierre (d'amélioration) ou materiau
 #   emplacement    : main, seconde-main, tete, torse, jambes, pieds ou aucun. Un objet ne compte que porté à sa place.
 #   materiau       : objet du jeu de base qui sert de support (il décide de l'animation, pas des stats)
 #   nature         : physique ou magique (un coup magique utilise la Puissance magique et ne fait jamais de critique)
@@ -108,6 +108,15 @@ bottes:
   emplacement: pieds
   materiau: leather_boots
   lignes-bonus: [armor, magic-armor, movement-speed, dodge-rating, max-stamina, knockback-resistance]
+
+# Outils de métier (pioche, marteau, cisailles...) : des objets à exemplaire, avec leur durabilité et leurs modificateurs.
+outil:
+  nom: "Outil"
+  categorie: outil
+  emplacement: main
+  materiau: iron_pickaxe
+  empilable: false
+  lignes-bonus: [profession-experience, durability-loss-reduction, unbreaking-chance, luck]
 
 gemme:
   nom: "Gemme"

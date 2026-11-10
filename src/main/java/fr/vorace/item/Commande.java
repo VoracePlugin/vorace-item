@@ -184,22 +184,16 @@ public final class Commande implements CommandExecutor, TabCompleter {
         Menu menu = new Menu("Catalogue (" + (pg + 1) + "/" + pages + ")", 6);
         for (int i = 0; i < 45 && pg * 45 + i < liste.size(); i++) {
             ModeleObjet m = liste.get(pg * 45 + i);
-            ItemStack apercu;
-            if (m.kit() != null) {
-                Map<String, String> pieces = pieces(m, "hasard");
-                apercu = pieces == null ? null : plugin.exemplaires().creer(m, plugin.catalogue().raretes().premier(), false, 0.5, pieces, Signature.AUCUNE, 1);
-            } else {
-                apercu = plugin.exemplaires().creer(m, m.rang(), false, 0.5, null, Signature.AUCUNE, 1);
+            Map<String, String> pieces = m.kit() == null ? null : pieces(m, "hasard");
+            Rarete rang = m.kit() == null ? m.rang() : plugin.catalogue().raretes().premier();
+            ItemStack apercu = m.kit() != null && pieces == null ? null
+                : m.empilable() ? plugin.exemplaires().creer(m, rang, false, 0.5, null, Signature.AUCUNE, 1) : plugin.exemplaires().apercu(m, rang, pieces);
+            if (apercu == null) {
+                menu.bouton(i, Menu.icone("BARRIER", "<red>" + m.nom(), "Pièces manquantes."), null);
+                continue;
             }
-            if (apercu == null) apercu = Menu.icone("BARRIER", "<red>" + m.nom(), "Pièces manquantes.");
-            ItemStack don = apercu;
             menu.bouton(i, Menu.icone(apercu, null, true, "", Menu.DISCRET + m.id() + " · " + m.fichier(), Menu.clic("Clic", "prendre cet objet")),
-                plugin.exemplaires().modele(apercu) == null ? null : (j, d, s) -> {
-                    ItemStack copie = don.clone();
-                    Exemplaire ex = plugin.exemplaires().lire(copie);
-                    if (ex != null && ex.id != null) { ex.id = java.util.UUID.randomUUID(); plugin.exemplaires().ecrire(copie, ex); }
-                    EcouteurMenus.rendre(j, copie);
-                });
+                (j, d, s) -> EcouteurMenus.rendre(j, plugin.exemplaires().creer(m, rang, false, 0.5, pieces, Signature.AUCUNE, 1)));
         }
         if (pg > 0) menu.bouton(45, Menu.icone("ARROW", "<white>◀ Page précédente"), (j, d, s) -> catalogue(j, pg - 1));
         if (pg < pages - 1) menu.bouton(53, Menu.icone("ARROW", "<white>Page suivante ▶"), (j, d, s) -> catalogue(j, pg + 1));

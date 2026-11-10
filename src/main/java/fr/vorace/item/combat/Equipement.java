@@ -33,7 +33,7 @@ public final class Equipement {
     /**
      * Total des stats de l'équipement.
      *
-     * @param arme   l'objet tenu en main s'il compte (null à mains nues ou si l'objet est inutilisable)
+     * @param arme   l'arme tenue en main si elle compte (null à mains nues, avec un outil, ou si l'arme est inutilisable)
      * @param portes tous les objets qui comptent
      */
     public record Bilan(Map<String, Double> totaux, Porte arme, List<Porte> portes) {
@@ -97,7 +97,7 @@ public final class Equipement {
             if (totaux == null) { totaux = new LinkedHashMap<>(); portes = new ArrayList<>(); }
             Porte p = new Porte(place, objet, ex, m);
             portes.add(p);
-            if (place == EquipmentSlot.HAND) arme = p;
+            if (place == EquipmentSlot.HAND && m.type().estArme()) arme = p;
             for (Map.Entry<String, Double> e : plugin.exemplaires().stats(ex).entrySet()) totaux.merge(e.getKey(), e.getValue(), Double::sum);
         }
         return totaux == null ? VIDE : new Bilan(totaux, arme, portes);

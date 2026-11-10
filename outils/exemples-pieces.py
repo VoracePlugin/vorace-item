@@ -6,9 +6,9 @@ modèle Minecraft (éléments + UV) avec sa texture de 64 x 64 pixels, peinte à
 par bloc). L'épée est construite debout, centrée en x = 8 et z = 8 ; les réglages « display » communs sont dans
 objets/exemples.yml (modulaire.affichage).
 
-Technique (voir le document « armes et forge » de Babel) : la lame est un plan sans épaisseur dont la texture peinte
-dessine le contour, plus une âme en volume ; garde, poignée et pommeau sont des cubes dont chaque face est peinte, avec
-le bord haut éclairé et le bas dans l'ombre. Une lame reste toujours une seule pièce continue.
+Technique : de vrais modèles en volume, dans le style de Minecraft (pas un dessin à plat). Chaque pièce est faite de
+cubes dont chaque face est peinte, avec le bord haut éclairé et le bas dans l'ombre : la lame a un plat épais, deux
+tranchants plus fins et une pointe en gradins. Une lame reste toujours une seule pièce continue.
 
 Usage : python3 outils/exemples-pieces.py        (demande Pillow : pip install pillow)
 """
@@ -95,47 +95,19 @@ def cube(atlas, de, vers, palette, hasard, rotation=None, motif=None):
     return element
 
 
-def plan(atlas, de, vers, dessin):
-    """Un plan sans épaisseur (z fixe), peint des deux côtés avec le même dessin (miroir au dos)."""
-    l, h = round((vers[0] - de[0]) * PX), round((vers[1] - de[1]) * PX)
-    rect = atlas.place(l, h)
-    for j in range(h):
-        for i in range(l):
-            couleur = dessin(i, j, l, h)
-            if couleur:
-                atlas.image.putpixel((rect[0] + i, rect[1] + j), couleur + (255,))
-    u = uv(rect)
-    return {"from": [de[0], de[1], 8], "to": [vers[0], vers[1], 8],
-            "faces": {"south": {"uv": u, "texture": "#0"}, "north": {"uv": [u[2], u[1], u[0], u[3]], "texture": "#0"}}}
+def motif_lame(i, j, l, h, ton):
+    """Plat de la lame : gouttière sombre au milieu, bords plus clairs vers les tranchants."""
+    milieu = (l - 1) / 2.0
+    if l >= 4 and abs(i - milieu) <= 0.5 and 1 < j < h - 2:
+        return 1
+    if i == 0 or i == l - 1:
+        return 3
+    return 2 if (i + j * 3) % 11 else 3
 
 
-def dessin_lame(palette, hasard, forme):
-    """Lame peinte : contour sombre, deux tranchants clairs, gouttière sombre au milieu, pointe selon la forme."""
-    def dessin(i, j, l, h):
-        pointe = 8 if forme == "droite" else 6
-        if forme == "droite":
-            # pointe symétrique : la lame se resserre vers le haut
-            marge = max(0, (pointe - j + 1) // 2) if j < pointe else 0
-            gauche, droite = marge, l - 1 - marge
-        else:
-            # lame large : dos droit, tranchant qui rejoint le dos en biseau
-            gauche, droite = 0, l - 1 - max(0, pointe - j)
-        if i < gauche or i > droite or gauche > droite:
-            return None
-        if i == gauche or i == droite or (j == 0) or (forme != "droite" and j < pointe and i == droite):
-            return palette[0] if (i + j) % 7 else palette[1]
-        milieu = (gauche + droite) / 2.0
-        if abs(i - milieu) < 0.6 and j > pointe + 2 and j < h - 3:
-            return palette[1]                      # gouttière
-        if i == gauche + 1 or i == droite - 1:
-            return palette[4] if j % 9 else palette[3]   # tranchants
-        ton = 3 if i < milieu else 2
-        if hasard.random() < 0.06:
-            ton += hasard.choice((-1, 1))
-        if j > h - 4:
-            ton -= 1                               # ombre du talon, près de la garde
-        return palette[max(1, min(4, ton))]
-    return dessin
+def motif_tranchant(i, j, l, h, ton):
+    """Tranchant : presque blanc, avec quelques reflets."""
+    return 4 if j % 7 else 3
 
 
 def motif_cuir(i, j, l, h, ton):
@@ -157,12 +129,27 @@ def modele(elements, texture):
 
 
 def lame(metal, forme):
+    """Lame en volume, faite de cubes : un plat épais, deux tranchants plus fins, une pointe en gradins."""
     palette, hasard, atlas = METAUX[metal], random.Random(metal + forme), Atlas()
-    demi = 2.0 if forme == "droite" else 2.5
-    elements = [plan(atlas, (8 - demi, 6.5), (8 + demi, 26.0 if forme == "droite" else 24.0), dessin_lame(palette, hasard, forme))]
-    # âme : un cube fin au centre, pour que la lame ait du volume vue de côté
-    elements.append(cube(atlas, (7.5, 6.5, 7.7), (8.5, 21.0 if forme == "droite" else 19.5, 8.3), palette[1:] + [palette[4]], hasard))
-    elements.append(cube(atlas, (7.0, 6.5, 7.6), (9.0, 8.0, 8.4), palette, hasard))   # talon, contre la garde
+    elements = [cube(atlas, (7.0, 6.5, 7.3), (9.0, 7.5, 8.7), palette, hasard)]   # talon, contre la garde
+    if forme == "droite":
+        elements += [
+            cube(atlas, (6.75, 7.5, 7.6), (9.25, 21.5, 8.4), palette, hasard, motif=motif_lame),           # plat
+            cube(atlas, (6.25, 7.5, 7.8), (6.75, 20.5, 8.2), palette, hasard, motif=motif_tranchant),      # tranchants
+            cube(atlas, (9.25, 7.5, 7.8), (9.75, 20.5, 8.2), palette, hasard, motif=motif_tranchant),
+            cube(atlas, (7.0, 21.5, 7.65), (9.0, 23.0, 8.35), palette, hasard),                            # pointe en gradins
+            cube(atlas, (7.5, 23.0, 7.7), (8.5, 24.5, 8.3), palette, hasard),
+            cube(atlas, (7.75, 24.5, 7.8), (8.25, 25.5, 8.2), palette, hasard),
+        ]
+    else:
+        # lame large : dos droit à gauche, tranchant à droite, bout taillé en biseau (gradins)
+        elements += [
+            cube(atlas, (6.0, 7.5, 7.55), (9.75, 19.0, 8.45), palette, hasard, motif=motif_lame),          # plat
+            cube(atlas, (9.75, 7.5, 7.8), (10.25, 18.0, 8.2), palette, hasard, motif=motif_tranchant),     # tranchant
+            cube(atlas, (6.0, 19.0, 7.6), (9.0, 20.5, 8.4), palette, hasard),                              # biseau en gradins
+            cube(atlas, (6.0, 20.5, 7.65), (8.0, 22.0, 8.35), palette, hasard),
+            cube(atlas, (6.0, 22.0, 7.7), (7.0, 23.5, 8.3), palette, hasard),
+        ]
     return atlas, elements
 
 

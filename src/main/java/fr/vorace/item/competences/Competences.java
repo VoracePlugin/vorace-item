@@ -68,6 +68,7 @@ public final class Competences implements Listener {
     private final VoraceItem plugin;
     private volatile Map<String, Competence> competences = Map.of();
     private final Map<String, Long> recharges = new HashMap<>();
+    private final Map<UUID, Long> derniersClics = new HashMap<>();
 
     public Competences(VoraceItem plugin) {
         this.plugin = plugin;
@@ -122,6 +123,7 @@ public final class Competences implements Listener {
     // ------------------------------------------------------------------ déclenchement
 
     @EventHandler(priority = EventPriority.HIGH)
+    @SuppressWarnings("deprecation") // Material#isInteractable : suffisant pour reconnaître coffres, portes et établis
     public void clic(PlayerInteractEvent e) {
         if (e.getHand() != EquipmentSlot.HAND) return;
         Action a = e.getAction();
@@ -137,6 +139,12 @@ public final class Competences implements Listener {
         String cle = droit ? "clic-droit" : "clic-gauche";
         String id = p.isSneaking() && m.competences().containsKey("accroupi-" + cle) ? m.competences().get("accroupi-" + cle) : m.competences().get(cle);
         if (id == null) return;
+        // un clic droit sur un bloc qui s'utilise (coffre, porte, établi...) ne lance pas la compétence
+        if (a == Action.RIGHT_CLICK_BLOCK && !p.isSneaking() && e.getClickedBlock() != null && e.getClickedBlock().getType().isInteractable()) return;
+        // un même clic sur un bloc arrive parfois deux fois (bloc, puis objet) : le second est ignoré
+        long maintenant = System.currentTimeMillis();
+        Long dernier = derniersClics.put(p.getUniqueId(), maintenant);
+        if (dernier != null && maintenant - dernier < 150) return;
         if (ex.casse()) { p.sendActionBar(Textes.objet("<#ff5f5f>Cet objet est cassé")); return; }
         if (!plugin.equipement().utilisable(p, m)) { p.sendActionBar(Textes.objet("<#ff5f5f>Tu ne remplis pas les conditions de cet objet")); return; }
         lancer(p, id, objet, true);
@@ -146,6 +154,7 @@ public final class Competences implements Listener {
     public void depart(PlayerQuitEvent e) {
         String debut = e.getPlayer().getUniqueId() + ":";
         recharges.keySet().removeIf(k -> k.startsWith(debut));
+        derniersClics.remove(e.getPlayer().getUniqueId());
     }
 
     /**

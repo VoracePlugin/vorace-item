@@ -181,6 +181,15 @@ public final class VoraceItemAPI {
     }
 
     /**
+     * Ajoute une ligne bonus de plus à l'objet, tirée parmi celles que permet son modèle (passifs de métier).
+     *
+     * @return l'identifiant du modificateur ajouté, ou null si l'objet ne peut plus en recevoir
+     */
+    public static String ajouterLigneBonus(ItemStack objet) {
+        return plugin == null ? null : plugin.exemplaires().ajouterBonus(objet);
+    }
+
+    /**
      * Répare l'objet (voir {@link VoraceItemRepareEvent}).
      *
      * @param facteurUsure multiplicateur de l'usure permanente de la réparation (1 = normale, 0,5 = moitié moins)

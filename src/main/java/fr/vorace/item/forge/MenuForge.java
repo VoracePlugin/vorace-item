@@ -35,13 +35,14 @@ public final class MenuForge {
             ModeleObjet m = liste.get(pg * 45 + i);
             if (m.kit() != null) {
                 Map<String, String> premieres = premieresPieces(plugin.catalogue(), m);
-                ItemStack apercu = premieres == null ? null : plugin.exemplaires().creer(m, plugin.catalogue().raretes().premier(), false, 0.5, premieres, Signature.AUCUNE, 1);
+                ItemStack apercu = premieres == null ? null : plugin.exemplaires().apercu(m, plugin.catalogue().raretes().premier(), premieres);
                 ItemStack icone = apercu == null ? Menu.icone(m.apparence().materiau(), "<white>" + m.nom())
                     : Menu.icone(apercu, "<white>" + m.nom(), false);
                 menu.bouton(i, Menu.icone(icone, null, false, "Arme assemblée pièce par pièce :", "une pièce par emplacement, chacune", "dans le matériau de ton choix.", "",
                     Menu.clic("Clic", "choisir les pièces")), (j, d, s) -> assemblage(plugin, j, m, new LinkedHashMap<>()));
             } else {
-                ItemStack apercu = plugin.exemplaires().creer(m, m.rang(), false, 0, null, Signature.AUCUNE, m.recette().quantite());
+                ItemStack apercu = m.empilable() ? plugin.exemplaires().creer(m, m.rang(), false, 0.5, null, Signature.AUCUNE, m.recette().quantite())
+                    : plugin.exemplaires().apercu(m, m.rang(), null);
                 List<String> lignes = new ArrayList<>(List.of("", "Il te faut :"));
                 lignes.addAll(plugin.ingredients().lignes(p, plugin.forge().cout(m, null)));
                 lignes.add("");
@@ -110,7 +111,7 @@ public final class MenuForge {
                 assemblage(plugin, j, kit, choix);
             });
         }
-        ItemStack apercu = plugin.exemplaires().creer(kit, c.raretes().premier(), false, 0.5, choix, Signature.AUCUNE, 1);
+        ItemStack apercu = plugin.exemplaires().apercu(kit, c.raretes().premier(), choix);
         if (apercu != null) menu.bouton(31, Menu.icone(apercu, null, true, "", Menu.DISCRET + "Aperçu : les stats dépendront", Menu.DISCRET + "de la qualité du travail."), null);
 
         Map<String, Integer> cout = plugin.forge().cout(kit, choix);
