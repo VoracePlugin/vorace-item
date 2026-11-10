@@ -1,7 +1,7 @@
 #!/bin/bash
 # Essai automatique sur un vrai serveur Paper (CI) : vorace-core et vorace-item démarrent, un faux joueur reçoit une
-# épée modulaire et tue un cochon d'un coup (formule de dégâts de vorace-item), puis « /vitem essai » vérifie les
-# objets, le pack, le combat et les compétences.
+# épée modulaire et tue un cochon d'un coup (formule de dégâts de vorace-item), « /vitem essai » vérifie les objets, le
+# pack, le combat et les compétences, puis le faux joueur forge une épée et sertit une gemme dans les menus.
 # Usage : outils/essai-serveur.sh <version de Paper> <dossier contenant Vorace-*.jar et VoraceItem-*.jar>
 set -uo pipefail
 VERSION=${1:-1.21.4}
@@ -16,6 +16,7 @@ echo "eula=true" > eula.txt
 cat > server.properties <<PROPS
 online-mode=false
 level-type=minecraft\:flat
+generator-settings={"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:dirt","height":2},{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains"}
 generate-structures=false
 spawn-protection=0
 spawn-monsters=false
@@ -34,7 +35,7 @@ attendre() { # attendre <motif> <fichier> <secondes>
 if ! attendre 'Done (' journal.txt 400; then echo "Le serveur n'a pas démarré"; tail -80 journal.txt; exit 1; fi
 sleep 3
 cmd "vitem recharger"
-node "$OUTILS/essai-bot.mjs" 40 > bot.txt 2>&1 &
+node "$OUTILS/essai-bot.mjs" 55 > bot.txt 2>&1 &
 BOT=$!
 attendre 'BOT CONNECTE' bot.txt 60 || { echo "Le faux joueur ne s'est pas connecté"; cat bot.txt; }
 sleep 2
@@ -54,6 +55,13 @@ cmd "give Testeur copper_ingot 4"
 cmd "give Testeur leather 1"
 cmd "give Testeur stick 1"
 attendre 'BOT FORGE OK' bot.txt 20 || echo "Le faux joueur n'a pas forgé"
+# l'atelier : une épée Rare (un emplacement de gemme) et un rubis, que le faux joueur pose dans le menu pour sertir
+sleep 2
+cmd "vitem assembler Testeur epee hasard rare"
+cmd "vitem donner Testeur rubis_taille"
+sleep 1
+cmd "say ATELIER"
+attendre 'BOT SERTI' bot.txt 25 || echo "Le faux joueur n'a pas fini à l'atelier"
 wait $BOT
 cmd "stop"
 for _ in $(seq 1 60); do kill -0 $SERVEUR 2>/dev/null || break; sleep 1; done
@@ -67,9 +75,11 @@ echo "===== Fin du journal"; tail -25 journal.txt
 # verdict
 grep -aq 'ESSAI VORACE-ITEM : [0-9]* réussi(s), 0 échec(s)' journal.txt || { echo "ECHEC : /vitem essai"; exit 1; }
 if grep -aq 'combat et compétences non essayés' journal.txt; then echo "ECHEC : le combat n'a pas été essayé (pas de joueur)"; exit 1; fi
-grep -aq 'voraceitem:kit/epee' bot.txt || { echo "ECHEC : le joueur n'a pas reçu l'épée modulaire (modèle composé)"; exit 1; }
+grep -a 'BOT OBJET' bot.txt | grep -q 'voraceitem:kit/epee' || { echo "ECHEC : le joueur n'a pas reçu l'épée modulaire (modèle composé)"; exit 1; }
+grep -a 'BOT OBJET' bot.txt | grep -q 'fer/lame_droite' || { echo "ECHEC : l'épée reçue par le joueur ne porte pas ses pièces"; exit 1; }
 grep -aq 'BOT REFUS' bot.txt || { echo "ECHEC : la forge n'a pas refusé de forger sans matériaux"; exit 1; }
 grep -aq 'BOT FORGE OK' bot.txt || { echo "ECHEC : la forge n'a pas fabriqué l'épée avec les matériaux"; exit 1; }
+grep -aq 'BOT SERTI OK' bot.txt || { echo "ECHEC : l'atelier n'a pas serti la gemme (cases libres du menu, objet rendu à la fermeture)"; exit 1; }
 grep -aq 'COCHON VIVANT' journal.txt || { echo "ECHEC : le cochon n'a pas été posé"; exit 1; }
 grep -aq 'COCHON MORT' journal.txt || { echo "ECHEC : le coup d'épée du joueur n'a pas tué le cochon (formule de dégâts)"; exit 1; }
 ERREURS=$(grep -acE 'ERROR\]: \[VoraceItem\]|at fr\.vorace\.item\.|WARN\]: \[VoraceItem\]' journal.txt)
