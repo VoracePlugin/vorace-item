@@ -26,6 +26,9 @@ C'est le rôle de MMOItems, en libre et gratuit.
 4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple, `/vitem forge` pour forger, `/vitem atelier` pour
    réparer, améliorer et sertir.
 
+**Arcs** : un arc dessiné (`apparence.texture: <chemin>`) se bande en main comme celui du jeu si
+`ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent.
+
 **Casques en 3D** : un casque (`type: casque`) avec `apparence.modele` et sans `apparence.equipement` est porté
 sur la tête comme son modèle (comme une citrouille), sans dessin d'armure. Le modèle se fait dans Blockbench, l'avant
 de la tête vers le nord, la tête du joueur au centre (16 unités = 10 pixels du joueur) ; le réglage d'affichage

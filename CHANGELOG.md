@@ -1,5 +1,15 @@
 # Journal des changements
 
+## 0.12.0 (novembre 2026) : objets de bois de l'Ébéniste
+
+- **Arcs qui se bandent** : un objet dessiné (`apparence.texture`) qui a ses trois images de tension
+  (`<texture>_tension_0`, `_1`, `_2`) reçoit la définition de l'arc du jeu (il se bande en main, trois images selon la
+  durée du tir).
+- Nouveau type `munition` (s'empile, matériau du jeu : flèche).
+- Essences de bois d'exemple (sans pièces d'épée) : if, frêne, chêne, avec leurs lignes bonus favorites.
+- Objets d'exemple : arcs courts d'if, de frêne et de chêne, arc long d'if, bâtons de chêne et de frêne (cristal
+  d'améthyste), flèche. Dessins : `outils/exemples-bois.py` (32 x 32, style de l'arc du jeu).
+
 ## 0.11.2 (novembre 2026) : armures en 3D par le mod Armor Model API
 
 - Nouvelle apparence `armure-3d` (et `texture-armure-3d`) : l'objet reçoit `minecraft:custom_data.armor_model_api`
