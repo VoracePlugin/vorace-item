@@ -35,6 +35,9 @@ attendre() { # attendre <motif> <fichier> <secondes>
 if ! attendre 'Done (' journal.txt 400; then echo "Le serveur n'a pas démarré"; tail -80 journal.txt; exit 1; fi
 sleep 3
 cmd "vitem recharger"
+# laisser vorace-core finir de reconstruire le pack avant la connexion : un joueur qui arrive en plein milieu
+# peut être expulsé (« Recursive update »)
+sleep 8
 node "$OUTILS/essai-bot.mjs" 55 > bot.txt 2>&1 &
 BOT=$!
 attendre 'BOT CONNECTE' bot.txt 60 || { echo "Le faux joueur ne s'est pas connecté"; cat bot.txt; }
