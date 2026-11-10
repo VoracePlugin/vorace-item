@@ -91,7 +91,7 @@ public final class Essai {
                 "un exemplaire garde son modèle, son rang, son identifiant et son fabricant après enregistrement");
             double[] f = Calcul.fourchette(c, dague, ex, Modificateurs.ATTAQUE, rare, false);
             double attaque = plugin.exemplaires().stats(ex).getOrDefault(Modificateurs.ATTAQUE, 0.0);
-            verifier(f != null && Math.abs(attaque - (f[0] + f[1]) / 2) < 1e-6, "l'attaque est au milieu de la fourchette Rare (" + Textes.nombre(attaque) + ")");
+            verifier(f != null && Math.abs(attaque - Math.round((f[0] + f[1]) / 2)) < 1e-6, "l'attaque est au milieu de la fourchette Rare, arrondie à l'unité (" + Textes.nombre(attaque) + ")");
             double[] dessous = Calcul.fourchette(c, dague, ex, Modificateurs.ATTAQUE, c.raretes().precedent(rare), false);
             verifier(f != null && dessous != null && Math.abs(dessous[1] - f[0]) < 1e-9, "les fourchettes de deux rangs voisins se touchent");
             ItemMeta meta = relu.getItemMeta();
@@ -140,7 +140,7 @@ public final class Essai {
                 Exemplaire ex = plugin.exemplaires().lire(arme);
                 double attendu = 15 + 3 * c.raretes().multiplicateurPalier(2) + 1 + 1;
                 double attaque = plugin.exemplaires().stats(ex).getOrDefault(Modificateurs.ATTAQUE, 0.0);
-                verifier(Math.abs(attaque - attendu) < 1e-6, "son attaque est la somme de ses pièces, la garde d'acier comptant son palier (" + Textes.nombre(attaque) + ")");
+                verifier(Math.abs(attaque - Math.round(attendu)) < 1e-6, "son attaque est la somme de ses pièces, la garde d'acier comptant son palier (" + Textes.nombre(attaque) + ")");
                 String nom = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(meta.displayName());
                 verifier(nom.equals("Épée de fer"), "elle s'appelle « " + nom + " », d'après le matériau de sa lame");
             }
@@ -260,7 +260,8 @@ public final class Essai {
             Competences.Lancer second = plugin.competences().lancer(p, "entaille", p.getInventory().getItemInMainHand(), true);
             verifier(premier == Competences.Lancer.FAIT && second == Competences.Lancer.RECHARGE && plugin.ressources().stamina(p) < staminaAvant,
                 "une compétence coûte de la stamina puis se recharge");
-            verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
+            if (!epee.competences().isEmpty())                       // les objets d'exemple n'ont plus de compétence (0.10.3)
+                verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
 
             // usure : l'arme perd de la durabilité, comptée comme usure de combat
             Exemplaire avantUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
@@ -277,7 +278,7 @@ public final class Essai {
                 p.getInventory().setItemInMainHand(objet);
                 plugin.equipementChange(p);
                 double attaque = plugin.equipement().bilan(p).total(Modificateurs.ATTAQUE);
-                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - 19 * (1 + plugin.reglages().ameliorationBonus)) < 1e-6,
+                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - Math.round(19 * (1 + plugin.reglages().ameliorationBonus))) < 1e-6,
                     "une pierre d'amélioration passe l'épée à +1 (attaque " + Textes.nombre(attaque) + ")");
             }
 
