@@ -155,7 +155,9 @@ fer:
   poignée vers y = 0. Exporte le `.json` dans `ressources/modeles` et la texture dans `ressources/textures`. Ne mets
   pas de réglages « display » dans la pièce : ceux du kit (`affichage`) sont appliqués à toutes.
 - `gravures:` (facultatif, dans `modulaire`) : un modèle posé par-dessus l'arme selon son rang (`rare: chemin`).
-- Les exemples sont dessinés par [outils/exemples-pieces.py](outils/exemples-pieces.py).
+- Les exemples (trois ensembles : bronze de légionnaire, épée de chevalier, acier royal) sont dessinés par
+  [outils/exemples-pieces.py](outils/exemples-pieces.py) : un dessin de 128 pixels par pièce, découpé en petits cubes
+  d'épaisseur variable. Toutes les pièces partagent la même grille, donc elles se mélangent entre ensembles.
 
 Dans le pack, le kit devient un objet « composite » qui choisit une pièce par emplacement
 (`assets/voraceitem/items/kit/epee.json`). L'arme porte le nom de ses pièces dans `custom_model_data`.

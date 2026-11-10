@@ -1,5 +1,21 @@
 # Journal des changements
 
+## 0.9.1 (novembre 2026) : pièces d'exemple redessinées
+
+- **Trois ensembles de pièces d'épée**, un par matériau, chacun avec son style (avant : les mêmes formes recolorées) :
+  - cuivre : bronze de légionnaire (lame en feuille, fauchon, cuir clair, pommeau en anneau, vert-de-gris) ;
+  - fer : épée de chevalier (lames à gouttière, gardes dorées, cuir rouge au fil d'or, pommeau à rubis) ;
+  - acier : lame royale d'acier bleu (arête incrustée, espadon à ergots, gardes d'argent à saphir, pommeau de cristal).
+  Les pièces gardent leurs identifiants (`fer/lame_droite`...) et se mélangent toujours entre ensembles.
+- **Nouvelle technique de dessin** (`outils/exemples-pieces.py`) : chaque pièce est un dessin de 128 pixels découpé en
+  petits cubes, avec une épaisseur par zone (tranchant très fin, plat de lame fin, garde et pommeau épais). Une épée
+  compte 100 à 250 cubes au lieu de 16.
+- Réglages d'affichage de l'épée d'exemple refaits pour ces pièces (`objets/exemples.yml`, `modulaire.affichage`).
+  Ils restent à ajuster en jeu avec un vrai client.
+- Sur un serveur déjà lancé, les exemples ne sont pas réinstallés : pour avoir les nouvelles pièces, supprime
+  `plugins/VoraceItem/ressources/modeles/exemple`, `plugins/VoraceItem/ressources/textures/exemple` et copie le bloc
+  `affichage` du nouveau `objets/exemples.yml`, ou repars d'un dossier `plugins/VoraceItem` vide.
+
 ## 0.9.0 (novembre 2026) : premier vorace-item complet
 
 La 0.1.0 n'était qu'un squelette (le plugin démarrait et vérifiait que vorace-core était là). La 0.9.0 apporte toute
