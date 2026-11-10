@@ -43,12 +43,14 @@ BOT=$!
 attendre 'BOT CONNECTE' bot.txt 60 || { echo "Le faux joueur ne s'est pas connecté"; cat bot.txt; }
 sleep 2
 cmd "vitem assembler Testeur epee fer/lame_droite,fer/garde_droite,fer/poignee_cuir,fer/pommeau_rond"
-cmd "execute at Testeur run summon pig ^ ^ ^2 {NoAI:1b}"
+# le monde a ses propres cochons : on les retire, et celui de l'essai porte une étiquette
+cmd "kill @e[type=pig]"
+cmd "execute at Testeur run summon pig ^ ^ ^2 {NoAI:1b,Tags:[\"essai\"]}"
 sleep 1
-cmd "execute if entity @e[type=pig] run say COCHON VIVANT"
+cmd "execute if entity @e[tag=essai] run say COCHON VIVANT"
 attendre 'BOT ATTAQUE' bot.txt 30 || echo "Le faux joueur n'a pas attaqué"
 sleep 2
-cmd "execute unless entity @e[type=pig] run say COCHON MORT"
+cmd "execute unless entity @e[tag=essai] run say COCHON MORT"
 cmd "kill @e[type=pig]"
 cmd "vitem essai"
 attendre 'ESSAI VORACE-ITEM' journal.txt 30 || echo "L'essai n'a pas fini"
