@@ -1,5 +1,15 @@
 # Journal des changements
 
+## 0.11.2 (novembre 2026) : armures en 3D par le mod Armor Model API
+
+- Nouvelle apparence `armure-3d` (et `texture-armure-3d`) : l'objet reçoit `minecraft:custom_data.armor_model_api`
+  (modèle `.geo.json` et texture), que lit le mod côté joueur [Armor Model API](https://github.com/FabricExtras/ArmorModelAPI).
+  Les fichiers vont dans `ressources/armure3d/` et sont écrits dans le pack (`assets/voraceitem/geo/`,
+  `assets/voraceitem/textures/armor/`). Le dessin d'armure (`equipement`) reste celui des joueurs sans le mod.
+- Armure de fer d'exemple : le modèle d'essai de Babel (`exemple/fer_b` : épaulières et cape ; `fer_a` sans) sur les
+  quatre pièces ; casque de secours dessiné sur la tête (cervelière à nasal, camail), plus de modèle 3D porté pour
+  le casque de fer.
+
 ## 0.11.1 (novembre 2026) : armures refaites, casques en 3D
 
 - **Casques en 3D** : un casque avec un modèle (`apparence.modele`) et sans dessin d'armure se porte sur la tête comme

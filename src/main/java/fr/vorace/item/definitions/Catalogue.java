@@ -209,7 +209,9 @@ public final class Catalogue {
             a == null ? null : chemin(a.getString("modele")), a == null ? null : chemin(a.getString("texture")),
             a != null && a.contains("custom-model-data") ? a.getInt("custom-model-data") : null,
             a != null && a.contains("brillance") ? a.getBoolean("brillance") : null,
-            a == null ? null : chemin(a.getString("equipement")));
+            a == null ? null : chemin(a.getString("equipement")),
+            a == null ? null : chemin(a.getString("armure-3d")),
+            a == null ? null : chemin(a.getString("texture-armure-3d", a.getString("armure-3d"))));
         if (s.getString("materiau") != null) materiauxDesModeles.put(id, s.getString("materiau").toLowerCase(Locale.ROOT));
 
         ConfigurationSection cond = s.getConfigurationSection("conditions");

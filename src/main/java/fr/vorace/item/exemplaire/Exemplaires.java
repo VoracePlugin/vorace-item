@@ -246,7 +246,26 @@ public final class Exemplaires {
             if (signales.add(m.id() + ":materiau")) plugin.getLogger().warning(m.id() + " : objet Minecraft inconnu « " + m.apparence().materiau() + " », papier utilisé");
             mat = Material.PAPER;
         }
-        return new ItemStack(mat);
+        return armure3d(new ItemStack(mat), m);
+    }
+
+    /**
+     * Armure en 3D (mod Armor Model API côté joueur) : le mod lit {@code minecraft:custom_data.armor_model_api}. Ce
+     * composant est posé avant tout le reste ; Bukkit garde ensuite les clés qu'il ne connaît pas à côté de ses données.
+     */
+    private ItemStack armure3d(ItemStack objet, ModeleObjet m) {
+        if (m.apparence().armure3d() == null) return objet;
+        String tex = m.apparence().textureArmure3d() == null ? m.apparence().armure3d() : m.apparence().textureArmure3d();
+        String args = "[minecraft:custom_data={armor_model_api:{model:\"" + NS + ":geo/" + m.apparence().armure3d() + ".geo.json\",texture:\""
+            + NS + ":textures/armor/" + tex + ".png\"}}]";
+        try {
+            @SuppressWarnings("deprecation")
+            ItemStack r = org.bukkit.Bukkit.getUnsafe().modifyItemStack(objet, args);
+            return r;
+        } catch (RuntimeException e) {
+            if (signales.add(m.id() + ":armure3d")) plugin.getLogger().warning(m.id() + " : armure 3D non posée (" + e.getMessage() + ")");
+            return objet;
+        }
     }
 
     // ------------------------------------------------------------------ écriture

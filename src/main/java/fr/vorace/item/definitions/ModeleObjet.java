@@ -23,9 +23,12 @@ public record ModeleObjet(String id, String fichier, String nom, TypeObjet type,
     /**
      * Apparence de l'objet. Dans l'ordre : un objet de vorace-core, un modèle 3D ou une texture de
      * plugins/VoraceItem/ressources, sinon l'objet Minecraft de base tel quel. equipement : pour une armure, le dessin
-     * porté sur le joueur (ressources/equipement/&lt;chemin&gt;/humanoid.png et humanoid_leggings.png).
+     * porté sur le joueur (ressources/equipement/&lt;chemin&gt;/humanoid.png et humanoid_leggings.png). armure3d : armure en
+     * 3D pour les joueurs qui ont le mod Armor Model API (ressources/armure3d/&lt;chemin&gt;.geo.json et sa texture
+     * ressources/armure3d/&lt;textureArmure3d&gt;.png) ; le dessin d'armure reste celui des joueurs sans le mod.
      */
-    public record Apparence(String materiau, String objetVorace, String modele, String texture, Integer cmd, Boolean brillance, String equipement) {
+    public record Apparence(String materiau, String objetVorace, String modele, String texture, Integer cmd, Boolean brillance, String equipement,
+                            String armure3d, String textureArmure3d) {
         public boolean dansLePack() { return modele != null || texture != null; }
     }
 

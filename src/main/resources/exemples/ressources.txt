@@ -1,3 +1,6 @@
+armure3d/exemple/fer.png
+armure3d/exemple/fer_a.geo.json
+armure3d/exemple/fer_b.geo.json
 equipement/exemple/armure_acier/humanoid.png
 equipement/exemple/armure_acier/humanoid_leggings.png
 equipement/exemple/armure_cuivre/humanoid.png
@@ -12,7 +15,6 @@ modeles/exemple/acier/poignee_cuir.json
 modeles/exemple/acier/pommeau_rond.json
 modeles/exemple/armure/casque_acier.json
 modeles/exemple/armure/casque_cuivre.json
-modeles/exemple/armure/casque_fer.json
 modeles/exemple/cuivre/garde_croissant.json
 modeles/exemple/cuivre/garde_droite.json
 modeles/exemple/cuivre/lame_droite.json
@@ -36,11 +38,11 @@ textures/exemple/armure/acier_jambieres.png
 textures/exemple/armure/acier_plastron.png
 textures/exemple/armure/casque_acier.png
 textures/exemple/armure/casque_cuivre.png
-textures/exemple/armure/casque_fer.png
 textures/exemple/armure/cuivre_bottes.png
 textures/exemple/armure/cuivre_jambieres.png
 textures/exemple/armure/cuivre_plastron.png
 textures/exemple/armure/fer_bottes.png
+textures/exemple/armure/fer_casque.png
 textures/exemple/armure/fer_jambieres.png
 textures/exemple/armure/fer_plastron.png
 textures/exemple/cuivre/garde_croissant.png

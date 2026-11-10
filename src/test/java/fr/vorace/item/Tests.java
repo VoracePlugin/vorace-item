@@ -210,6 +210,9 @@ public final class Tests {
             "armure d'exemple : dessin porté et matériau déclaré");
         verifier(casque != null && casque.apparence().equipement() == null && "exemple/armure/casque_acier".equals(casque.apparence().modele()),
             "casque d'exemple : un modèle 3D porté sur la tête, sans dessin d'armure");
+        ModeleObjet casqueFer = c.modele("casque_fer");
+        verifier(casqueFer != null && "exemple/fer_b".equals(casqueFer.apparence().armure3d()) && "exemple/fer".equals(casqueFer.apparence().textureArmure3d())
+            && casqueFer.apparence().equipement() != null, "casque de fer : armure 3D du mod, dessin d'armure de secours");
         ex.position = 1;
         verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), Math.round(reference * 1.1)), "en haut de la fourchette Commune : le bas de la Peu commune");
         ex.rang = "rare";
@@ -294,7 +297,9 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 3 * 3, "épée (73 fichiers) et 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition) avec leurs 3 dessins portés (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 3 * 3 + 2, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), leurs 3 dessins portés et l'armure 3D du fer (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.containsKey("assets/voraceitem/geo/exemple/fer_b.geo.json") && fichiers.containsKey("assets/voraceitem/textures/armor/exemple/fer.png"),
+            "armure 3D du fer (mod Armor Model API) écrite dans le pack");
         verifier(fichiers.containsKey("assets/voraceitem/equipment/exemple/armure_acier.json")
             && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid/exemple/armure_acier.png")
             && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid_leggings/exemple/armure_acier.png"), "dessin d'armure porté écrit dans le pack (1.21.4)");

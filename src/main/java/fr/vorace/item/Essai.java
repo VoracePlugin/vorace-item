@@ -292,6 +292,14 @@ public final class Essai {
                 verifier(mp.hasEquippable() && mp.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.CHEST && mp.getEquippable().getModel() != null,
                     "la cuirasse d'exemple se porte sur le torse avec son dessin");
             }
+            // armure 3D du fer : le composant lu par le mod Armor Model API est posé, et gardé après l'écriture de vorace-item
+            ModeleObjet fer3d = c.modele("plastron_fer");
+            if (fer3d != null) {
+                ItemStack it = plugin.exemplaires().creer(fer3d, fer3d.rang(), false, 0, null, Signature.AUCUNE, 1);
+                String comp = it.getItemMeta().getAsComponentString();
+                verifier(comp.contains("armor_model_api") && comp.contains("voraceitem:geo/exemple/fer_b.geo.json") && plugin.exemplaires().lire(it) != null,
+                    "armure 3D du fer : custom_data.armor_model_api posé, données de vorace-item gardées (" + comp.length() + " car.)");
+            }
             // armure : un coup reçu d'une créature est réduit par la défense du joueur
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
             org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();

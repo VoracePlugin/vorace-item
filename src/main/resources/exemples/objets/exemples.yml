@@ -240,7 +240,11 @@ casque_fer:
   materiau: fer
   apparence:
     materiau: iron_helmet
-    modele: exemple/armure/casque_fer
+    texture: exemple/armure/fer_casque
+    equipement: exemple/armure_fer
+    # armure en 3D (mod Armor Model API côté joueur) ; sans le mod, le dessin d'armure ci-dessus
+    armure-3d: exemple/fer_b
+    texture-armure-3d: exemple/fer
   stats:
     armor: 4
     magic-armor: 1
@@ -256,6 +260,8 @@ plastron_fer:
     materiau: iron_chestplate
     texture: exemple/armure/fer_plastron
     equipement: exemple/armure_fer
+    armure-3d: exemple/fer_b
+    texture-armure-3d: exemple/fer
   stats:
     armor: 9
     magic-armor: 2
@@ -271,6 +277,8 @@ jambieres_fer:
     materiau: iron_leggings
     texture: exemple/armure/fer_jambieres
     equipement: exemple/armure_fer
+    armure-3d: exemple/fer_b
+    texture-armure-3d: exemple/fer
   stats:
     armor: 7
     magic-armor: 2
@@ -286,6 +294,8 @@ bottes_fer:
     materiau: iron_boots
     texture: exemple/armure/fer_bottes
     equipement: exemple/armure_fer
+    armure-3d: exemple/fer_b
+    texture-armure-3d: exemple/fer
   stats:
     armor: 3
     magic-armor: 1

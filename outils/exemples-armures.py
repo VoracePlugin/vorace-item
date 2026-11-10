@@ -207,6 +207,27 @@ CUIVRE = dict(
 )
 
 FER = dict(
+    # tête (dessin de secours du casque, pour les joueurs sans le mod d'armures 3D) : cervelière à nasal, bandeau
+    # de laiton, camail de mailles
+    tete_devant=[
+        "34444443",
+        "23444432",
+        "bbbccbbb",
+        "y..32..x",
+        "y..32..x",
+        "yx....xy",
+        "xy....yx",
+        "yxyxyxyx"],
+    tete_cote=[
+        "34444443",
+        "23333332",
+        "bbbbbbba",
+        "yxyxyxyx",
+        "xwxyxwxy",
+        "yxyxyxyx",
+        "xwxyxwxy",
+        "yxyxyxyx"],
+    tete_dessus=["23333332", "34444443", "34444443", "34444443", "34444443", "34444443", "23444432", "22333322"],
     torse_devant=[
         "34444443",
         "ytqttpsx",
@@ -458,6 +479,10 @@ def couche_principale(m):
     poser(img, pal, d["bras_dessous"], 48, 16)
     poser(img, pal, bande(d["botte_cote"], d["botte_devant"], miroir(d["botte_cote"]), d["botte_dos"]), 0, 20)
     poser(img, pal, d["botte_dessous"], 8, 16)
+    if "tete_devant" in d:
+        tc = d["tete_cote"]
+        poser(img, pal, bande(tc, d["tete_devant"], miroir(tc), d.get("tete_dos", tc)), 0, 8)
+        poser(img, pal, d["tete_dessus"], 8, 0)
     return img
 
 
@@ -721,7 +746,9 @@ def casque_acier():
     return m
 
 
-CASQUES = {"cuivre": casque_cuivre, "fer": casque_fer, "acier": casque_acier}
+# Le fer a son armure en 3D par le mod Armor Model API (ressources/armure3d/exemple/fer_b.geo.json) : son casque
+# de secours est le dessin d'armure (tête), pas un modèle porté.
+CASQUES = {"cuivre": casque_cuivre, "acier": casque_acier}
 
 
 def modele_json(m, chemin_texture):
@@ -758,6 +785,15 @@ def main():
         b.save(os.path.join(d, "humanoid_leggings.png"), optimize=True)
         for piece, ic in icones(a, b).items():
             ic.save(os.path.join(dt, "%s_%s.png" % (mat, piece)), optimize=True)
+        if mat not in CASQUES:
+            ic = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+            ic.alpha_composite(a.crop((8, 8, 16, 16)).resize((8, 8)), (4, 4))
+            ic.alpha_composite(a.crop((8, 8, 16, 11)), (4, 4))
+            ic.save(os.path.join(dt, mat + "_casque.png"), optimize=True)
+            for vieux in (os.path.join(dt, "casque_" + mat + ".png"), os.path.join(dm, "casque_" + mat + ".json")):
+                if os.path.exists(vieux):
+                    os.remove(vieux)
+            continue
         m = CASQUES[mat]()
         mod, atlas = modele_json(m, "exemple/armure/casque_" + mat)
         atlas.save(os.path.join(dt, "casque_" + mat + ".png"), optimize=True)

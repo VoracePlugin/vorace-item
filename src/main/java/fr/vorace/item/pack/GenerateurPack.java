@@ -104,6 +104,9 @@ public final class GenerateurPack {
             if (m.apparence().equipement() != null && equipementsFaits.add(m.apparence().equipement())) {
                 ecrireEquipement(m.apparence().equipement(), equipement, sortie, problemes, m.id());
             }
+            if (m.apparence().armure3d() != null && equipementsFaits.add("3d:" + m.apparence().armure3d())) {
+                ecrireArmure3d(m.apparence().armure3d(), m.apparence().textureArmure3d(), ressources.resolve("armure3d"), sortie, problemes, m.id());
+            }
             if (m.kit() != null) {
                 // déjà fait plus haut
             } else if (m.apparence().objetVorace() == null && m.apparence().dansLePack()) {
@@ -272,6 +275,23 @@ public final class GenerateurPack {
         JsonObject eq = new JsonObject();
         eq.add("layers", couches);
         sortie.put("assets/" + NS + "/equipment/" + chemin + ".json", octets(eq));
+    }
+
+    /**
+     * Armure en 3D pour le mod Armor Model API : assets/voraceitem/geo/&lt;chemin&gt;.geo.json et
+     * assets/voraceitem/textures/armor/&lt;texture&gt;.png, pris dans ressources/armure3d/.
+     */
+    static void ecrireArmure3d(String chemin, String texture, Path dossier, Map<String, byte[]> sortie, List<String> problemes, String qui) {
+        String tex = texture == null ? chemin : texture;
+        Path geo = dossier.resolve(chemin + ".geo.json"), png = dossier.resolve(tex + ".png");
+        try {
+            if (Files.isRegularFile(geo)) sortie.put("assets/" + NS + "/geo/" + chemin + ".geo.json", Files.readAllBytes(geo));
+            else problemes.add(qui + " : armure 3D introuvable (ressources/armure3d/" + chemin + ".geo.json)");
+            if (Files.isRegularFile(png)) sortie.put("assets/" + NS + "/textures/armor/" + tex + ".png", Files.readAllBytes(png));
+            else problemes.add(qui + " : texture de l'armure 3D introuvable (ressources/armure3d/" + tex + ".png)");
+        } catch (IOException e) {
+            problemes.add(qui + " : " + e.getMessage());
+        }
     }
 
     /** Copie ressources/textures/&lt;chemin&gt;.png dans le pack ; renvoie son nom dans le pack, ou null si elle n'existe pas. */

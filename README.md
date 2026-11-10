@@ -32,6 +32,11 @@ de la tête vers le nord, la tête du joueur au centre (16 unités = 10 pixels d
 `head` le place. Les armures complètes font comme les packs des serveurs : casque en 3D, reste en dessin d'armure de
 16 pixels par bloc (`ressources/equipement/<chemin>/humanoid.png`, 64 x 32).
 
+**Armures en 3D (mod côté joueur)** : `apparence.armure-3d: <chemin>` (et `texture-armure-3d`) pose sur l'objet le
+composant lu par le mod [Armor Model API](https://github.com/FabricExtras/ArmorModelAPI) ; le modèle
+`ressources/armure3d/<chemin>.geo.json` (format Bedrock, os `armorHead`, `armorBody`…) et sa texture vont dans le pack.
+Garder un `equipement` pour les joueurs sans le mod. Attention : le mod n'existe pas en 1.21.4 (1.21.1, 1.21.11, 26.x).
+
 vorace-item écrit sa partie du pack de ressources dans `plugins/Vorace/pack/sources/voraceitem`, que vorace-core
 fusionne tout seul avec les autres packs. Si tu as changé les `sources` dans `plugins/Vorace/config.yml`, garde
 `plugins/Vorace/pack/sources/*`.
