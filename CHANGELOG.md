@@ -1,5 +1,16 @@
 # Journal des changements
 
+## 0.11.0 (novembre 2026) : armures
+
+- **Apparence d'une armure portée** : `apparence.armure: <chemin>` dans un modèle d'objet. vorace-item lit
+  `ressources/armures/<chemin>.png` (tête, torse, bras, pieds) et `<chemin>_jambes.png` (jambes), les met dans le
+  pack (`equipment/<chemin>.json`) et les relie à l'objet. Les pièces d'un ensemble partagent le même chemin.
+- **Trois ensembles d'exemple** assortis aux épées, quatre pièces chacun (`objets/armures.yml`) : cuivre (plaques de
+  légionnaire et lanières de cuir), fer (plates et mailles), acier (acier sombre bordé d'or). Chaque pièce a son
+  icône d'inventaire et sa recette à la forge. Dessinés par `outils/exemples-armures.py`.
+- L'apparence portée n'a pas encore été vue en jeu : à regarder avec un vrai client.
+- Sur un serveur déjà lancé, les exemples ne sont pas réinstallés : repars d'un dossier `plugins/VoraceItem` vide.
+
 ## 0.10.2 (novembre 2026) : pièces muettes, qualité cachée par pièce
 
 - **Rien n'est écrit sur une pièce**, à part son nom, lame comprise : ni stats, ni qualité, ni fabricant. On ne peut

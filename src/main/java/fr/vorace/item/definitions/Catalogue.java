@@ -189,7 +189,8 @@ public final class Catalogue {
             a == null || a.getString("objet-vorace") == null ? null : a.getString("objet-vorace").toLowerCase(Locale.ROOT),
             a == null ? null : chemin(a.getString("modele")), a == null ? null : chemin(a.getString("texture")),
             a != null && a.contains("custom-model-data") ? a.getInt("custom-model-data") : null,
-            a != null && a.contains("brillance") ? a.getBoolean("brillance") : null);
+            a != null && a.contains("brillance") ? a.getBoolean("brillance") : null,
+            a == null ? null : chemin(a.getString("armure")));
 
         ConfigurationSection cond = s.getConfigurationSection("conditions");
         List<String> classes = new ArrayList<>();

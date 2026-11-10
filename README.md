@@ -58,6 +58,7 @@ Tout se règle dans `plugins/VoraceItem`, puis `/vitem recharger`. Chaque fichie
 | `competences.yml` | Les compétences d'armes. |
 | `butins.yml` | Les tables de butin et les monstres qui les utilisent. |
 | `ressources/modeles`, `ressources/textures` | Les modèles 3D (`.json` de Blockbench) et les textures (`.png`). |
+| `ressources/armures` | Les textures des armures portées (`.png` de 64 x 32). |
 
 ### Un modèle d'objet
 
@@ -84,6 +85,30 @@ dague_de_chasse:
 L'apparence se choisit avec `apparence:` : `materiau` (un objet du jeu de base), `objet-vorace` (un objet de
 `plugins/Vorace/objets`, avec sa texture ou son modèle 3D), `modele` (un `.json` de `ressources/modeles`) ou
 `texture` (un `.png` de `ressources/textures`).
+
+#### Armures
+
+Une armure a deux apparences : son icône dans l'inventaire (`texture` ou `modele`) et ce que l'on voit sur le joueur
+quand elle est portée (`armure`).
+
+```yaml
+plastron_de_fer:
+  nom: "Plastron de fer"
+  type: plastron
+  rang: peu_commun
+  apparence: { materiau: iron_chestplate, texture: exemple/armure/fer_plastron, armure: exemple/fer }
+  stats: { armor: 19, magic-armor: 3 }
+```
+
+- `armure: exemple/fer` lit `ressources/armures/exemple/fer.png` (tête, torse, bras, pieds) et
+  `ressources/armures/exemple/fer_jambes.png` (jambes). Ce sont des textures de 64 x 32, au format des armures du jeu.
+- Les quatre pièces d'un ensemble donnent le même chemin. Le jeu affiche la bonne partie selon l'emplacement du type
+  (casque, plastron, jambières, bottes).
+- Une armure portée n'est pas un modèle 3D : Minecraft la dessine sur le corps du joueur à partir de cette texture.
+- Sans `armure`, la pièce portée a l'apparence de l'objet de base (`materiau`).
+
+Trois ensembles d'exemple sont fournis dans `objets/armures.yml` (cuivre, fer, acier), dessinés par
+[outils/exemples-armures.py](outils/exemples-armures.py).
 
 ### Rangs et fourchettes de stats
 

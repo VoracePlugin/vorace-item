@@ -8,6 +8,7 @@
 #   etage          : étage du donjon du modèle (son palier fixe la force des lignes bonus)
 #   apparence      : materiau (objet du jeu de base), ou objet-vorace (un objet de plugins/Vorace/objets), ou modele
 #                    (ressources/modeles/<chemin>.json), ou texture (ressources/textures/<chemin>.png) ; brillance
+#                    armure : apparence d'une armure portée (voir objets/armures.yml)
 #   stats          : stats de rang, à leur valeur au RANG DE BASE du modèle (bas de la fourchette)
 #   modificateurs  : modificateurs fixes (voir modificateurs.yml)
 #   lignes-bonus   : modificateurs qui peuvent être tirés en plus (sinon ceux du type)

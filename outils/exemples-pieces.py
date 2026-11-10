@@ -341,9 +341,13 @@ def main():
                           f, separators=(",", ":"))
             dessin.image().save(os.path.join(SORTIE, "textures", chemin + ".png"), optimize=True)
             fichiers += ["modeles/" + chemin + ".json", "textures/" + chemin + ".png"]
-    # liste des fichiers d'exemple, lue par le plugin pour les installer au premier lancement
+    # liste de tous les fichiers d'exemple (épées et armures), lue par le plugin pour les installer au premier lancement
+    tous = []
+    for dossier, _, noms in os.walk(SORTIE):
+        for f in noms:
+            tous.append(os.path.relpath(os.path.join(dossier, f), SORTIE).replace(os.sep, "/"))
     with open(os.path.join(RACINE, "ressources.txt"), "w", encoding="utf-8") as f:
-        f.write("\n".join(sorted(fichiers)) + "\n")
+        f.write("\n".join(sorted(tous)) + "\n")
     print("%d fichiers écrits dans %s" % (len(fichiers), os.path.normpath(SORTIE)))
     print("cubes par pièce : " + ", ".join("%s %d" % (c.split("/", 1)[1], n) for c, n in cubes.items()))
     if len(sys.argv) > 1:

@@ -1,0 +1,137 @@
+# Armures d'exemple de vorace-item : trois ensembles assortis aux épées (cuivre, fer, acier), quatre pièces chacun.
+# Tu peux les modifier ou supprimer ce fichier : il ne reviendra pas.
+#
+# Une armure a deux apparences :
+#   texture : l'icône dans l'inventaire (ressources/textures/<chemin>.png, 16 x 16)
+#   armure  : ce que l'on voit sur le joueur quand elle est portée. Les pièces d'un même ensemble donnent le même
+#             chemin : ressources/armures/<chemin>.png habille la tête, le torse, les bras et les pieds, et
+#             ressources/armures/<chemin>_jambes.png habille les jambes (textures de 64 x 32, au format des armures
+#             du jeu). Sans « armure », la pièce portée a l'apparence de l'objet Minecraft de base (materiau).
+# Les stats (armor, magic-armor) sont à leur valeur au rang de base, en bas de la fourchette.
+
+# ----------------------------------------------------------------- cuivre : plaques de légionnaire et lanières de cuir
+casque_de_cuivre:
+  nom: "Casque de cuivre"
+  type: casque
+  rang: commun
+  etage: 3
+  apparence: { materiau: iron_helmet, texture: exemple/armure/cuivre_casque, armure: exemple/cuivre }
+  stats: { armor: 8 }
+  durabilite: 160
+  recette: { COPPER_INGOT: 5 }
+
+plastron_de_cuivre:
+  nom: "Plastron de cuivre"
+  type: plastron
+  rang: commun
+  etage: 3
+  apparence: { materiau: iron_chestplate, texture: exemple/armure/cuivre_plastron, armure: exemple/cuivre }
+  stats: { armor: 14 }
+  durabilite: 240
+  recette: { COPPER_INGOT: 8 }
+
+jambieres_de_cuivre:
+  nom: "Jambières de cuivre"
+  type: jambieres
+  rang: commun
+  etage: 3
+  apparence: { materiau: iron_leggings, texture: exemple/armure/cuivre_jambieres, armure: exemple/cuivre }
+  stats: { armor: 11 }
+  durabilite: 220
+  recette: { COPPER_INGOT: 4, LEATHER: 3 }
+
+bottes_de_cuivre:
+  nom: "Bottes de cuivre"
+  type: bottes
+  rang: commun
+  etage: 3
+  apparence: { materiau: iron_boots, texture: exemple/armure/cuivre_bottes, armure: exemple/cuivre }
+  stats: { armor: 6 }
+  durabilite: 190
+  recette: { COPPER_INGOT: 4 }
+
+# ----------------------------------------------------------------- fer : plates et mailles de chevalier
+casque_de_fer:
+  nom: "Casque de fer"
+  type: casque
+  rang: peu_commun
+  etage: 8
+  apparence: { materiau: iron_helmet, texture: exemple/armure/fer_casque, armure: exemple/fer }
+  stats: { armor: 11, magic-armor: 2 }
+  durabilite: 240
+  recette: { IRON_INGOT: 5 }
+
+plastron_de_fer:
+  nom: "Plastron de fer"
+  type: plastron
+  rang: peu_commun
+  etage: 8
+  apparence: { materiau: iron_chestplate, texture: exemple/armure/fer_plastron, armure: exemple/fer }
+  stats: { armor: 19, magic-armor: 3 }
+  durabilite: 360
+  recette: { IRON_INGOT: 8 }
+
+jambieres_de_fer:
+  nom: "Jambières de fer"
+  type: jambieres
+  rang: peu_commun
+  etage: 8
+  apparence: { materiau: iron_leggings, texture: exemple/armure/fer_jambieres, armure: exemple/fer }
+  stats: { armor: 15, magic-armor: 2 }
+  durabilite: 330
+  recette: { IRON_INGOT: 7 }
+
+bottes_de_fer:
+  nom: "Bottes de fer"
+  type: bottes
+  rang: peu_commun
+  etage: 8
+  apparence: { materiau: iron_boots, texture: exemple/armure/fer_bottes, armure: exemple/fer }
+  stats: { armor: 8, magic-armor: 1 }
+  durabilite: 290
+  recette: { IRON_INGOT: 4 }
+
+# ----------------------------------------------------------------- acier : acier sombre bordé d'or
+heaume_d_acier:
+  nom: "Heaume d'acier"
+  type: casque
+  rang: rare
+  etage: 15
+  apparence: { materiau: iron_helmet, texture: exemple/armure/acier_casque, armure: exemple/acier }
+  stats: { armor: 15, magic-armor: 4 }
+  modificateurs: { max-health: 4 }
+  durabilite: 340
+  recette: { IRON_INGOT: 6, GOLD_INGOT: 1 }
+
+plastron_d_acier:
+  nom: "Plastron d'acier"
+  type: plastron
+  rang: rare
+  etage: 15
+  apparence: { materiau: iron_chestplate, texture: exemple/armure/acier_plastron, armure: exemple/acier }
+  stats: { armor: 26, magic-armor: 6 }
+  modificateurs: { max-health: 8 }
+  durabilite: 500
+  recette: { IRON_INGOT: 10, GOLD_INGOT: 2 }
+
+jambieres_d_acier:
+  nom: "Jambières d'acier"
+  type: jambieres
+  rang: rare
+  etage: 15
+  apparence: { materiau: iron_leggings, texture: exemple/armure/acier_jambieres, armure: exemple/acier }
+  stats: { armor: 20, magic-armor: 5 }
+  modificateurs: { max-health: 6 }
+  durabilite: 460
+  recette: { IRON_INGOT: 8, GOLD_INGOT: 1 }
+
+bottes_d_acier:
+  nom: "Bottes d'acier"
+  type: bottes
+  rang: rare
+  etage: 15
+  apparence: { materiau: iron_boots, texture: exemple/armure/acier_bottes, armure: exemple/acier }
+  stats: { armor: 11, magic-armor: 3 }
+  modificateurs: { max-health: 4 }
+  durabilite: 400
+  recette: { IRON_INGOT: 5, GOLD_INGOT: 1 }

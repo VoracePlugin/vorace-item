@@ -288,7 +288,23 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18, "1 définition d'épée, 18 modèles, 18 textures, 18 pièces seules et leurs 18 définitions (" + fichiers.size() + " fichiers)");
+        // armures : 3 ensembles (1 définition et 2 textures portées chacun), 12 pièces (1 objet, 1 modèle, 1 icône chacune)
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 3 * 3 + 12 * 3, "épées (73 fichiers) et armures (45 fichiers) : " + fichiers.size() + " fichiers");
+        byte[] ensemble = fichiers.get("assets/voraceitem/equipment/exemple/fer.json");
+        verifier(ensemble != null && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid/exemple/fer.png")
+            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid_leggings/exemple/fer.png"), "l'ensemble de fer a sa définition et ses deux textures portées");
+        if (ensemble != null) {
+            JsonObject couches = JsonParser.parseString(new String(ensemble, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("layers");
+            verifier(couches.getAsJsonArray("humanoid").get(0).getAsJsonObject().get("texture").getAsString().equals("voraceitem:exemple/fer")
+                && couches.getAsJsonArray("humanoid_leggings").get(0).getAsJsonObject().get("texture").getAsString().equals("voraceitem:exemple/fer"),
+                "définition d'armure portée : une couche pour le haut, une pour les jambes");
+        }
+        byte[] icone = fichiers.get("assets/voraceitem/models/item/objet/plastron_de_fer.json");
+        verifier(icone != null && new String(icone, StandardCharsets.UTF_8).contains("voraceitem:item/exemple/armure/fer_plastron")
+            && fichiers.containsKey("assets/voraceitem/items/objet/plastron_de_fer.json"), "le plastron de fer a son icône d'inventaire");
+        ModeleObjet heaume = c.modele("heaume_d_acier");
+        verifier(heaume != null && "exemple/acier".equals(heaume.apparence().armure()) && heaume.type().emplacement().equals("tete")
+            && c.modele("dague_de_chasse").apparence().armure() == null, "le heaume d'acier porte l'ensemble « exemple/acier », une dague n'a pas d'armure portée");
         byte[] seule = fichiers.get("assets/voraceitem/models/item/piece_seule/fer/pommeau_rond.json");
         verifier(seule != null && fichiers.containsKey("assets/voraceitem/items/piece/fer/pommeau_rond.json"), "le pommeau a son objet à lui");
         if (seule != null) {
@@ -321,6 +337,7 @@ public final class Tests {
         Path d = Files.createTempDirectory("vorace-item-tests");
         for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml", "competences.yml", "butins.yml")) copier(f, d.resolve(f));
         copier("exemples/objets/exemples.yml", d.resolve("objets/exemples.yml"));
+        copier("exemples/objets/armures.yml", d.resolve("objets/armures.yml"));
         copier("exemples/materiaux/exemples.yml", d.resolve("materiaux/exemples.yml"));
         try (InputStream index = Tests.class.getResourceAsStream("/exemples/ressources.txt")) {
             if (index == null) throw new IOException("exemples/ressources.txt introuvable");

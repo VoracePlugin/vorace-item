@@ -14,9 +14,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
 
@@ -45,7 +47,11 @@ public final class GenerateurPack {
         Path modeles = ressources.resolve("modeles");
         Path textures = ressources.resolve("textures");
 
+        Set<String> armures = new HashSet<>();
         for (ModeleObjet m : c.modeles()) {
+            if (m.apparence().armure() != null && armures.add(m.apparence().armure())) {
+                armure(m.apparence().armure(), ressources.resolve("armures"), sortie, problemes, m.id());
+            }
             if (m.kit() != null) {
                 JsonArray couches = new JsonArray();
                 int index = 0;
@@ -129,6 +135,37 @@ public final class GenerateurPack {
             }
         }
         return sortie;
+    }
+
+    /**
+     * Armure portée : ressources/armures/&lt;chemin&gt;.png habille la tête, le torse, les bras et les pieds ;
+     * &lt;chemin&gt;_jambes.png habille les jambes. Ce sont des textures de 64 x 32, au format des armures du jeu.
+     * Plusieurs objets (casque, plastron...) peuvent partager le même chemin : c'est un ensemble.
+     */
+    static void armure(String chemin, Path dossier, Map<String, byte[]> sortie, List<String> problemes, String qui) {
+        JsonObject couches = new JsonObject();
+        try {
+            for (String[] couche : new String[][] {{"humanoid", ""}, {"humanoid_leggings", "_jambes"}}) {
+                Path png = dossier.resolve(chemin + couche[1] + ".png");
+                if (!Files.isRegularFile(png)) continue;
+                sortie.put("assets/" + NS + "/textures/entity/equipment/" + couche[0] + "/" + chemin + ".png", Files.readAllBytes(png));
+                JsonObject texture = new JsonObject();
+                texture.addProperty("texture", NS + ":" + chemin);
+                JsonArray liste = new JsonArray();
+                liste.add(texture);
+                couches.add(couche[0], liste);
+            }
+        } catch (IOException e) {
+            problemes.add(qui + " : armure illisible (ressources/armures/" + chemin + ".png) : " + e.getMessage());
+            return;
+        }
+        if (couches.size() == 0) {
+            problemes.add(qui + " : armure introuvable (ressources/armures/" + chemin + ".png ou " + chemin + "_jambes.png)");
+            return;
+        }
+        JsonObject def = new JsonObject();
+        def.add("layers", couches);
+        sortie.put("assets/" + NS + "/equipment/" + chemin + ".json", octets(def));
     }
 
     /**

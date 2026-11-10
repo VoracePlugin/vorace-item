@@ -12,12 +12,14 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.bukkit.inventory.meta.components.EquippableComponent;
 import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -297,6 +299,14 @@ public final class Exemplaires {
             else if (m.apparence().cmd() != null) meta.setCustomModelData(m.apparence().cmd());
         }
         if (m.apparence().brillance() != null) meta.setEnchantmentGlintOverride(m.apparence().brillance());
+        // armure : ce que l'on voit sur le joueur quand la pièce est portée
+        EquipmentSlot place = place(m.type().emplacement());
+        if (m.apparence().armure() != null && place != null) {
+            EquippableComponent porte = meta.getEquippable();
+            porte.setSlot(place);
+            porte.setModel(cle(m.apparence().armure()));
+            meta.setEquippable(porte);
+        }
 
         // attributs du jeu de base : remplacés (les dégâts et l'armure viennent des stats de vorace-item)
         meta.setAttributeModifiers(null);
@@ -336,6 +346,17 @@ public final class Exemplaires {
         } else {
             meta.setUseCooldown(null);
         }
+    }
+
+    /** Emplacement d'armure du jeu (tête, torse, jambes, pieds), ou null pour le reste. */
+    public static EquipmentSlot place(String emplacement) {
+        return switch (emplacement) {
+            case "tete" -> EquipmentSlot.HEAD;
+            case "torse" -> EquipmentSlot.CHEST;
+            case "jambes" -> EquipmentSlot.LEGS;
+            case "pieds" -> EquipmentSlot.FEET;
+            default -> null;
+        };
     }
 
     public static EquipmentSlotGroup groupe(String emplacement) {

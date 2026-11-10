@@ -282,6 +282,17 @@ public final class Essai {
             }
 
             // armure : un coup reçu d'une créature est réduit par la défense du joueur
+            ModeleObjet heaume = c.modele("heaume_d_acier");
+            if (heaume != null) {
+                ItemStack objet = plugin.exemplaires().creer(heaume, heaume.rang(), false, 0, null, Signature.AUCUNE, 1);
+                ItemMeta mh = objet == null ? null : objet.getItemMeta();
+                verifier(mh != null && mh.hasEquippable() && mh.getEquippable().getSlot() == org.bukkit.inventory.EquipmentSlot.HEAD
+                    && mh.getEquippable().getModel() != null && mh.getEquippable().getModel().toString().equals("voraceitem:exemple/acier")
+                    && mh.hasItemModel() && mh.getItemModel().toString().equals("voraceitem:objet/heaume_d_acier"),
+                    "le heaume d'acier se porte sur la tête, avec l'apparence de son ensemble et son icône");
+                verifier(Files.isRegularFile(plugin.core().packs().racineServeur().resolve(plugin.reglages().dossierPack).resolve("assets/voraceitem/equipment/exemple/acier.json")),
+                    "l'ensemble d'acier est dans le pack");
+            }
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
             org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();
             if (plastron != null && p.getGameMode() == org.bukkit.GameMode.SURVIVAL && difficulte != org.bukkit.Difficulty.PEACEFUL) {
