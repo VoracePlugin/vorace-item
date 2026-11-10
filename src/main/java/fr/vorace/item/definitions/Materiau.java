@@ -7,8 +7,10 @@ import java.util.Map;
  *
  * @param complement ce qui suit le nom de l'arme : « de fer », « d'acier », « en os de Minotaure »
  * @param etage      étage du donjon du matériau (son palier fixe la force des pièces)
+ * @param poidsBonus modificateur → poids : les lignes bonus des objets de ce matériau restent tirées au hasard, mais
+ *                   celles-ci sortent plus souvent (poids 1 pour les autres)
  */
-public record Materiau(String id, String nom, String complement, int etage, Map<String, Piece> pieces) {
+public record Materiau(String id, String nom, String complement, int etage, Map<String, Piece> pieces, Map<String, Double> poidsBonus) {
 
     /**
      * Une pièce d'arme modulaire : une lame, une garde, une poignée, un pommeau...

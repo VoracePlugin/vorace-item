@@ -167,3 +167,188 @@ pierre_d_amelioration:
     brillance: true
   description:
     - "À utiliser à l'atelier : l'objet gagne un niveau."
+
+# ----------------------------------------------------------------- armures de métal (forgées par le Forgeron, aux gestes)
+# Trois ensembles : cuivre martelé, lames de fer rivetées, plates d'acier bordées d'or. « equipement » : le dessin porté
+# sur le joueur (ressources/equipement/<chemin>/humanoid.png et humanoid_leggings.png) ; « texture » : l'icône.
+# « materiau » : le matériau de l'objet, qui oriente le tirage de ses lignes bonus (materiaux/exemples.yml).
+
+casque_cuivre:
+  nom: "Casque de cuivre"
+  type: casque
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_helmet
+    texture: exemple/armure/cuivre_casque
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 3
+    magic-armor: 1
+  durabilite: 150
+
+plastron_cuivre:
+  nom: "Cuirasse de cuivre"
+  type: plastron
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/cuivre_plastron
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 7
+    magic-armor: 2
+  durabilite: 220
+
+jambieres_cuivre:
+  nom: "Jambières de cuivre"
+  type: jambieres
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/cuivre_jambieres
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 5
+    magic-armor: 1
+  durabilite: 190
+
+bottes_cuivre:
+  nom: "Bottes de cuivre"
+  type: bottes
+  rang: commun
+  etage: 1
+  materiau: cuivre
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/cuivre_bottes
+    equipement: exemple/armure_cuivre
+  stats:
+    armor: 2
+    magic-armor: 1
+  durabilite: 130
+
+casque_fer:
+  nom: "Casque de fer"
+  type: casque
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_helmet
+    texture: exemple/armure/fer_casque
+    equipement: exemple/armure_fer
+  stats:
+    armor: 4
+    magic-armor: 1
+  durabilite: 220
+
+plastron_fer:
+  nom: "Cuirasse de fer"
+  type: plastron
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/fer_plastron
+    equipement: exemple/armure_fer
+  stats:
+    armor: 9
+    magic-armor: 2
+  durabilite: 320
+
+jambieres_fer:
+  nom: "Jambières de fer"
+  type: jambieres
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/fer_jambieres
+    equipement: exemple/armure_fer
+  stats:
+    armor: 7
+    magic-armor: 2
+  durabilite: 280
+
+bottes_fer:
+  nom: "Bottes de fer"
+  type: bottes
+  rang: commun
+  etage: 5
+  materiau: fer
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/fer_bottes
+    equipement: exemple/armure_fer
+  stats:
+    armor: 3
+    magic-armor: 1
+  durabilite: 190
+
+casque_acier:
+  nom: "Casque d'acier"
+  type: casque
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_helmet
+    texture: exemple/armure/acier_casque
+    equipement: exemple/armure_acier
+  stats:
+    armor: 5
+    magic-armor: 1
+  durabilite: 300
+
+plastron_acier:
+  nom: "Cuirasse d'acier"
+  type: plastron
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_chestplate
+    texture: exemple/armure/acier_plastron
+    equipement: exemple/armure_acier
+  stats:
+    armor: 11
+    magic-armor: 3
+  durabilite: 420
+
+jambieres_acier:
+  nom: "Jambières d'acier"
+  type: jambieres
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_leggings
+    texture: exemple/armure/acier_jambieres
+    equipement: exemple/armure_acier
+  stats:
+    armor: 8
+    magic-armor: 2
+  durabilite: 360
+
+bottes_acier:
+  nom: "Bottes d'acier"
+  type: bottes
+  rang: peu_commun
+  etage: 15
+  materiau: acier
+  apparence:
+    materiau: iron_boots
+    texture: exemple/armure/acier_bottes
+    equipement: exemple/armure_acier
+  stats:
+    armor: 4
+    magic-armor: 1
+  durabilite: 260

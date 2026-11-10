@@ -44,6 +44,8 @@ public final class GenerateurPack {
         Map<String, byte[]> sortie = new TreeMap<>();
         Path modeles = ressources.resolve("modeles");
         Path textures = ressources.resolve("textures");
+        Path equipement = ressources.resolve("equipement");
+        java.util.Set<String> equipementsFaits = new java.util.HashSet<>();
 
         for (ModeleObjet m : c.modeles()) {
             if (m.kit() != null) {
@@ -98,6 +100,12 @@ public final class GenerateurPack {
                 JsonObject def = new JsonObject();
                 def.add("model", composite);
                 sortie.put("assets/" + NS + "/items/kit/" + m.id() + ".json", octets(def));
+            }
+            if (m.apparence().equipement() != null && equipementsFaits.add(m.apparence().equipement())) {
+                ecrireEquipement(m.apparence().equipement(), equipement, sortie, problemes, m.id());
+            }
+            if (m.kit() != null) {
+                // déjà fait plus haut
             } else if (m.apparence().objetVorace() == null && m.apparence().dansLePack()) {
                 JsonObject modele;
                 if (m.apparence().modele() != null) {
@@ -237,6 +245,33 @@ public final class GenerateurPack {
             if (trouve != null) t.addProperty(e.getKey(), trouve);
             else if (ns == null || ns.equals(NS)) problemes.add(qui + " : texture « " + valeur + " » absente de ressources/textures (gardée telle quelle)");
         }
+    }
+
+    /**
+     * Dessin d'armure porté sur le joueur (1.21.4) : assets/voraceitem/equipment/&lt;chemin&gt;.json et ses deux couches,
+     * prises dans ressources/equipement/&lt;chemin&gt;/humanoid.png (casque, plastron, bottes) et humanoid_leggings.png.
+     */
+    static void ecrireEquipement(String chemin, Path dossier, Map<String, byte[]> sortie, List<String> problemes, String qui) {
+        JsonObject couches = new JsonObject();
+        for (String couche : List.of("humanoid", "humanoid_leggings")) {
+            Path png = dossier.resolve(chemin).resolve(couche + ".png");
+            if (!Files.isRegularFile(png)) continue;
+            try {
+                sortie.put("assets/" + NS + "/textures/entity/equipment/" + couche + "/" + chemin + ".png", Files.readAllBytes(png));
+            } catch (IOException e) {
+                problemes.add(qui + " : " + e.getMessage());
+                continue;
+            }
+            JsonArray l = new JsonArray();
+            JsonObject t = new JsonObject();
+            t.addProperty("texture", NS + ":" + chemin);
+            l.add(t);
+            couches.add(couche, l);
+        }
+        if (couches.size() == 0) { problemes.add(qui + " : dessin d'armure introuvable (ressources/equipement/" + chemin + "/humanoid.png)"); return; }
+        JsonObject eq = new JsonObject();
+        eq.add("layers", couches);
+        sortie.put("assets/" + NS + "/equipment/" + chemin + ".json", octets(eq));
     }
 
     /** Copie ressources/textures/&lt;chemin&gt;.png dans le pack ; renvoie son nom dans le pack, ou null si elle n'existe pas. */

@@ -202,7 +202,12 @@ public final class Tests {
         verifier(proche(Calcul.references(c, epee, ex).get("attaque"), reference), "référence d'une épée : somme des pièces, chacune avec le palier de son matériau");
         Map<String, Double> stats = Calcul.stats(c, ex, 0.03);
         verifier(proche(stats.get("attaque"), Math.round(reference)), "en bas de la fourchette Commune : la référence");
-        verifier(proche(stats.get("critical-strike-chance"), 2), "le modificateur fixe de la garde est compté");
+        verifier(stats.get("critical-strike-chance") == null, "les pièces d'exemple n'ont plus de modificateur fixe");
+        verifier(proche(c.poidsBonus(epee, ex).getOrDefault("physical-damage", 0.0), 3) && c.poidsBonus(epee, ex).getOrDefault("attack-speed", 1.0) == 1.0,
+            "lignes bonus orientées par le matériau de la lame (fer : dégâts physiques plus souvent)");
+        ModeleObjet casque = c.modele("casque_acier");
+        verifier(casque != null && casque.apparence().equipement() != null && proche(c.poidsBonus(casque, null).getOrDefault("damage-reduction", 0.0), 3),
+            "armure d'exemple : dessin porté et matériau déclaré");
         ex.position = 1;
         verifier(proche(Calcul.stats(c, ex, 0.03).get("attaque"), Math.round(reference * 1.1)), "en haut de la fourchette Commune : le bas de la Peu commune");
         ex.rang = "rare";
@@ -243,7 +248,7 @@ public final class Tests {
         verifier(tout.contains("Qualité : ") && tout.contains("Fine"), "qualité");
         verifier(tout.contains("Attaque physique <white>" + Textes.nombre(Math.round((15 + 3 * 1.12 + 2) * 1.2 * 1.06))), "attaque avec le rang et l'amélioration");
         verifier(tout.contains("Scale <white>FOR B") && tout.contains("AGI D") && tout.contains("Type <white>Cutting"), "scale et type d'attaque");
-        verifier(tout.contains("+2 % Chance de coup critique") && tout.contains("◇ +1,2 % Vol de vie"), "modificateur fixe et ligne bonus");
+        verifier(tout.contains("◇ +1,2 % Vol de vie"), "ligne bonus");
         verifier(tout.contains("❖ Rubis taillé") && tout.contains("+4 Dégâts physiques"), "gemme sertie");
         verifier(tout.contains("Durabilité : <white>150") && tout.contains("Forgé par") && tout.contains("Antoine"), "durabilité et fabricant");
         verifier(!l.get(0).isEmpty() && !l.get(l.size() - 1).isEmpty() && !tout.contains("\n\n\n"), "pas de ligne vide en trop");

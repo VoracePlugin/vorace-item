@@ -1,5 +1,21 @@
 # Journal des changements
 
+## 0.11.0 (novembre 2026) : lignes bonus orientées par le matériau, armures portées
+
+- **Lignes bonus orientées par le matériau** : elles restent tirées au hasard dans la liste du type d'objet, mais
+  `lignes-bonus` d'un matériau (`materiaux/*.yml`, modificateur → poids) fait sortir certaines plus souvent. Une arme
+  prend les poids du matériau de sa lame ; un objet simple, ceux de son champ `materiau`. Les pièces d'exemple n'ont
+  plus de modificateur fixe : cuivre (vitesse, critique, déplacement, esquive), fer (dégâts physiques, usure, armure,
+  vie), acier (pénétration, dégâts critiques, réduction de dégâts, ténacité).
+- **Armures portées** : `apparence.equipement: <chemin>` donne à une armure son dessin sur le joueur
+  (`ressources/equipement/<chemin>/humanoid.png` et `humanoid_leggings.png`, disposition des armures du jeu) ;
+  vorace-item l'écrit dans le pack (`equipment/`, `textures/entity/equipment/`, Minecraft 1.21.4) et le pose sur
+  l'objet (composant « equippable »).
+- **Armures d'exemple** (`outils/exemples-armures.py`, aperçu `outils/apercu-armures.png`) : cuivre (casque à nasal
+  et coiffe de cuir, gambison matelassé et plastron de lamelles), fer (chapel de fer et camail, cotte de mailles,
+  brigandine rivetée), acier (heaume à visière et bavière, plates bordées d'or, braconnière, épaulières à lames).
+  Casque, cuirasse, jambières et bottes pour chaque matériau ; elles se forgent avec Matsuri Métier.
+
 ## 0.10.3 (novembre 2026) : stats rondes, modificateurs logiques, cimeterre dans le bon sens
 
 - **Stats de rang arrondies à l'unité** (attaque physique, puissance magique, armures) : « 19 » au lieu de « 18,9 ».

@@ -36,6 +36,8 @@ public final class Catalogue {
     private final Modificateurs modificateurs;
     private final Map<String, TypeObjet> types = new LinkedHashMap<>();
     private final Map<String, Materiau> materiaux = new LinkedHashMap<>();
+    /** Objets simples (armures...) : leur matériau, qui oriente le tirage des lignes bonus. */
+    private final Map<String, String> materiauxDesModeles = new LinkedHashMap<>();
     private final Map<String, Piece> pieces = new LinkedHashMap<>();
     private final Map<String, ModeleObjet> modeles = new LinkedHashMap<>();
 
@@ -50,6 +52,21 @@ public final class Catalogue {
     public TypeObjet type(String id) { return types.get(Textes.cle(id)); }
     public Collection<Materiau> materiaux() { return materiaux.values(); }
     public Materiau materiau(String id) { return id == null ? null : materiaux.get(Textes.cle(id)); }
+
+    /**
+     * Poids des lignes bonus d'un exemplaire : ceux du matériau de sa première pièce (arme modulaire) ou de son champ
+     * « materiau » (objet simple). Vide si rien n'est déclaré : tous les modificateurs ont alors la même chance.
+     */
+    public Map<String, Double> poidsBonus(ModeleObjet m, fr.vorace.item.exemplaire.Exemplaire ex) {
+        Materiau mat = null;
+        if (m.kit() != null && ex != null && !m.kit().emplacements().isEmpty()) {
+            Piece p = piece(ex.pieces.get(m.kit().emplacements().get(0)));
+            if (p != null) mat = materiau(p.materiau());
+        } else {
+            mat = materiau(materiauxDesModeles.get(m.id()));
+        }
+        return mat == null ? Map.of() : mat.poidsBonus();
+    }
     public Collection<ModeleObjet> modeles() { return modeles.values(); }
     public ModeleObjet modele(String id) { return id == null ? null : modeles.get(id.toLowerCase(Locale.ROOT)); }
     public Collection<Piece> pieces() { return pieces.values(); }
@@ -164,7 +181,9 @@ public final class Catalogue {
                     quantites(p.getConfigurationSection("cout")), Math.max(0, p.getInt("durabilite", 0))));
             }
         }
-        return new Materiau(id, nom, s.getString("complement", "en " + nom.toLowerCase(Locale.ROOT)), Math.max(1, s.getInt("etage", 1)), pieces);
+        Map<String, Double> poids = new LinkedHashMap<>();
+        nombres(s.getConfigurationSection("lignes-bonus")).forEach((k, v) -> poids.put(modificateurs.id(k), Math.max(0, v)));
+        return new Materiau(id, nom, s.getString("complement", "en " + nom.toLowerCase(Locale.ROOT)), Math.max(1, s.getInt("etage", 1)), pieces, poids);
     }
 
     private ModeleObjet lireModele(String id, String fichier, ConfigurationSection s, List<String> problemes) {
@@ -189,7 +208,9 @@ public final class Catalogue {
             a == null || a.getString("objet-vorace") == null ? null : a.getString("objet-vorace").toLowerCase(Locale.ROOT),
             a == null ? null : chemin(a.getString("modele")), a == null ? null : chemin(a.getString("texture")),
             a != null && a.contains("custom-model-data") ? a.getInt("custom-model-data") : null,
-            a != null && a.contains("brillance") ? a.getBoolean("brillance") : null);
+            a != null && a.contains("brillance") ? a.getBoolean("brillance") : null,
+            a == null ? null : chemin(a.getString("equipement")));
+        if (s.getString("materiau") != null) materiauxDesModeles.put(id, s.getString("materiau").toLowerCase(Locale.ROOT));
 
         ConfigurationSection cond = s.getConfigurationSection("conditions");
         List<String> classes = new ArrayList<>();

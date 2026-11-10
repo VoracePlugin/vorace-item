@@ -188,8 +188,9 @@ public final class Exemplaires {
         Catalogue c = plugin.catalogue();
         List<String> possibles = new ArrayList<>(m.lignesBonus());
         int palier = Calcul.palier(c, m, ex);
+        Map<String, Double> poids = c.poidsBonus(m, ex);
         for (int i = 0; i < rang.lignesBonus() && !possibles.isEmpty(); i++) {
-            String id = possibles.remove(hasard.nextInt(possibles.size()));
+            String id = tirer(possibles, poids);
             double v = c.modificateurs().tirerBonus(id, palier, hasard, rang.multiplicateur() / c.raretes().premier().multiplicateur());
             if (v != 0) ex.bonus.put(id, v);
         }
@@ -209,8 +210,9 @@ public final class Exemplaires {
         List<String> possibles = new ArrayList<>(m.lignesBonus());
         possibles.removeAll(ex.bonus.keySet());
         Rarete rang = c.raretes().parId(ex.rang);
+        Map<String, Double> poids = c.poidsBonus(m, ex);
         while (!possibles.isEmpty()) {
-            String id = possibles.remove(hasard.nextInt(possibles.size()));
+            String id = tirer(possibles, poids);
             double v = c.modificateurs().tirerBonus(id, Calcul.palier(c, m, ex), hasard,
                 (rang == null ? m.rang() : rang).multiplicateur() / c.raretes().premier().multiplicateur());
             if (v == 0) continue;
@@ -219,6 +221,18 @@ public final class Exemplaires {
             return id;
         }
         return null;
+    }
+
+    /** Tire (et retire de la liste) un modificateur au hasard, pondéré par le matériau (poids 1 par défaut). */
+    private String tirer(List<String> possibles, Map<String, Double> poids) {
+        double total = 0;
+        for (String id : possibles) total += poids.getOrDefault(id, 1.0);
+        double r = hasard.nextDouble() * total;
+        for (int i = 0; i < possibles.size(); i++) {
+            r -= poids.getOrDefault(possibles.get(i), 1.0);
+            if (r <= 0) return possibles.remove(i);
+        }
+        return possibles.remove(possibles.size() - 1);
     }
 
     private ItemStack base(ModeleObjet m) {
@@ -297,6 +311,11 @@ public final class Exemplaires {
             else if (m.apparence().cmd() != null) meta.setCustomModelData(m.apparence().cmd());
         }
         if (m.apparence().brillance() != null) meta.setEnchantmentGlintOverride(m.apparence().brillance());
+        if (m.apparence().equipement() != null) {                      // armure : son dessin porté sur le joueur
+            org.bukkit.inventory.meta.components.EquippableComponent eq = meta.getEquippable();
+            eq.setModel(cle(m.apparence().equipement()));
+            meta.setEquippable(eq);
+        }
 
         // attributs du jeu de base : remplacés (les dégâts et l'armure viennent des stats de vorace-item)
         meta.setAttributeModifiers(null);
