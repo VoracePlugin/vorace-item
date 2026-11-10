@@ -1,5 +1,19 @@
 # Journal des changements
 
+## 0.9.2 (novembre 2026) : pièces d'exemple dans le style de Minecraft
+
+Les pièces de la 0.9.1 ressemblaient à des épées de jeu 2D (lames larges, contours noirs, reflets en biais, grosses
+gemmes, couleurs vives). Elles sont redessinées dans le style des objets de Minecraft :
+
+- **peu de couleurs** : 5 tons par matière, proches de ceux des lingots, du bâton et du cuir du jeu ;
+- **aplats en deux bandes** (moitié claire, moitié sombre) avec quelques taches d'usure, sans contour noir ;
+- **lames étroites** (5 à 11 pixels), gardes fines de 3 pixels, manche simple à ligatures, petit pommeau ;
+- trois ensembles toujours distincts et mélangeables : épée courte de cuivre qui verdit, épée d'armes de fer, épée
+  longue d'acier sombre à garde d'or.
+
+La technique (dessin de 128 pixels découpé en cubes d'épaisseur variable) et les identifiants des pièces ne changent
+pas. Pour les installer sur un serveur déjà lancé, voir la 0.9.1.
+
 ## 0.9.1 (novembre 2026) : pièces d'exemple redessinées
 
 - **Trois ensembles de pièces d'épée**, un par matériau, chacun avec son style (avant : les mêmes formes recolorées) :

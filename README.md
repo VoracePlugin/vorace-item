@@ -155,7 +155,7 @@ fer:
   poignée vers y = 0. Exporte le `.json` dans `ressources/modeles` et la texture dans `ressources/textures`. Ne mets
   pas de réglages « display » dans la pièce : ceux du kit (`affichage`) sont appliqués à toutes.
 - `gravures:` (facultatif, dans `modulaire`) : un modèle posé par-dessus l'arme selon son rang (`rare: chemin`).
-- Les exemples (trois ensembles : bronze de légionnaire, épée de chevalier, acier royal) sont dessinés par
+- Les exemples (trois ensembles : épée courte de cuivre, épée d'armes de fer, épée longue d'acier) sont dessinés par
   [outils/exemples-pieces.py](outils/exemples-pieces.py) : un dessin de 128 pixels par pièce, découpé en petits cubes
   d'épaisseur variable. Toutes les pièces partagent la même grille, donc elles se mélangent entre ensembles.
 
