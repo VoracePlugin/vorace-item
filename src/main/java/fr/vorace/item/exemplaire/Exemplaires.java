@@ -246,25 +246,25 @@ public final class Exemplaires {
             if (signales.add(m.id() + ":materiau")) plugin.getLogger().warning(m.id() + " : objet Minecraft inconnu « " + m.apparence().materiau() + " », papier utilisé");
             mat = Material.PAPER;
         }
-        return armure3d(new ItemStack(mat), m);
+        return new ItemStack(mat);
     }
 
     /**
-     * Armure en 3D (mod Armor Model API côté joueur) : le mod lit {@code minecraft:custom_data.armor_model_api}. Ce
-     * composant est posé avant tout le reste ; Bukkit garde ensuite les clés qu'il ne connaît pas à côté de ses données.
+     * Armure en 3D (mod Armor Model API côté joueur) : le mod lit {@code minecraft:custom_data.armor_model_api}. Bukkit
+     * garde ensuite cette clé à côté de ses propres données quand l'objet est réécrit.
      */
-    private ItemStack armure3d(ItemStack objet, ModeleObjet m) {
-        if (m.apparence().armure3d() == null) return objet;
+    private void armure3d(ItemStack objet, ModeleObjet m) {
+        if (m.apparence().armure3d() == null) return;
         String tex = m.apparence().textureArmure3d() == null ? m.apparence().armure3d() : m.apparence().textureArmure3d();
-        String args = "[minecraft:custom_data={armor_model_api:{model:\"" + NS + ":geo/" + m.apparence().armure3d() + ".geo.json\",texture:\""
-            + NS + ":textures/armor/" + tex + ".png\"}}]";
+        String snbt = "{model:\"" + NS + ":geo/" + m.apparence().armure3d() + ".geo.json\",texture:\"" + NS + ":textures/armor/" + tex + ".png\"}";
+        String voulu = NS + ":geo/" + m.apparence().armure3d() + ".geo.json";
+        String deja = DonneesBrutes.lire(objet, "armor_model_api");
+        if (deja != null && deja.contains(voulu) && deja.contains(tex + ".png")) return;
         try {
-            @SuppressWarnings("deprecation")
-            ItemStack r = org.bukkit.Bukkit.getUnsafe().modifyItemStack(objet, args);
-            return r;
-        } catch (RuntimeException e) {
-            if (signales.add(m.id() + ":armure3d")) plugin.getLogger().warning(m.id() + " : armure 3D non posée (" + e.getMessage() + ")");
-            return objet;
+            ItemStack copie = DonneesBrutes.poser(objet, "armor_model_api", snbt);
+            objet.setItemMeta(copie.getItemMeta());
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            if (signales.add(m.id() + ":armure3d")) plugin.getLogger().warning(m.id() + " : armure 3D non posée (" + e + ")");
         }
     }
 
@@ -298,6 +298,7 @@ public final class Exemplaires {
         texte(p, kNom, ex.nom);
         if (m != null) afficher(meta, m, ex);
         objet.setItemMeta(meta);
+        if (m != null) armure3d(objet, m);
         return m != null;
     }
 
