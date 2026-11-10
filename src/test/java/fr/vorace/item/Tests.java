@@ -292,7 +292,10 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18, "1 définition d'épée, 18 modèles, 18 textures, 18 pièces seules et leurs 18 définitions (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 3 * 3, "épée (73 fichiers) et 12 armures d'exemple (icône, modèle, définition) avec leurs 3 dessins portés (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.containsKey("assets/voraceitem/equipment/exemple/armure_acier.json")
+            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid/exemple/armure_acier.png")
+            && fichiers.containsKey("assets/voraceitem/textures/entity/equipment/humanoid_leggings/exemple/armure_acier.png"), "dessin d'armure porté écrit dans le pack (1.21.4)");
         byte[] seule = fichiers.get("assets/voraceitem/models/item/piece_seule/fer/pommeau_rond.json");
         verifier(seule != null && fichiers.containsKey("assets/voraceitem/items/piece/fer/pommeau_rond.json"), "le pommeau a son objet à lui");
         if (seule != null) {
