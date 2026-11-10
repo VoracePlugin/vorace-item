@@ -161,6 +161,13 @@ public final class Combat implements Listener {
             boolean balayage = cause == EntityDamageEvent.DamageCause.ENTITY_SWEEP_ATTACK;
             Equipement.Bilan bilan = plugin.equipement().bilan(p);
             ModeleObjet arme = bilan.arme() == null ? null : bilan.arme().modele();
+            if (arme == null && !plugin.reglages().formulePartout) {
+                // sans arme de vorace-item, le coup garde sa force du jeu de base (épée en diamant, poing...)
+                if (cible instanceof Player victime && plugin.reglages().monstresContreJoueurs && !plugin.equipement().bilan(victime).portes().isEmpty()) {
+                    coupDuJeu(e, p, victime, 1);
+                }
+                return;
+            }
             double mult = balayage ? plugin.reglages().balayage : charge(p);
             Frappe f = calculer(p, bilan, arme, cible, mult, null);
             double degats = avantCoup(p, bilan, arme, cible, f, null);
@@ -188,26 +195,36 @@ public final class Combat implements Listener {
             LivingEntity monstre = source instanceof LivingEntity l ? l
                 : source instanceof Projectile pr && pr.getShooter() instanceof LivingEntity l2 ? l2 : null;
             if (monstre == null || monstre instanceof Player) return;
-            Reglages r = plugin.reglages();
-            Equipement.Bilan bilan = plugin.equipement().bilan(victime);
-            double esquive = Math.min(r.esquiveMax, plugin.profil().esquive(victime) + bilan.total("dodge-rating"));
-            if (ThreadLocalRandom.current().nextDouble() * 100 < esquive) {
-                e.setCancelled(true);
-                signalerEsquive(victime, null);
-                return;
-            }
-            double puissance = e.getDamage() * r.attaqueMonstres;
-            double degats = Formule.degats(puissance, defense(victime, false));
-            degats *= 1 - Math.min(80, Math.max(0, bilan.total("damage-reduction"))) / 100.0;
-            degats = Formule.arrondir(degats);
-            fixer(e, degats);
-            userArmure(victime);
-            double renvoi = degats * bilan.total("damage-reflect") / 100.0;
-            if (renvoi >= 1 && !monstre.isDead()) {
-                direct = true;
-                degatsDirects = Math.round(renvoi);
-                try { monstre.damage(degatsDirects, victime); } finally { direct = false; }
-            }
+            // un joueur sans aucun objet de vorace-item garde les règles du jeu de base (armure en diamant...)
+            if (!plugin.reglages().formulePartout && plugin.equipement().bilan(victime).portes().isEmpty()) return;
+            coupDuJeu(e, monstre, victime, plugin.reglages().attaqueMonstres);
+        }
+    }
+
+    /**
+     * Un coup qui garde sa force du jeu de base (monstre, ou joueur sans arme de vorace-item) contre un joueur :
+     * cette force sert de Puissance, la défense du joueur (Résistance + Armure de son équipement) s'applique.
+     */
+    private void coupDuJeu(EntityDamageByEntityEvent e, LivingEntity attaquant, Player victime, double multiplicateur) {
+        Reglages r = plugin.reglages();
+        Equipement.Bilan bilan = plugin.equipement().bilan(victime);
+        double esquive = Math.min(r.esquiveMax, plugin.profil().esquive(victime) + bilan.total("dodge-rating"));
+        if (ThreadLocalRandom.current().nextDouble() * 100 < esquive) {
+            e.setCancelled(true);
+            signalerEsquive(victime, attaquant instanceof Player p ? p : null);
+            return;
+        }
+        double puissance = e.getDamage() * multiplicateur;
+        double degats = Formule.degats(puissance, defense(victime, false));
+        degats *= 1 - Math.min(80, Math.max(0, bilan.total("damage-reduction"))) / 100.0;
+        degats = Formule.arrondir(degats);
+        fixer(e, degats);
+        userArmure(victime);
+        double renvoi = degats * bilan.total("damage-reflect") / 100.0;
+        if (renvoi >= 1 && !attaquant.isDead()) {
+            direct = true;
+            degatsDirects = Math.round(renvoi);
+            try { attaquant.damage(degatsDirects, victime); } finally { direct = false; }
         }
     }
 

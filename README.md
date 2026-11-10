@@ -179,6 +179,10 @@ Frapper sans attendre la recharge de l'arme donne moins de dégâts, comme dans 
   (`voraceitem:resistance_physique`, `voraceitem:resistance_magique`), sinon par leur armure du jeu de base. Quand un
   monstre frappe un joueur, sa Puissance est son dégât du jeu de base × `combat.attaque-monstres`.
 - Un objet ne compte que **porté à sa place**, **non cassé**, et si le joueur remplit ses **conditions**.
+- **Avec le jeu de base** : par défaut, la formule ne touche que les coups portés avec une arme de vorace-item et les
+  coups reçus par un joueur qui porte au moins un objet de vorace-item ; une épée en diamant ou une armure en fer
+  gardent leurs règles. Sur un serveur où tout l'équipement vient de vorace-item (Babel), mets
+  `combat.formule-partout: true` : tous les coups suivent la formule, même à mains nues.
 - `combat.actif: false` : vorace-item ne touche plus aux dégâts.
 - Les modificateurs que vorace-item applique lui-même sont notés `[appliqué]` dans `modificateurs.yml` ; les autres
   sont additionnés et laissés aux autres plugins.

@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pig;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -231,6 +232,73 @@ public final class Essai {
             verifier(premier == Competences.Lancer.FAIT && second == Competences.Lancer.RECHARGE && plugin.ressources().stamina(p) < staminaAvant,
                 "une compétence coûte de la stamina puis se recharge");
             verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
+
+            // usure : l'arme perd de la durabilité, comptée comme usure de combat
+            Exemplaire avantUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
+            plugin.usure().user(p, EquipmentSlot.HAND, 5, true);
+            Exemplaire apresUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
+            verifier(apresUsure.durabilite == avantUsure.durabilite - 5 && apresUsure.usureCombat == 5, "l'arme s'use (" + avantUsure.durabilite + " → " + apresUsure.durabilite + ")");
+
+            // amélioration : la première pierre réussit toujours avec les réglages d'exemple
+            ModeleObjet pierre = c.modele("pierre_d_amelioration");
+            if (pierre != null && plugin.reglages().chanceAmelioration(1) >= 1) {
+                ItemStack objet = p.getInventory().getItemInMainHand();
+                ItemStack pierres = plugin.exemplaires().creer(pierre, pierre.rang(), false, 0.5, null, Signature.AUCUNE, 2);
+                boolean change = plugin.atelier().ameliorer(p, objet, pierres);
+                p.getInventory().setItemInMainHand(objet);
+                plugin.equipementChange(p);
+                double attaque = plugin.equipement().bilan(p).total(Modificateurs.ATTAQUE);
+                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - 19 * (1 + plugin.reglages().ameliorationBonus)) < 1e-6,
+                    "une pierre d'amélioration passe l'épée à +1 (attaque " + Textes.nombre(attaque) + ")");
+            }
+
+            // armure : un coup reçu d'une créature est réduit par la défense du joueur
+            ModeleObjet plastron = c.modele("plastron_cuir_cloute");
+            org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();
+            if (plastron != null && p.getGameMode() == org.bukkit.GameMode.SURVIVAL && difficulte != org.bukkit.Difficulty.PEACEFUL) {
+                ItemStack avantTorse = p.getInventory().getChestplate();
+                double vieAvant = p.getHealth();
+                try {
+                    p.getInventory().setChestplate(plugin.exemplaires().creer(plastron, plastron.rang(), false, 0, null, Signature.AUCUNE, 1));
+                    plugin.equipementChange(p);
+                    plugin.equipement().appliquerAttributs(p);
+                    double vieMax = p.getAttribute(Attribute.MAX_HEALTH).getValue();
+                    verifier(Math.abs(plugin.equipement().bilan(p).total(Modificateurs.ARMURE) - 14) < 1e-6 && Math.abs(vieMax - (p.getAttribute(Attribute.MAX_HEALTH).getBaseValue() + 6)) < 1e-6,
+                        "le plastron porté donne son armure (14) et sa vie max (+6)");
+                    p.setHealth(Math.min(vieMax, 20));
+                    p.setNoDamageTicks(0);
+                    double defense = plugin.combat().defense(p, false);
+                    // le jeu de base ajuste d'abord le coup d'une créature à la difficulté du monde
+                    double force = difficulte == org.bukkit.Difficulty.EASY ? Math.min(10 / 2.0 + 1, 10) : difficulte == org.bukkit.Difficulty.HARD ? 15 : 10;
+                    double attendu2 = Formule.arrondir(Formule.degats(force * plugin.reglages().attaqueMonstres, defense));
+                    double avantCoup = p.getHealth();
+                    p.damage(10, cible);
+                    double recu = avantCoup - p.getHealth();
+                    verifier(Math.abs(recu - attendu2) < 0.01, "un coup de " + Textes.nombre(force) + " reçu avec " + Textes.nombre(defense) + " de défense fait " + Textes.nombre(recu) + " dégât(s)");
+                } finally {
+                    p.getInventory().setChestplate(avantTorse);
+                    plugin.equipementChange(p);
+                    plugin.equipement().appliquerAttributs(p);
+                    p.setHealth(Math.min(vieAvant, p.getAttribute(Attribute.MAX_HEALTH).getValue()));
+                }
+            }
+
+            // conditions : une arme dont le joueur ne remplit pas les conditions ne compte pas
+            ModeleObjet lame = c.modele("lame_du_veilleur");
+            if (lame != null && plugin.profil() == plugin.profilParDefaut()) {
+                p.getInventory().setItemInMainHand(plugin.exemplaires().creer(lame, lame.rang(), false, 0, null, Signature.AUCUNE, 1));
+                plugin.profilParDefaut().fixer(p, "niveau", 1.0);
+                plugin.profilParDefaut().fixerClasses(p, null);
+                plugin.equipementChange(p);
+                boolean refusee = plugin.equipement().bilan(p).arme() == null;
+                plugin.profilParDefaut().fixer(p, "niveau", 50.0);
+                plugin.profilParDefaut().fixerClasses(p, "guerrier");
+                plugin.equipementChange(p);
+                boolean acceptee = plugin.equipement().bilan(p).arme() != null;
+                plugin.profilParDefaut().fixer(p, "niveau", null);
+                plugin.profilParDefaut().fixerClasses(p, null);
+                verifier(refusee && acceptee, "la Lame du Veilleur ne compte que pour un guerrier de niveau 40 ou plus");
+            }
         } finally {
             cible.remove();
             p.getInventory().setItemInMainHand(avantMain);

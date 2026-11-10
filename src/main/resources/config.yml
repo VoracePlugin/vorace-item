@@ -30,7 +30,12 @@ combat:
   attaque-monstres: 1.0
   # Défense d'un monstre qui n'en a pas reçu d'un autre plugin : ses points d'armure du jeu de base x cette valeur.
   defense-par-point-d-armure: 2.0
-  # Attaque d'un joueur sans arme de vorace-item (son scale est FOR D).
+  # false = la formule ne touche que les coups portés avec une arme de vorace-item et les coups reçus par un joueur
+  #         qui porte au moins un objet de vorace-item. Le reste suit le jeu de base (épée en diamant, armure en fer...) :
+  #         à garder si le serveur a encore les armes et armures du jeu de base.
+  # true  = la formule s'applique à tous les coups des joueurs (à mains nues : Attaque = attaque-mains-nues, scale
+  #         FOR D) et à tous les coups qu'ils reçoivent. Conseillé pour Babel, où tout l'équipement vient de vorace-item.
+  formule-partout: false
   attaque-mains-nues: 1.0
   # Un point d'Armure magique compte plus qu'un point d'Armure physique.
   coefficient-armure-magique: 2.0

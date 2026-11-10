@@ -13,6 +13,8 @@ armes assemblées dans le pack et le temps de recharge visible sur les objets n'
 - **Stats d'objet et modificateurs** (`modificateurs.yml`) : Attaque physique, Puissance magique, Armure physique,
   Armure magique, et les 38 modificateurs de Babel en 9 familles. Les valeurs sont en flat, sauf les chances,
   conversions et vitesses (points de %).
+- **Types d'objets** (`types.yml`) : épée, dague, hache, marteau, lance, arc, bâton, baguette, bouclier, casque,
+  plastron, jambières, bottes, outil, gemme, pierre d'amélioration, matériau.
 - **Modèles d'objets** en YAML (`objets/*.yml`) : type, rang de base, stats, modificateurs fixes, lignes bonus,
   scales, élément, durabilité, conditions de niveau et de classe, compétences, gemmes, recette.
 - **Fourchettes de stats** : une par rang, contiguës (le haut d'un rang est le bas du suivant), plus la fourchette
@@ -42,7 +44,10 @@ armes assemblées dans le pack et le temps de recharge visible sur les objets n'
   critique × 1,25 sur les coups physiques seulement, esquive plafonnée à 20 %, dégâts bruts, pénétration, dégâts
   élémentaires, vol de vie et de mana, renvoi de dégâts, réduction des dégâts.
 - Coups de mêlée, tirs à l'arc et compétences des joueurs ; coups des monstres contre les joueurs.
-- Un objet ne compte que porté à sa place, non cassé, conditions remplies.
+- Un objet ne compte que porté à sa place, non cassé, conditions remplies. Seuls les objets de type arme comptent
+  comme arme en main (pas un outil).
+- Par défaut, les coups portés sans arme de vorace-item et les coups reçus par un joueur sans objet de vorace-item
+  gardent les règles du jeu de base ; `combat.formule-partout: true` applique la formule à tous les coups (Babel).
 - Modificateurs appliqués par les attributs du jeu : vie maximale, vitesses de déplacement et d'attaque, résistance
   au recul, chance.
 - **Stats des joueurs** : fournies par le plugin des classes (`ProfilJoueur`), sinon un profil par défaut réglable
@@ -73,8 +78,8 @@ armes assemblées dans le pack et le temps de recharge visible sur les objets n'
 - **`/vitem`** : forge, atelier, donner, assembler, catalogue, info, reparer, nommer, profil, butin, competence, pack,
   recharger, essai.
 - **API** (`fr.vorace.item.api.VoraceItemAPI`) : créer un exemplaire, assembler une arme, lire les stats et les
-  fourchettes, calculer la qualité à partir d'un score, réparer, frapper avec la formule, lancer une compétence,
-  tirer un butin. Événements `VoraceItemDegatsEvent`, `VoraceItemCompetenceEvent`, `VoraceItemCreeEvent`,
+  fourchettes, calculer la qualité à partir d'un score, ajouter une ligne bonus, réparer, frapper avec la formule,
+  lancer une compétence, tirer un butin. Événements `VoraceItemDegatsEvent`, `VoraceItemCompetenceEvent`, `VoraceItemCreeEvent`,
   `VoraceItemRepareEvent`.
 - **Tests sans serveur** (tâche Gradle `tests`) : rangs et fourchettes, qualité, formule de dégâts (exemples du
   document de Babel), fichiers d'exemple, stats d'une arme modulaire, mise en page, pack.

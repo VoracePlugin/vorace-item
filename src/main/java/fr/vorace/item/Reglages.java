@@ -22,6 +22,7 @@ public final class Reglages {
     public final double attaqueMonstres;
     public final double defenseParArmureVanilla;
     public final double mainsNues;
+    public final boolean formulePartout;
     public final double coefArmureMagique;
     public final boolean chiffres;
 
@@ -76,6 +77,7 @@ public final class Reglages {
         attaqueMonstres = c.getDouble("combat.attaque-monstres", 5.0);
         defenseParArmureVanilla = c.getDouble("combat.defense-par-point-d-armure", 2.0);
         mainsNues = c.getDouble("combat.attaque-mains-nues", 1.0);
+        formulePartout = c.getBoolean("combat.formule-partout", false);
         coefArmureMagique = c.getDouble("combat.coefficient-armure-magique", 2.0);
         chiffres = c.getBoolean("combat.afficher-degats", false);
 
