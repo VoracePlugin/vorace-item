@@ -47,6 +47,9 @@ public final class VoraceItemAPI {
 
     public static void initialiser(VoraceItem p) { plugin = p; }
 
+    /** Le mana et la stamina des joueurs (ceux du plugin des classes s'il en fournit, sinon ceux de vorace-item), ou null. */
+    public static RessourcesJoueur ressources() { return plugin == null ? null : plugin.ressources(); }
+
     // ------------------------------------------------------------------ création
 
     /**

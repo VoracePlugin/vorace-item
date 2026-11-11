@@ -1,5 +1,10 @@
 # Journal des changements
 
+## 0.12.1 (novembre 2026)
+
+- `VoraceItemAPI.ressources()` : le mana et la stamina des joueurs pour les autres plugins (potions des métiers) ;
+  `RessourcesJoueur.rendreStamina`.
+
 ## 0.12.0 (novembre 2026) : objets de bois de l'Ébéniste
 
 - **Arcs qui se bandent** : un objet dessiné (`apparence.texture`) qui a ses trois images de tension

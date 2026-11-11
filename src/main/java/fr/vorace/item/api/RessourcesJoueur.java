@@ -21,4 +21,7 @@ public interface RessourcesJoueur {
 
     /** Rend du mana (vol de mana, potion...). */
     void rendreMana(Player joueur, double mana);
+
+    /** Rend de la stamina (potion de vigueur...). Par défaut : rien. */
+    default void rendreStamina(Player joueur, double stamina) { }
 }

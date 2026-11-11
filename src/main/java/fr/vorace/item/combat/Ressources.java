@@ -83,6 +83,12 @@ public final class Ressources implements RessourcesJoueur {
         j.mana = Math.min(manaMax(p), j.mana + Math.max(0, mana));
     }
 
+    @Override
+    public void rendreStamina(Player p, double stamina) {
+        Jauges j = de(p);
+        j.stamina = Math.min(staminaMax(p), j.stamina + Math.max(0, stamina));
+    }
+
     /** Appelé une fois par seconde : régénération du mana, de la stamina et de la vie apportée par l'équipement. */
     public void seconde() {
         Reglages r = plugin.reglages();
