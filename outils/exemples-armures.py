@@ -771,6 +771,48 @@ def modele_json(m, chemin_texture):
     return mod, atlas
 
 
+def icone_casque(mod, atlas, taille=16):
+    """Icône 16 x 16 d'un casque en 3D : sa face avant (nord) vue de face, les éléments du fond d'abord. Le dessin est
+    fait en grand puis réduit case par case (couleur la plus fréquente), pour garder un rendu en pixels nets."""
+    fins = 8
+    els = mod["elements"]
+    x0 = min(e["from"][0] for e in els); x1 = max(e["to"][0] for e in els)
+    y0 = min(e["from"][1] for e in els); y1 = max(e["to"][1] for e in els)
+    cote = max(x1 - x0, y1 - y0)
+    grand = Image.new("RGBA", (taille * fins, taille * fins), (0, 0, 0, 0))
+    echelle = (taille - 2) * fins / cote                     # une case de marge autour
+    ox = (taille * fins - (x1 - x0) * echelle) / 2
+    oy = (taille * fins - (y1 - y0) * echelle) / 2
+    tex_px = atlas.width / 16.0
+    for e in sorted(els, key=lambda e: -e["from"][2]):       # du fond vers l'avant
+        f = e["faces"].get("north")
+        if not f:
+            continue
+        u0, v0, u1, v1 = (c * tex_px for c in f["uv"])
+        morceau = atlas.crop((int(round(min(u0, u1))), int(round(min(v0, v1))), int(round(max(u0, u1))), int(round(max(v0, v1)))))
+        if u1 < u0:
+            morceau = morceau.transpose(Image.FLIP_LEFT_RIGHT)
+        # face nord vue de face : x du modèle vers la gauche de l'image (on regarde vers le sud)
+        gauche = ox + (x1 - e["to"][0]) * echelle
+        haut = oy + (y1 - e["to"][1]) * echelle
+        l = max(1, int(round((e["to"][0] - e["from"][0]) * echelle)))
+        h_ = max(1, int(round((e["to"][1] - e["from"][1]) * echelle)))
+        if morceau.width == 0 or morceau.height == 0:
+            continue
+        grand.alpha_composite(morceau.resize((l, h_), Image.NEAREST), (int(round(gauche)), int(round(haut))))
+    petit = Image.new("RGBA", (taille, taille), (0, 0, 0, 0))
+    for y in range(taille):
+        for x in range(taille):
+            case = [c for c in grand.crop((x * fins, y * fins, (x + 1) * fins, (y + 1) * fins)).getdata() if c[3] > 127]
+            if len(case) * 2 < fins * fins:
+                continue
+            compte = {}
+            for c in case:
+                compte[c] = compte.get(c, 0) + 1
+            petit.putpixel((x, y), max(compte, key=compte.get))
+    return petit
+
+
 def main():
     entrees = []
     dt = os.path.join(SORTIE, "textures", "exemple", "armure")
@@ -799,9 +841,8 @@ def main():
         atlas.save(os.path.join(dt, "casque_" + mat + ".png"), optimize=True)
         with open(os.path.join(dm, "casque_" + mat + ".json"), "w", encoding="utf-8") as f:
             json.dump(mod, f, ensure_ascii=False, indent=1)
-        vieux = os.path.join(dt, mat + "_casque.png")
-        if os.path.exists(vieux):
-            os.remove(vieux)
+        # icône dans l'inventaire : la face avant du casque, à plat comme les autres pièces
+        icone_casque(mod, atlas).save(os.path.join(dt, mat + "_casque.png"), optimize=True)
         entrees.append((mat, a, b, m))
     tous = [os.path.relpath(os.path.join(dd, n), SORTIE).replace(os.sep, "/") for dd, _, ns in os.walk(SORTIE) for n in ns]
     with open(os.path.join(RACINE, "ressources.txt"), "w", encoding="utf-8") as f:

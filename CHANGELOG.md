@@ -1,5 +1,18 @@
 # Journal des changements
 
+## 0.13.1 (novembre 2026) : retours de l'essai en jeu
+
+- **Arme en seconde main** : sans réglage pour la main gauche, le jeu reprenait celui de la main droite en miroir,
+  et une lame courbe partait vers l'avant. vorace-item écrit maintenant la main gauche lui-même (rotation verticale
+  inversée), pour les kits d'armes modulaires et les objets qui ont des réglages d'affichage. Un réglage de main
+  gauche écrit dans le fichier est gardé tel quel.
+- **Icône à plat pour un objet en 3D** : un objet qui a un `modele` et une `texture` montre le modèle 3D partout
+  (sur la tête, en main, au sol) et la texture dans l'inventaire. Les casques de cuivre et d'acier d'exemple ont leur
+  icône (`cuivre_casque.png`, `acier_casque.png`, tirées de la face avant du casque par `outils/exemples-armures.py`).
+- **`apparence.affichage`** : réglages d'affichage d'un objet simple (même format que `modulaire.affichage`), pour le
+  grandir ou le tourner en main. Les images de tension d'un arc les reprennent. Les arcs d'exemple sont 25 % plus
+  grands en main que l'arc du jeu (leur dessin occupe moins de place dans son image).
+
 ## 0.13.0 (novembre 2026) : vorace-item ne fait plus que créer les objets
 
 vorace-item crée les objets et leur donne leurs stats, rien d'autre. Ce qui ne crée pas d'objets part dans les

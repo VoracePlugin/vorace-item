@@ -26,9 +26,11 @@ public record ModeleObjet(String id, String fichier, String nom, TypeObjet type,
      * porté sur le joueur (ressources/equipement/&lt;chemin&gt;/humanoid.png et humanoid_leggings.png). armure3d : armure en
      * 3D pour les joueurs qui ont le mod Armor Model API (ressources/armure3d/&lt;chemin&gt;.geo.json et sa texture
      * ressources/armure3d/&lt;textureArmure3d&gt;.png) ; le dessin d'armure reste celui des joueurs sans le mod.
+     * Un modèle 3D avec une texture : le modèle partout, la texture comme icône dans l'inventaire (casque en 3D).
+     * affichage : réglages « display » de l'objet (JSON du modèle Minecraft), pour le grandir ou le tourner en main.
      */
     public record Apparence(String materiau, String objetVorace, String modele, String texture, Integer cmd, Boolean brillance, String equipement,
-                            String armure3d, String textureArmure3d) {
+                            String armure3d, String textureArmure3d, com.google.gson.JsonObject affichage) {
         public boolean dansLePack() { return modele != null || texture != null; }
     }
 

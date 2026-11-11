@@ -7,7 +7,10 @@
 #   rang           : rang de base du modèle. Un modèle n'existe qu'à ce rang, au rang du dessous ou au rang du dessus.
 #   etage          : étage du donjon du modèle (son palier fixe la force des lignes bonus)
 #   apparence      : materiau (objet du jeu de base), ou objet-vorace (un objet de plugins/Vorace/objets), ou modele
-#                    (ressources/modeles/<chemin>.json), ou texture (ressources/textures/<chemin>.png) ; brillance
+#                    (ressources/modeles/<chemin>.json), ou texture (ressources/textures/<chemin>.png) ; brillance.
+#                    modele + texture : le modèle partout, la texture comme icône dans l'inventaire (casque en 3D).
+#                    affichage : réglages « display » du modèle Minecraft (grandir ou tourner l'objet en main) ;
+#                    sans réglage pour la main gauche, celui de la main droite est repris sans retourner l'arme.
 #   stats          : stats de rang, à leur valeur au RANG DE BASE du modèle (bas de la fourchette)
 #   modificateurs  : modificateurs fixes (voir modificateurs.yml)
 #   lignes-bonus   : modificateurs qui peuvent être tirés en plus (sinon ceux du type)
@@ -181,6 +184,7 @@ casque_cuivre:
   apparence:
     materiau: iron_helmet
     modele: exemple/armure/casque_cuivre
+    texture: exemple/armure/cuivre_casque       # icône à plat dans l'inventaire
   stats:
     armor: 3
     magic-armor: 1
@@ -309,6 +313,7 @@ casque_acier:
   apparence:
     materiau: iron_helmet
     modele: exemple/armure/casque_acier
+    texture: exemple/armure/acier_casque       # icône à plat dans l'inventaire
   stats:
     armor: 5
     magic-armor: 1
@@ -371,6 +376,11 @@ arc_court_if:
   apparence:
     materiau: bow
     texture: exemple/bois/arc_court_if
+    affichage:                           # 25 % plus grand en main que l'arc du jeu
+      thirdperson_righthand: { rotation: [-80, 260, -40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      thirdperson_lefthand: { rotation: [-80, -280, 40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      firstperson_righthand: { rotation: [0, -90, 25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
+      firstperson_lefthand: { rotation: [0, 90, -25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
   stats:
     attaque: 15
   durabilite: 220
@@ -385,6 +395,11 @@ arc_court_frene:
   apparence:
     materiau: bow
     texture: exemple/bois/arc_court_frene
+    affichage:                           # 25 % plus grand en main que l'arc du jeu
+      thirdperson_righthand: { rotation: [-80, 260, -40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      thirdperson_lefthand: { rotation: [-80, -280, 40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      firstperson_righthand: { rotation: [0, -90, 25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
+      firstperson_lefthand: { rotation: [0, 90, -25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
   stats:
     attaque: 13
   durabilite: 200
@@ -399,6 +414,11 @@ arc_court_chene:
   apparence:
     materiau: bow
     texture: exemple/bois/arc_court_chene
+    affichage:                           # 25 % plus grand en main que l'arc du jeu
+      thirdperson_righthand: { rotation: [-80, 260, -40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      thirdperson_lefthand: { rotation: [-80, -280, 40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      firstperson_righthand: { rotation: [0, -90, 25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
+      firstperson_lefthand: { rotation: [0, 90, -25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
   stats:
     attaque: 14
   durabilite: 260
@@ -413,6 +433,11 @@ arc_long_if:
   apparence:
     materiau: bow
     texture: exemple/bois/arc_long_if
+    affichage:                           # 25 % plus grand en main que l'arc du jeu
+      thirdperson_righthand: { rotation: [-80, 260, -40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      thirdperson_lefthand: { rotation: [-80, -280, 40], translation: [-1, -2, 2.5], scale: [1.125, 1.125, 1.125] }
+      firstperson_righthand: { rotation: [0, -90, 25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
+      firstperson_lefthand: { rotation: [0, 90, -25], translation: [1.13, 3.2, 1.13], scale: [0.85, 0.85, 0.85] }
   stats:
     attaque: 24
   durabilite: 320

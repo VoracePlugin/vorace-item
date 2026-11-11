@@ -27,8 +27,13 @@ plugins, qui créent les objets et lisent leurs stats avec l'API (voir « Pour l
 **Arcs** : un arc dessiné (`apparence.texture: <chemin>`) se bande en main comme celui du jeu si
 `ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent.
 
+**Taille et tenue en main** : `apparence.affichage` (même format que `modulaire.affichage`, celui des réglages
+« display » de Blockbench) grandit ou tourne un objet en main, au sol ou dans un cadre. Sans réglage pour la main
+gauche, vorace-item reprend celui de la main droite sans retourner l'arme (une lame courbe reste vers l'arrière).
+
 **Casques en 3D** : un casque (`type: casque`) avec `apparence.modele` et sans `apparence.equipement` est porté
-sur la tête comme son modèle (comme une citrouille), sans dessin d'armure. Le modèle se fait dans Blockbench, l'avant
+sur la tête comme son modèle (comme une citrouille), sans dessin d'armure. Avec en plus `apparence.texture`, cette image sert
+d'icône à plat dans l'inventaire (le modèle 3D reste sur la tête, en main et au sol). Le modèle se fait dans Blockbench, l'avant
 de la tête vers le nord, la tête du joueur au centre (16 unités = 10 pixels du joueur) ; le réglage d'affichage
 `head` le place. Les armures complètes font comme les packs des serveurs : casque en 3D, reste en dessin d'armure de
 16 pixels par bloc (`ressources/equipement/<chemin>/humanoid.png`, 64 x 32).
