@@ -134,12 +134,34 @@ public final class GenerateurPack {
                 boolean arc = m.apparence().modele() == null && m.apparence().texture() != null
                     && Files.isRegularFile(textures.resolve(m.apparence().texture() + "_tension_0.png"));
                 if (arc) modele.addProperty("parent", "minecraft:item/bow");
+                // réglages d'affichage de l'objet (grandir un arc en main...) : ils remplacent ceux du modèle
+                if (m.apparence().affichage() != null) {
+                    JsonObject display = modele.has("display") && modele.get("display").isJsonObject() ? modele.getAsJsonObject("display") : new JsonObject();
+                    for (Map.Entry<String, JsonElement> e : m.apparence().affichage().entrySet()) display.add(e.getKey(), e.getValue().deepCopy());
+                    modele.add("display", display);
+                }
                 sortie.put("assets/" + NS + "/models/item/objet/" + m.id() + ".json", octets(modele));
                 JsonObject simple = new JsonObject();
                 simple.addProperty("type", "minecraft:model");
                 simple.addProperty("model", NS + ":item/objet/" + m.id());
+                JsonObject repos = arc ? arcQuiSeBande(m, simple, textures, sortie, problemes) : simple;
+                // modèle 3D avec une texture : la texture sert d'icône dans l'inventaire (casque en 3D, dessin à plat)
+                if (m.apparence().modele() != null && m.apparence().texture() != null) {
+                    String t = copierTexture(m.apparence().texture(), textures, sortie);
+                    if (t == null) {
+                        problemes.add(m.id() + " : icône introuvable (ressources/textures/" + m.apparence().texture() + ".png)");
+                    } else {
+                        JsonObject plat = new JsonObject();
+                        plat.addProperty("parent", "minecraft:item/generated");
+                        JsonObject tex = new JsonObject();
+                        tex.addProperty("layer0", t);
+                        plat.add("textures", tex);
+                        sortie.put("assets/" + NS + "/models/item/objet/" + m.id() + "_icone.json", octets(plat));
+                        repos = icone(repos, NS + ":item/objet/" + m.id() + "_icone");
+                    }
+                }
                 JsonObject def = new JsonObject();
-                def.add("model", arc ? arcQuiSeBande(m, simple, textures, sortie, problemes) : simple);
+                def.add("model", repos);
                 sortie.put("assets/" + NS + "/items/objet/" + m.id() + ".json", octets(def));
             }
         }
@@ -303,6 +325,24 @@ public final class GenerateurPack {
      * Définition d'un arc qui se bande (comme l'arc du jeu) : au repos son dessin, en main tirée les trois images de
      * tension selon la durée du tir (0 ; 0,65 ; 0,9 seconde... en part de 20 ticks).
      */
+    /** Dans l'inventaire (« gui »), le modèle à plat de l'icône ; partout ailleurs, le modèle de l'objet. */
+    static JsonObject icone(JsonObject ailleurs, String modeleIcone) {
+        JsonObject plat = new JsonObject();
+        plat.addProperty("type", "minecraft:model");
+        plat.addProperty("model", modeleIcone);
+        JsonObject cas = new JsonObject();
+        cas.addProperty("when", "gui");
+        cas.add("model", plat);
+        JsonArray cases = new JsonArray();
+        cases.add(cas);
+        JsonObject s = new JsonObject();
+        s.addProperty("type", "minecraft:select");
+        s.addProperty("property", "minecraft:display_context");
+        s.add("cases", cases);
+        s.add("fallback", ailleurs);
+        return s;
+    }
+
     private static JsonObject arcQuiSeBande(ModeleObjet m, JsonObject repos, Path textures, Map<String, byte[]> sortie, List<String> problemes) {
         JsonObject[] tension = new JsonObject[3];
         for (int i = 0; i < 3; i++) {
@@ -311,8 +351,9 @@ public final class GenerateurPack {
                 problemes.add(m.id() + " : image de tension introuvable (ressources/textures/" + m.apparence().texture() + "_tension_" + i + ".png)");
                 return repos;
             }
+            // hérite du modèle de l'arc au repos : mêmes réglages d'affichage, seul le dessin change
             JsonObject mod = new JsonObject();
-            mod.addProperty("parent", "minecraft:item/bow");
+            mod.addProperty("parent", NS + ":item/objet/" + m.id());
             JsonObject tex = new JsonObject();
             tex.addProperty("layer0", t);
             mod.add("textures", tex);

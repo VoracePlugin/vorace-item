@@ -260,6 +260,30 @@ public final class Tests {
         List<String> problemes = new ArrayList<>();
         Map<String, byte[]> fichiers = GenerateurPack.generer(c, dossier.resolve("ressources"), problemes);
         verifier(problemes.isEmpty(), "le pack d'exemple se construit sans remarque : " + problemes);
+
+        // main gauche du kit : même rotation verticale inversée (la lame courbe reste vers l'arrière)
+        JsonObject modeleLame = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/piece/fer/lame_droite.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject aff = modeleLame.getAsJsonObject("display");
+        verifier(aff.has("thirdperson_lefthand") && aff.getAsJsonObject("thirdperson_lefthand").getAsJsonArray("rotation").get(1).getAsDouble() == 90
+            && aff.getAsJsonObject("firstperson_lefthand").getAsJsonArray("rotation").get(1).getAsDouble() == 90
+            && aff.getAsJsonObject("firstperson_lefthand").getAsJsonArray("rotation").get(0).getAsDouble() == 10,
+            "main gauche du kit : rotation verticale inversée (90 au lieu de −90), le reste gardé");
+        JsonObject incline = JsonParser.parseString("{\"thirdperson_righthand\":{\"rotation\":[0,-90,30]}}").getAsJsonObject();
+        verifier(!Catalogue.mainGauche(incline).has("thirdperson_lefthand"), "main droite inclinée en z : le miroir du jeu est gardé");
+
+        // casque en 3D : son modèle partout, son icône à plat dans l'inventaire
+        byte[] casque = fichiers.get("assets/voraceitem/items/objet/casque_cuivre.json");
+        String defCasque = casque == null ? "" : new String(casque, StandardCharsets.UTF_8);
+        verifier(defCasque.contains("minecraft:display_context") && defCasque.contains("\"gui\"") && defCasque.contains("voraceitem:item/objet/casque_cuivre_icone")
+            && defCasque.contains("voraceitem:item/objet/casque_cuivre\"") && fichiers.containsKey("assets/voraceitem/models/item/objet/casque_cuivre_icone.json"),
+            "casque en 3D : icône à plat dans l'inventaire, modèle 3D ailleurs");
+
+        // arc : ses réglages d'affichage (plus grand en main), repris par ses images de tension
+        JsonObject modeleArc = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/objet/arc_court_if.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject tension = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/objet/arc_court_if_tension_1.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        verifier(modeleArc.getAsJsonObject("display").getAsJsonObject("firstperson_righthand").getAsJsonArray("scale").get(0).getAsDouble() == 0.85
+            && tension.get("parent").getAsString().equals("voraceitem:item/objet/arc_court_if") && !tension.has("display"),
+            "arc : réglages d'affichage de l'objet, repris par les images de tension");
         byte[] def = fichiers.get("assets/voraceitem/items/kit/epee.json");
         verifier(def != null, "définition de l'épée modulaire");
         if (def != null) {
@@ -283,7 +307,7 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 3 * 3 + 2 + 4 * 9 + 3 * 3, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions) et 2 bâtons et une flèche (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions) et 2 bâtons et une flèche (" + fichiers.size() + " fichiers)");
         byte[] arc = fichiers.get("assets/voraceitem/items/objet/arc_court_if.json");
         verifier(arc != null && new String(arc, StandardCharsets.UTF_8).contains("minecraft:using_item") && new String(arc, StandardCharsets.UTF_8).contains("arc_court_if_tension_2")
             && fichiers.containsKey("assets/voraceitem/textures/item/exemple/bois/arc_court_if_tension_1.png"), "l'arc d'if se bande en main (trois images de tension)");

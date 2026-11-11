@@ -206,7 +206,8 @@ public final class Catalogue {
             a != null && a.contains("brillance") ? a.getBoolean("brillance") : null,
             a == null ? null : chemin(a.getString("equipement")),
             a == null ? null : chemin(a.getString("armure-3d")),
-            a == null ? null : chemin(a.getString("texture-armure-3d", a.getString("armure-3d"))));
+            a == null ? null : chemin(a.getString("texture-armure-3d", a.getString("armure-3d"))),
+            a == null || !a.isConfigurationSection("affichage") ? null : mainGauche(json(a.getConfigurationSection("affichage"))));
         if (s.getString("materiau") != null) materiauxDesModeles.put(id, s.getString("materiau").toLowerCase(Locale.ROOT));
 
         ConfigurationSection cond = s.getConfigurationSection("conditions");
@@ -240,7 +241,7 @@ public final class Catalogue {
             }
             ConfigurationSection aff = sk.getConfigurationSection("affichage");
             kit = new Kit(List.copyOf(emplacements), max == null ? raretes.dernier() : max, sk.getString("nom", "<type> <materiau>"),
-                aff == null ? null : json(aff), gravures);
+                aff == null ? null : mainGauche(json(aff)), gravures);
         }
 
         String element = Modificateurs.element(s.getString("element"));
@@ -285,6 +286,33 @@ public final class Catalogue {
     }
 
     /** Section YAML → objet JSON (réglages « display » des modèles). */
+    /**
+     * Réglages de la main gauche, quand seuls ceux de la main droite sont donnés. Sans eux, le jeu reprend ceux de la
+     * main droite en miroir : l'arme tourne d'un demi-tour sur elle-même et une lame courbe part vers l'avant au lieu
+     * de l'arrière. On donne donc à la main gauche la rotation inverse autour de l'axe vertical, qui garde le même
+     * côté de l'arme vers l'arrière (seulement si la rotation de la main droite n'a pas d'inclinaison z : sinon le jeu
+     * garde son miroir).
+     */
+    public static JsonObject mainGauche(JsonObject affichage) {
+        for (String vue : List.of("thirdperson", "firstperson")) {
+            String droite = vue + "_righthand", gauche = vue + "_lefthand";
+            if (!affichage.has(droite) || affichage.has(gauche) || !affichage.get(droite).isJsonObject()) continue;
+            JsonObject d = affichage.getAsJsonObject(droite);
+            JsonObject g = d.deepCopy();
+            if (d.has("rotation") && d.get("rotation").isJsonArray() && d.getAsJsonArray("rotation").size() == 3) {
+                JsonArray r = d.getAsJsonArray("rotation");
+                if (r.get(2).getAsDouble() != 0) continue;
+                JsonArray rg = new JsonArray();
+                rg.add(r.get(0));
+                rg.add(new JsonPrimitive(-r.get(1).getAsDouble()));
+                rg.add(r.get(2));
+                g.add("rotation", rg);
+            }
+            affichage.add(gauche, g);
+        }
+        return affichage;
+    }
+
     public static JsonObject json(ConfigurationSection s) {
         JsonObject o = new JsonObject();
         for (String k : s.getKeys(false)) {
