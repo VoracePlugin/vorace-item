@@ -1,5 +1,39 @@
 # Journal des changements
 
+## 0.13.0 (novembre 2026) : vorace-item ne fait plus que créer les objets
+
+vorace-item crée les objets et leur donne leurs stats, rien d'autre. Ce qui ne crée pas d'objets part dans les
+plugins qui s'en chargeront (plugin cœur pour le combat et les compétences, Matsuri Métier pour la fabrication,
+plugin des monstres ou du donjon pour le butin).
+
+**Retiré**
+- **Compétences d'armes** : `competences.yml`, `/vitem competence`, `VoraceItemAPI.lancerCompetence`,
+  `VoraceItemCompetenceEvent`, la clé `competences` des modèles (signalée au chargement si elle reste) et le temps de
+  recharge affiché sur l'objet (retiré des anciens objets à leur mise à jour).
+- **Combat** : formule de dégâts, esquive, critique, vol de vie, renvoi de dégâts, défense des monstres, mana et
+  stamina (section `combat` et `ressources` de `config.yml`, `VoraceItemAPI.frapper`, `defenseMonstres`,
+  `ressources()`, `VoraceItemDegatsEvent`, `DefenseMonstre`, `RessourcesJoueur`). Les stats restent sur les objets et
+  se lisent avec `VoraceItemAPI.total` ; dans `modificateurs.yml`, `[combat]` marque ce qui revient au plugin du combat.
+- **Forge et atelier** : `/vitem forge`, `/vitem atelier`, leurs blocs, `voraceitem.forge`, `voraceitem.atelier`,
+  `voraceitem.forge.tout`, les sections `forge`, `atelier`, `gemmes` et les chances d'amélioration. Réparer reste dans
+  l'API (`VoraceItemAPI.reparer`) ; amélioration et gemmes se posent dans les données de l'objet par un autre plugin.
+- **Butin** : `butins.yml`, `/vitem butin`, `VoraceItemAPI.tirerButin`, `VoraceItemCreeEvent`.
+- `ProfilJoueur` ne demande plus que le niveau et les classes (conditions des objets) ; `/vitem profil` ne règle plus
+  que ceux-là.
+- Les anciens `competences.yml` et `butins.yml` de `plugins/VoraceItem` ne sont plus lus (on peut les supprimer).
+
+**Changé**
+- **Usure** : chaque fois que le jeu userait un objet de vorace-item (coup porté, coup reçu par l'armure, flèche
+  tirée), l'objet perd à la place sa durabilité de vorace-item (`durabilite.usure-par-utilisation`, ancien
+  `usure-par-coup` encore lu). Avant, c'était le combat de vorace-item qui l'usait. La perte à la mort reste.
+- `/vitem` est réservé aux administrateurs (toutes ses sous-commandes l'étaient déjà, sauf forge et atelier).
+
+**Corrigé**
+- **Vie perdue à la reconnexion** : à la déconnexion, vorace-item retirait le bonus de vie max de l'équipement avant
+  la sauvegarde du joueur ; en revenant, le jeu bornait sa vie au maximum sans bonus. Le bonus reste maintenant sur
+  le joueur (il est recalculé toutes les demi-secondes) ; il n'est retiré que si vorace-item est arrêté seul, pas à
+  l'arrêt du serveur.
+
 ## 0.12.1 (novembre 2026)
 
 - `VoraceItemAPI.ressources()` : le mana et la stamina des joueurs pour les autres plugins (potions des métiers) ;

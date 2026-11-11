@@ -3,7 +3,6 @@ package fr.vorace.item;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import fr.vorace.item.combat.Formule;
 import fr.vorace.item.definitions.Catalogue;
 import fr.vorace.item.definitions.ModeleObjet;
 import fr.vorace.item.definitions.Modificateurs;
@@ -14,7 +13,6 @@ import fr.vorace.item.exemplaire.Calcul;
 import fr.vorace.item.exemplaire.Description;
 import fr.vorace.item.exemplaire.Exemplaire;
 import fr.vorace.item.exemplaire.Qualite;
-import fr.vorace.item.forge.Ingredients;
 import fr.vorace.item.pack.GenerateurPack;
 
 import java.io.IOException;
@@ -30,7 +28,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 /**
- * Tests sans serveur (tâche Gradle « tests ») : rangs et fourchettes, qualité, formule de dégâts, lecture des fichiers
+ * Tests sans serveur (tâche Gradle « tests ») : rangs et fourchettes, qualité, lettres de scale, lecture des fichiers
  * d'exemple, calcul des stats d'une arme modulaire, mise en page, partie du pack de ressources.
  */
 public final class Tests {
@@ -42,14 +40,13 @@ public final class Tests {
         try {
             raretes();
             qualite();
-            formule();
+            scales();
             List<String> problemes = new ArrayList<>();
             Catalogue c = Catalogue.charger(dossier, problemes);
             catalogue(c, problemes);
             calcul(c);
             description(c);
             pack(c, dossier);
-            ingredients();
         } finally {
             supprimer(dossier);
         }
@@ -144,21 +141,10 @@ public final class Tests {
         verifier(Math.abs(brutes / 20000.0 - 0.45) < 0.02, "le bouton donne environ 45 % de Brutes (" + brutes / 200.0 + " %)");
     }
 
-    // ------------------------------------------------------------------ formule de dégâts
+    // ------------------------------------------------------------------ scales des armes
 
-    private static void formule() {
-        Map<String, Double> joueur = Map.of("force", 50.0, "intelligence", 50.0, "agilite", 20.0);
-        double epee = Formule.puissance(30, Map.of("force", "B", "agilite", "D"), s -> joueur.getOrDefault(s, 0.0), 0, 1);
-        verifier(proche(epee, 90), "épée 30 d'Attaque, FOR B, AGI D : puissance 90");
-        double degats = Formule.degats(epee, 50);
-        verifier(Formule.arrondir(degats) == 58 && Formule.arrondir(degats * 1.25) == 72, "contre 50 de défense : 58 dégâts, 72 en critique");
-        double baton = Formule.puissance(30, Map.of("intelligence", "A", "agilite", "E"), s -> joueur.getOrDefault(s, 0.0), 0, 1);
-        verifier(proche(baton, 95) && Formule.arrondir(Formule.degats(baton, 20)) == 78, "bâton 30 de Puissance, INT A, AGI E : puissance 95, 78 dégâts contre 20");
-        verifier(proche(Formule.degats(60, 60), 30) && proche(Formule.degats(60, 120), 20) && proche(Formule.degats(60, 20), 45), "part des dégâts : 50 %, 33 %, 75 %");
-        verifier(Formule.degats(0, 10) == 0 && Formule.arrondir(0.2) == 1, "pas de puissance, pas de dégâts ; un coup qui porte fait au moins 1");
+    private static void scales() {
         verifier(proche(TypeObjet.coefficient("S"), 1.5) && proche(TypeObjet.coefficient("e"), 0.25) && proche(TypeObjet.coefficient("0,8"), 0.8), "lettres de scale");
-        verifier(proche(Formule.charge(0, 1.6), 0.2 + 0.8 * Math.pow(0.5 / 12.5, 2)) && proche(Formule.charge(40, 1.6), 1), "recharge de l'arme entre deux coups");
-        verifier(proche(Formule.puissance(10, Map.of(), s -> 0, 5, 2), 30), "bonus de dégâts et multiplicateur de compétence");
     }
 
     // ------------------------------------------------------------------ fichiers d'exemple
@@ -247,7 +233,7 @@ public final class Tests {
         ex.durabilite = 150;
         ex.amelioration = 2;
         verifier(Description.nom(c, epee, ex).equals("<#4d8dff>Épée de fer <white>+2"), "nom : couleur du rang, matériau de la lame, amélioration (" + Description.nom(c, epee, ex) + ")");
-        List<String> l = Description.lignes(c, epee, ex, Calcul.stats(c, ex, 0.03), id -> id.equals("entaille") ? "Entaille (6 s)" : null);
+        List<String> l = Description.lignes(c, epee, ex, Calcul.stats(c, ex, 0.03));
         String tout = String.join("\n", l);
         verifier(l.get(0).contains("◆ Rare") && l.get(0).contains("Épée"), "première ligne : rang et type");
         verifier(tout.contains("Qualité : ") && tout.contains("Fine"), "qualité");
@@ -258,14 +244,14 @@ public final class Tests {
         verifier(tout.contains("Durabilité : <white>150") && tout.contains("Forgé par") && tout.contains("Antoine"), "durabilité et fabricant");
         verifier(!l.get(0).isEmpty() && !l.get(l.size() - 1).isEmpty() && !tout.contains("\n\n\n"), "pas de ligne vide en trop");
         ex.durabilite = 0;
-        verifier(String.join("\n", Description.lignes(c, epee, ex, Map.of(), null)).contains("Cassé"), "objet cassé");
+        verifier(String.join("\n", Description.lignes(c, epee, ex, Map.of())).contains("Cassé"), "objet cassé");
         ex.nom = "Croc <red>du Nord";
         verifier(Description.nom(c, epee, ex).contains("Croc \\<red>du Nord"), "un nom donné par un joueur ne peut pas contenir de balises");
         ModeleObjet rubis = c.modele("rubis_taille");
         Exemplaire g = new Exemplaire();
         g.modele = "rubis_taille";
         g.rang = "rare";
-        verifier(String.join("\n", Description.lignes(c, rubis, g, Map.of(), null)).contains("Une fois sertie"), "description d'une gemme");
+        verifier(String.join("\n", Description.lignes(c, rubis, g, Map.of())).contains("Une fois sertie"), "description d'une gemme");
     }
 
     // ------------------------------------------------------------------ pack
@@ -325,18 +311,12 @@ public final class Tests {
         verifier(GenerateurPack.ecrire(sortie, fichiers) && !Files.exists(sortie.resolve("assets/voraceitem/items/kit/ancien.json")), "un fichier qui n'est plus dans le pack est retiré");
     }
 
-    private static void ingredients() {
-        Map<String, Integer> total = Ingredients.somme(List.of(Map.of("iron_ingot", 2), Map.of("iron_ingot", 1, "leather", 1)), 1);
-        verifier(total.equals(Map.of("iron_ingot", 3, "leather", 1)), "les coûts des pièces s'additionnent");
-        verifier(Ingredients.somme(List.of(Map.of("iron_ingot", 3, "gem", 1)), 1.25).equals(Map.of("iron_ingot", 4, "gem", 1)), "surcoût de 25 %, arrondi au plus proche");
-    }
-
     // ------------------------------------------------------------------ outils
 
     /** Copie dans un dossier temporaire les fichiers que le plugin installe au premier lancement. */
     private static Path installerExemples() throws IOException {
         Path d = Files.createTempDirectory("vorace-item-tests");
-        for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml", "competences.yml", "butins.yml")) copier(f, d.resolve(f));
+        for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml")) copier(f, d.resolve(f));
         copier("exemples/objets/exemples.yml", d.resolve("objets/exemples.yml"));
         copier("exemples/materiaux/exemples.yml", d.resolve("materiaux/exemples.yml"));
         try (InputStream index = Tests.class.getResourceAsStream("/exemples/ressources.txt")) {

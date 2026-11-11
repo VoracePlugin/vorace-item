@@ -18,7 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
-import org.bukkit.inventory.meta.components.UseCooldownComponent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -312,7 +311,7 @@ public final class Exemplaires {
         Catalogue c = plugin.catalogue();
         meta.displayName(Textes.objet(Description.nom(c, m, ex)));
         List<Component> lore = new ArrayList<>();
-        for (String l : Description.lignes(c, m, ex, stats(ex), id -> plugin.competences() == null ? null : plugin.competences().ligne(id))) {
+        for (String l : Description.lignes(c, m, ex, stats(ex))) {
             lore.add(l.isEmpty() ? Component.empty() : Textes.objet(l));
         }
         meta.lore(lore.isEmpty() ? null : lore);
@@ -372,17 +371,8 @@ public final class Exemplaires {
             }
         }
 
-        // temps de recharge visible sur l'objet : celui de la compétence du clic droit (sinon la première)
-        String competence = m.competences().getOrDefault("clic-droit", m.competences().values().stream().findFirst().orElse(null));
-        double recharge = competence == null || plugin.competences() == null ? 0 : plugin.competences().recharge(competence);
-        if (recharge > 0) {
-            UseCooldownComponent uc = meta.getUseCooldown();
-            uc.setCooldownSeconds((float) recharge);
-            uc.setCooldownGroup(cle("objet/" + (ex.id == null ? m.id() : ex.id.toString())));
-            meta.setUseCooldown(uc);
-        } else {
-            meta.setUseCooldown(null);
-        }
+        // plus de temps de recharge sur l'objet (il venait des compétences, retirées en 0.13.0) : retiré des anciens objets
+        meta.setUseCooldown(null);
     }
 
     public static EquipmentSlotGroup groupe(String emplacement) {

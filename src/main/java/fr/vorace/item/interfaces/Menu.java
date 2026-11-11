@@ -20,7 +20,7 @@ import java.util.Set;
 
 /**
  * Un menu de vorace-item : un coffre dont les cases sont des boutons, avec en plus des cases « libres » où le joueur
- * pose ses objets (forge, atelier). Les objets laissés dans les cases libres lui sont rendus à la fermeture.
+ * pose ses objets. Les objets laissés dans les cases libres lui sont rendus à la fermeture.
  */
 public final class Menu implements InventoryHolder {
 

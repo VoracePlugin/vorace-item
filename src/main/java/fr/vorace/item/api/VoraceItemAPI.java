@@ -1,8 +1,7 @@
 package fr.vorace.item.api;
 
 import fr.vorace.item.VoraceItem;
-import fr.vorace.item.combat.Usure;
-import fr.vorace.item.competences.Competences;
+import fr.vorace.item.equipement.Usure;
 import fr.vorace.item.definitions.Catalogue;
 import fr.vorace.item.definitions.Materiau.Piece;
 import fr.vorace.item.definitions.ModeleObjet;
@@ -12,7 +11,6 @@ import fr.vorace.item.exemplaire.Exemplaire;
 import fr.vorace.item.exemplaire.Exemplaires.Signature;
 import fr.vorace.item.exemplaire.Pieces;
 import fr.vorace.item.exemplaire.Qualite;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +22,8 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * Accès à vorace-item depuis un autre plugin (métiers, classes, quêtes, monstres).
+ * Accès à vorace-item depuis un autre plugin : les métiers créent les objets, le plugin cœur (combat, compétences)
+ * et les autres lisent leurs stats.
  * <pre>
  * // un objet fabriqué par un joueur : le score décide du grade, du rang et de la place dans la fourchette de stats
  * Qualite.Resultat q = VoraceItemAPI.qualite(82, "rare", 0, 0, new Random());
@@ -46,9 +45,6 @@ public final class VoraceItemAPI {
     private VoraceItemAPI() {}
 
     public static void initialiser(VoraceItem p) { plugin = p; }
-
-    /** Le mana et la stamina des joueurs (ceux du plugin des classes s'il en fournit, sinon ceux de vorace-item), ou null. */
-    public static RessourcesJoueur ressources() { return plugin == null ? null : plugin.ressources(); }
 
     // ------------------------------------------------------------------ création
 
@@ -245,40 +241,5 @@ public final class VoraceItemAPI {
      */
     public static Usure.Reparation reparer(Player reparateur, ItemStack objet, double facteurUsure) {
         return plugin == null ? Usure.Reparation.PAS_UN_OBJET : plugin.usure().reparer(reparateur, objet, facteurUsure);
-    }
-
-    // ------------------------------------------------------------------ combat et compétences
-
-    /**
-     * Fait porter par le joueur un coup calculé avec la formule de Babel (Puissance² ÷ (Puissance + Défense)).
-     *
-     * @param multiplicateur multiplicateur de compétence (1 = coup normal)
-     * @param magique        true ou false pour imposer la nature du coup, null pour celle de l'arme tenue
-     * @param competence     identifiant donné à {@link VoraceItemDegatsEvent#getCompetence()} (peut être null)
-     * @return les dégâts infligés (0 si esquivé ou annulé)
-     */
-    public static double frapper(Player attaquant, LivingEntity cible, double multiplicateur, Boolean magique, String competence) {
-        return plugin == null ? 0 : plugin.combat().frapper(attaquant, cible, multiplicateur, magique, competence);
-    }
-
-    /** Fournit la défense des monstres (Résistance + Armure). null = revenir au calcul par défaut. */
-    public static void defenseMonstres(DefenseMonstre defense) {
-        if (plugin != null) plugin.combat().defenseMonstres(defense);
-    }
-
-    /**
-     * Lance une compétence d'arme (competences.yml).
-     *
-     * @param verifier vrai pour respecter la recharge et dépenser mana et stamina
-     */
-    public static Competences.Lancer lancerCompetence(Player joueur, String competence, boolean verifier) {
-        return plugin == null ? Competences.Lancer.INCONNUE : plugin.competences().lancer(joueur, competence, null, verifier);
-    }
-
-    /** Tire le butin d'une table de butins.yml, comme si un monstre venait de mourir (la chance de la table s'applique). */
-    public static List<ItemStack> tirerButin(String table, Player joueur) {
-        if (plugin == null || table == null) return List.of();
-        return plugin.butins().tirer(plugin.butins().tables().get(table.toLowerCase(java.util.Locale.ROOT)), joueur,
-            joueur == null ? 0 : plugin.equipement().bilan(joueur).total("luck"), false);
     }
 }

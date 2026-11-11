@@ -12,7 +12,6 @@ import fr.vorace.item.definitions.TypeObjet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Mise en page d'un objet : son nom (à la couleur du rang) et les lignes de sa description, au format MiniMessage.
@@ -49,11 +48,9 @@ public final class Description {
     /**
      * Lignes de la description.
      *
-     * @param stats           stats calculées de l'exemplaire (voir {@link Calcul#stats})
-     * @param ligneCompetence identifiant de compétence → texte affiché (« Entaille (6 s, 15 SP) »), ou null si inconnue
+     * @param stats stats calculées de l'exemplaire (voir {@link Calcul#stats})
      */
-    public static List<String> lignes(Catalogue c, ModeleObjet m, Exemplaire ex, Map<String, Double> stats,
-                                      Function<String, String> ligneCompetence) {
+    public static List<String> lignes(Catalogue c, ModeleObjet m, Exemplaire ex, Map<String, Double> stats) {
         Modificateurs mods = c.modificateurs();
         List<List<String>> blocs = new ArrayList<>();
 
@@ -130,14 +127,6 @@ public final class Description {
         for (int i = ex.gemmes.size(); i < emplacements; i++) gemmes.add(DISCRET + "❖ Emplacement de gemme libre");
         blocs.add(gemmes);
 
-        // compétences
-        List<String> competences = new ArrayList<>();
-        for (Map.Entry<String, String> e : m.competences().entrySet()) {
-            String ligne = ligneCompetence == null ? null : ligneCompetence.apply(e.getValue());
-            if (ligne != null) competences.add(GRIS + declencheur(e.getKey()) + " : " + ligne);
-        }
-        blocs.add(competences);
-
         // conditions
         List<String> conditions = new ArrayList<>();
         if (m.niveau() > 0) conditions.add(GRIS + "Niveau requis : <white>" + m.niveau());
@@ -169,15 +158,5 @@ public final class Description {
             lignes.addAll(bloc);
         }
         return lignes;
-    }
-
-    private static String declencheur(String cle) {
-        return switch (cle) {
-            case "clic-droit" -> "Clic droit";
-            case "clic-gauche" -> "Clic gauche";
-            case "accroupi-clic-droit" -> "Accroupi + clic droit";
-            case "accroupi-clic-gauche" -> "Accroupi + clic gauche";
-            default -> Textes.majuscule(cle);
-        };
     }
 }

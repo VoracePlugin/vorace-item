@@ -3,7 +3,7 @@ package fr.vorace.item.definitions;
 import java.util.Map;
 
 /**
- * Un matériau de forge (plugins/VoraceItem/materiaux/*.yml) et ses pièces d'armes modulaires.
+ * Un matériau (plugins/VoraceItem/materiaux/*.yml) et ses pièces d'armes modulaires.
  *
  * @param complement ce qui suit le nom de l'arme : « de fer », « d'acier », « en os de Minotaure »
  * @param etage      étage du donjon du matériau (son palier fixe la force des pièces)
@@ -20,7 +20,7 @@ public record Materiau(String id, String nom, String complement, int etage, Map<
      * @param emplacement place dans le kit (« lame », « garde »...)
      * @param modele      modèle 3D dans plugins/VoraceItem/ressources/modeles (sans « .json »)
      * @param base        stats de référence apportées, avant le multiplicateur de palier du matériau
-     * @param cout        ce que la forge demande pour cette pièce
+     * @param cout        ce que demande la fabrication de cette pièce (lu par le plugin des métiers)
      */
     public record Piece(String id, String materiau, String cle, String kit, String emplacement, String nom, String modele,
                         Map<String, Double> base, Map<String, Double> modificateurs, Map<String, Integer> cout, int durabilite) {}

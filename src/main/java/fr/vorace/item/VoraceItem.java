@@ -2,32 +2,17 @@ package fr.vorace.item;
 
 import fr.vorace.Vorace;
 import fr.vorace.item.api.ProfilJoueur;
-import fr.vorace.item.api.RessourcesJoueur;
 import fr.vorace.item.api.VoraceItemAPI;
-import fr.vorace.item.butin.Butins;
-import fr.vorace.item.combat.Combat;
-import fr.vorace.item.combat.Equipement;
-import fr.vorace.item.combat.ProfilParDefaut;
-import fr.vorace.item.combat.Ressources;
-import fr.vorace.item.combat.Usure;
-import fr.vorace.item.competences.Competences;
 import fr.vorace.item.definitions.Catalogue;
+import fr.vorace.item.equipement.Equipement;
+import fr.vorace.item.equipement.ProfilParDefaut;
+import fr.vorace.item.equipement.Usure;
 import fr.vorace.item.exemplaire.Exemplaires;
 import fr.vorace.item.exemplaire.Qualite;
-import fr.vorace.item.forge.Atelier;
-import fr.vorace.item.forge.Forge;
-import fr.vorace.item.forge.Ingredients;
-import fr.vorace.item.forge.MenuForge;
 import fr.vorace.item.interfaces.EcouteurMenus;
 import fr.vorace.item.pack.GenerateurPack;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,13 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * vorace-item : objets RPG (stats, rareté, armes modulaires, forge, compétences d'armes, butin), appuyés sur
- * vorace-core pour le pack de ressources et l'apparence des objets.
+ * vorace-item : création des objets RPG (stats, rangs, qualité, armes modulaires, durabilité), appuyée sur vorace-core
+ * pour le pack de ressources et l'apparence des objets. Le combat, les compétences, la fabrication et le butin sont
+ * gérés par d'autres plugins, qui créent les objets et lisent leurs stats avec {@link VoraceItemAPI}.
  */
-public final class VoraceItem extends JavaPlugin implements Listener {
+public final class VoraceItem extends JavaPlugin {
 
     /** Fichiers créés au premier lancement (ils ne sont jamais remplacés ensuite). */
-    private static final List<String> FICHIERS = List.of("raretes.yml", "modificateurs.yml", "types.yml", "competences.yml", "butins.yml");
+    private static final List<String> FICHIERS = List.of("raretes.yml", "modificateurs.yml", "types.yml");
 
     /** Exemples installés une seule fois : ressource du .jar → fichier dans plugins/VoraceItem. */
     private static final List<String> EXEMPLES = List.of("objets/exemples.yml", "materiaux/exemples.yml");
@@ -57,16 +43,9 @@ public final class VoraceItem extends JavaPlugin implements Listener {
     private Qualite qualite;
     private Exemplaires exemplaires;
     private fr.vorace.item.exemplaire.Pieces pieces;
-    private Competences competences;
-    private Butins butins;
     private Equipement equipement;
-    private Ressources ressourcesInternes;
     private ProfilParDefaut profilParDefaut;
-    private Combat combat;
     private Usure usure;
-    private Forge forge;
-    private Atelier atelier;
-    private Ingredients ingredients;
 
     /** Le plugin vorace-core (objets, pack, modèles). */
     public Vorace core() { return core; }
@@ -75,26 +54,14 @@ public final class VoraceItem extends JavaPlugin implements Listener {
     public Qualite qualite() { return qualite; }
     public Exemplaires exemplaires() { return exemplaires; }
     public fr.vorace.item.exemplaire.Pieces pieces() { return pieces; }
-    public Competences competences() { return competences; }
-    public Butins butins() { return butins; }
     public Equipement equipement() { return equipement; }
-    public Combat combat() { return combat; }
     public Usure usure() { return usure; }
-    public Forge forge() { return forge; }
-    public Atelier atelier() { return atelier; }
-    public Ingredients ingredients() { return ingredients; }
     public ProfilParDefaut profilParDefaut() { return profilParDefaut; }
 
-    /** Stats des joueurs : celles du plugin des classes s'il en fournit, sinon le profil par défaut. */
+    /** Niveau et classes des joueurs (conditions des objets) : ceux du plugin des classes s'il en fournit, sinon le profil par défaut. */
     public ProfilJoueur profil() {
         ProfilJoueur p = Bukkit.getServicesManager().load(ProfilJoueur.class);
         return p == null ? profilParDefaut : p;
-    }
-
-    /** Mana et stamina : ceux du plugin des classes s'il en fournit, sinon les jauges de vorace-item. */
-    public RessourcesJoueur ressources() {
-        RessourcesJoueur r = Bukkit.getServicesManager().load(RessourcesJoueur.class);
-        return r == null ? ressourcesInternes : r;
     }
 
     @Override
@@ -107,27 +74,15 @@ public final class VoraceItem extends JavaPlugin implements Listener {
         core = v;
         exemplaires = new Exemplaires(this);
         pieces = new fr.vorace.item.exemplaire.Pieces(this);
-        competences = new Competences(this);
-        butins = new Butins(this);
         equipement = new Equipement(this);
-        ressourcesInternes = new Ressources(this);
         profilParDefaut = new ProfilParDefaut(this);
-        combat = new Combat(this);
         usure = new Usure(this);
-        forge = new Forge(this);
-        atelier = new Atelier(this);
-        ingredients = new Ingredients(this);
 
         installerFichiers();
         charger();
 
         Bukkit.getPluginManager().registerEvents(new EcouteurObjets(this), this);
         Bukkit.getPluginManager().registerEvents(new EcouteurMenus(this), this);
-        Bukkit.getPluginManager().registerEvents(combat, this);
-        Bukkit.getPluginManager().registerEvents(competences, this);
-        Bukkit.getPluginManager().registerEvents(butins, this);
-        Bukkit.getPluginManager().registerEvents(this, this);
-        Bukkit.getScheduler().runTaskTimer(this, ressourcesInternes::seconde, 20L, 20L);
         Bukkit.getScheduler().runTaskTimer(this, () -> { for (Player p : Bukkit.getOnlinePlayers()) equipement.appliquerAttributs(p); }, 10L, 10L);
 
         Commande commande = new Commande(this);
@@ -135,14 +90,19 @@ public final class VoraceItem extends JavaPlugin implements Listener {
         if (c != null) { c.setExecutor(commande); c.setTabCompleter(commande); }
         VoraceItemAPI.initialiser(this);
         getLogger().info("vorace-item " + getPluginMeta().getVersion() + " : " + catalogue.modeles().size() + " modèle(s), "
-            + catalogue.pieces().size() + " pièce(s) dans " + catalogue.materiaux().size() + " matériau(x), "
-            + competences.toutes().size() + " compétence(s), " + butins.tables().size() + " table(s) de butin.");
+            + catalogue.pieces().size() + " pièce(s) dans " + catalogue.materiaux().size() + " matériau(x).");
     }
 
     @Override
     public void onDisable() {
         if (equipement == null) return;
-        for (Player p : Bukkit.getOnlinePlayers()) depart(p);
+        // arrêt du serveur : les modificateurs d'attributs restent sur les joueurs (sinon un joueur qui avait de la vie
+        // en plus grâce à son équipement la perdrait au chargement de sa sauvegarde) ; plugin arrêté seul : on les retire
+        boolean arretServeur = Bukkit.isStopping();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!arretServeur) equipement.retirerAttributs(p);
+            equipement.oublier(p);
+        }
         VoraceItemAPI.initialiser(null);
     }
 
@@ -157,13 +117,6 @@ public final class VoraceItem extends JavaPlugin implements Listener {
         Path dossier = getDataFolder().toPath();
         catalogue = Catalogue.charger(dossier, problemes);
         qualite = Qualite.lire(catalogue.raretes(), getConfig().getConfigurationSection("qualite"));
-        competences.charger(dossier.resolve("competences.yml"), problemes);
-        butins.charger(dossier.resolve("butins.yml"), problemes);
-        for (var m : catalogue.modeles()) {
-            for (String id : m.competences().values()) {
-                if (competences.parId(id) == null) problemes.add(m.id() + " : compétence inconnue « " + id + " » (voir competences.yml)");
-            }
-        }
         equipement.toutOublier();
         genererPack(problemes);
         for (Player p : Bukkit.getOnlinePlayers()) rafraichir(p);
@@ -250,24 +203,12 @@ public final class VoraceItem extends JavaPlugin implements Listener {
         equipement.oublier(p);
     }
 
+    /**
+     * Le joueur part. Ses modificateurs d'attributs (vie max de l'équipement...) restent sur lui : ils sont enregistrés
+     * avec sa sauvegarde, et le jeu borne la vie au maximum en la relisant. Les retirer ici lui faisait perdre la vie
+     * gagnée grâce à son équipement à chaque reconnexion. Ils sont remis à jour toutes les demi-secondes.
+     */
     void depart(Player p) {
-        equipement.retirerAttributs(p);
         equipement.oublier(p);
-        ressourcesInternes.enregistrer(p);
-    }
-
-    /** Blocs qui ouvrent la forge ou l'atelier d'un clic droit (config.yml : forge.blocs, atelier.blocs). */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void station(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK || e.getHand() != EquipmentSlot.HAND || e.getClickedBlock() == null) return;
-        if (e.getPlayer().isSneaking()) return;
-        String bloc = e.getClickedBlock().getType().name();
-        if (reglages.forgeBlocs.contains(bloc)) {
-            e.setCancelled(true);
-            MenuForge.ouvrir(this, e.getPlayer(), 0);
-        } else if (reglages.atelierBlocs.contains(bloc)) {
-            e.setCancelled(true);
-            atelier.ouvrir(e.getPlayer());
-        }
     }
 }

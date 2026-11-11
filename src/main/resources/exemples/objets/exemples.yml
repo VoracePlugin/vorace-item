@@ -15,10 +15,9 @@
 #   element        : fire, wind, water, earth, ice, lightning, light, dark, holy, corruption (ou en français)
 #   durabilite     : 0 ou absent = l'objet ne s'use pas
 #   conditions     : niveau, classes (l'objet ne compte que si le joueur les remplit)
-#   competences    : clic-droit, clic-gauche, accroupi-clic-droit, accroupi-clic-gauche → compétence (competences.yml).
-#                    Les objets d'exemple n'en ont pas : les compétences d'armes de Babel viendront avec la liste d'Antoine.
 #   gemmes         : nombre d'emplacements de gemmes (sinon celui du rang)
-#   recette        : ce que la forge demande : IRON_INGOT (jeu de base), "vorace:lingot" (vorace-core), "item:gemme" (vorace-item)
+#   recette        : ce que demande la fabrication (lu par le plugin des métiers) : IRON_INGOT (jeu de base),
+#                    "vorace:lingot" (vorace-core), "item:gemme" (vorace-item)
 #   description    : lignes de texte libres
 #   modulaire      : arme assemblée pièce par pièce (les pièces sont dans materiaux/*.yml)
 
@@ -42,7 +41,7 @@ epee:
       ground: { rotation: [0, 0, 45], translation: [0, 1.5, 0.25] }
       fixed: { rotation: [0, 180, 45], translation: [0.25, -0.25, 0], scale: [1.4, 1.4, 1.4] }
 
-# ----------------------------------------------------------------- modèles simples (avec recette : la forge sait les faire)
+# ----------------------------------------------------------------- modèles simples (avec recette)
 dague_de_chasse:
   nom: "Dague de chasse"
   type: dague
@@ -112,7 +111,7 @@ bottes_d_eclaireur:
     LEATHER: 4
     FEATHER: 2
 
-# ----------------------------------------------------------------- modèle fait main (Légendaire : au-dessus de ce que fait la forge)
+# ----------------------------------------------------------------- modèle fait main (Légendaire)
 lame_du_veilleur:
   nom: "Lame du Veilleur"
   type: epee
