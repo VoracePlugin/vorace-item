@@ -262,8 +262,8 @@ public final class Tests {
         verifier(problemes.isEmpty(), "le pack d'exemple se construit sans remarque : " + problemes);
 
         // main gauche du kit : même rotation verticale inversée (la lame courbe reste vers l'arrière)
-        JsonObject piece = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/piece/fer/lame_droite.json"), StandardCharsets.UTF_8)).getAsJsonObject();
-        JsonObject aff = piece.getAsJsonObject("display");
+        JsonObject modeleLame = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/piece/fer/lame_droite.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject aff = modeleLame.getAsJsonObject("display");
         verifier(aff.has("thirdperson_lefthand") && aff.getAsJsonObject("thirdperson_lefthand").getAsJsonArray("rotation").get(1).getAsDouble() == 90
             && aff.getAsJsonObject("firstperson_lefthand").getAsJsonArray("rotation").get(1).getAsDouble() == 90
             && aff.getAsJsonObject("firstperson_lefthand").getAsJsonArray("rotation").get(0).getAsDouble() == 10,
@@ -279,9 +279,9 @@ public final class Tests {
             "casque en 3D : icône à plat dans l'inventaire, modèle 3D ailleurs");
 
         // arc : ses réglages d'affichage (plus grand en main), repris par ses images de tension
-        JsonObject arc = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/objet/arc_court_if.json"), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonObject modeleArc = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/objet/arc_court_if.json"), StandardCharsets.UTF_8)).getAsJsonObject();
         JsonObject tension = JsonParser.parseString(new String(fichiers.get("assets/voraceitem/models/item/objet/arc_court_if_tension_1.json"), StandardCharsets.UTF_8)).getAsJsonObject();
-        verifier(arc.getAsJsonObject("display").getAsJsonObject("firstperson_righthand").getAsJsonArray("scale").get(0).getAsDouble() == 0.85
+        verifier(modeleArc.getAsJsonObject("display").getAsJsonObject("firstperson_righthand").getAsJsonArray("scale").get(0).getAsDouble() == 0.85
             && tension.get("parent").getAsString().equals("voraceitem:item/objet/arc_court_if") && !tension.has("display"),
             "arc : réglages d'affichage de l'objet, repris par les images de tension");
         byte[] def = fichiers.get("assets/voraceitem/items/kit/epee.json");
