@@ -12,6 +12,8 @@
 - **`apparence.affichage`** : réglages d'affichage d'un objet simple (même format que `modulaire.affichage`), pour le
   grandir ou le tourner en main. Les images de tension d'un arc les reprennent. Les arcs d'exemple sont 25 % plus
   grands en main que l'arc du jeu (leur dessin occupe moins de place dans son image).
+- **Épées d'exemple trop grandes à la 1re personne** (elles sortaient de l'écran) : 30 % plus petites
+  (`firstperson_righthand` du kit : échelle 1,3 → 0,9), la poignée reste dans la main.
 
 ## 0.13.0 (novembre 2026) : vorace-item ne fait plus que créer les objets
 
