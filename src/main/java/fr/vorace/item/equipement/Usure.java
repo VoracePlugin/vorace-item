@@ -1,4 +1,4 @@
-package fr.vorace.item.combat;
+package fr.vorace.item.equipement;
 
 import fr.vorace.item.Reglages;
 import fr.vorace.item.Textes;

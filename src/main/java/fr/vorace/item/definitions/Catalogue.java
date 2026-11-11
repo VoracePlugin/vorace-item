@@ -142,11 +142,6 @@ public final class Catalogue {
                     if (pieces(m.id(), e).isEmpty()) problemes.add(m.id() + " : aucune pièce pour l'emplacement « " + e + " » (voir materiaux/*.yml)");
                 }
             }
-            for (String g : m.competences().keySet()) {
-                if (!List.of("clic-droit", "clic-gauche", "accroupi-clic-droit", "accroupi-clic-gauche").contains(g)) {
-                    problemes.add(m.id() + " : déclencheur de compétence inconnu « " + g + " » (clic-droit, clic-gauche, accroupi-clic-droit, accroupi-clic-gauche)");
-                }
-            }
         }
         for (Piece p : pieces.values()) {
             ModeleObjet kit = modeles.get(p.kit());
@@ -218,9 +213,7 @@ public final class Catalogue {
         List<String> classes = new ArrayList<>();
         if (cond != null) for (String c : cond.getStringList("classes")) classes.add(Textes.cle(c));
 
-        Map<String, String> competences = new LinkedHashMap<>();
-        ConfigurationSection sc = s.getConfigurationSection("competences");
-        if (sc != null) for (String k : sc.getKeys(false)) competences.put(Textes.cle(k).replace('_', '-'), String.valueOf(sc.get(k)).toLowerCase(Locale.ROOT));
+        if (s.contains("competences")) problemes.add(id + " : « competences » ignoré (les compétences ne sont plus gérées par vorace-item)");
 
         Recette recette = null;
         ConfigurationSection sr = s.getConfigurationSection("recette");
@@ -261,7 +254,7 @@ public final class Catalogue {
             Textes.cle(s.getString("nature", type.nature())).startsWith("mag") ? "magique" : "physique",
             s.getString("type-attaque", type.typeAttaque()), element, s.getDouble("vitesse-attaque", type.vitesseAttaque()),
             nombres(s.getConfigurationSection("modificateurs")), lignes, Math.max(0, s.getInt("durabilite", 0)),
-            cond == null ? 0 : Math.max(0, cond.getInt("niveau", 0)), classes, competences, s.getInt("gemmes", -1),
+            cond == null ? 0 : Math.max(0, cond.getInt("niveau", 0)), classes, s.getInt("gemmes", -1),
             recette, s.getStringList("description"), kit);
     }
 

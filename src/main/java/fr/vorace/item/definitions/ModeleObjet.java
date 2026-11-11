@@ -17,7 +17,7 @@ import java.util.Map;
 public record ModeleObjet(String id, String fichier, String nom, TypeObjet type, Rarete rang, int etage, Apparence apparence,
                           Map<String, Double> stats, Map<String, String> scales, String nature, String typeAttaque,
                           String element, double vitesseAttaque, Map<String, Double> modificateurs, List<String> lignesBonus,
-                          int durabilite, int niveau, List<String> classes, Map<String, String> competences, int gemmes,
+                          int durabilite, int niveau, List<String> classes, int gemmes,
                           Recette recette, List<String> description, Kit kit) {
 
     /**
@@ -32,7 +32,7 @@ public record ModeleObjet(String id, String fichier, String nom, TypeObjet type,
         public boolean dansLePack() { return modele != null || texture != null; }
     }
 
-    /** Ce que la forge demande pour fabriquer l'objet : « IRON_INGOT », « vorace:lingot_fer » ou « item:rubis_taille ». */
+    /** Ce que demande la fabrication de l'objet (lu par le plugin des métiers) : « IRON_INGOT », « vorace:lingot_fer » ou « item:rubis_taille ». */
     public record Recette(Map<String, Integer> materiaux, int quantite) {}
 
     /**

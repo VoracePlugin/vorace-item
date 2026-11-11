@@ -1,74 +1,21 @@
 # ============================================================
-#  vorace-item - objets RPG pour Vorace
+#  vorace-item - création des objets RPG pour Vorace (stats, rangs, qualité, armes modulaires)
 #  Après une modification : /vitem recharger
 #  Les objets sont dans objets/*.yml, les matériaux et leurs pièces dans materiaux/*.yml,
-#  les rangs dans raretes.yml, les stats dans modificateurs.yml, les types d'objets dans types.yml,
-#  les compétences d'armes dans competences.yml et le butin des monstres dans butins.yml.
+#  les rangs dans raretes.yml, les stats dans modificateurs.yml, les types d'objets dans types.yml.
+#  Le combat, les compétences, la fabrication et le butin sont gérés par d'autres plugins, qui lisent les stats des
+#  objets avec l'API de vorace-item.
 # ============================================================
 
 # Installer les objets d'exemple au premier lancement (une épée modulaire en cuivre, fer et acier, quelques objets).
 exemples: true
 
-combat:
-  # Applique la formule de dégâts de Babel aux coups des joueurs :
-  #   PUISSANCE = (Attaque ou Puissance de l'arme + scale1 x stat1 + scale2 x stat2) x multiplicateur de compétence
-  #   DÉGÂTS    = PUISSANCE² / (PUISSANCE + DÉFENSE de la cible)
-  # false = vorace-item ne touche pas aux dégâts (les objets gardent leurs stats, lisibles par les autres plugins).
-  actif: true
-  # Dégâts d'un coup critique (physique seulement) : x 1,25.
-  multiplicateur-critique: 1.25
-  # Chance d'esquive maximale, en %.
-  esquive-max: 20
-  # Part des dégâts pour les créatures touchées par le balayage d'une épée.
-  balayage: 0.5
-  # Les réductions du jeu de base (armure, enchantements de protection, potion de résistance) ne s'appliquent pas
-  # aux coups calculés par vorace-item : seule la défense de la formule compte.
-  ignorer-armure-vanilla: true
-  # Quand un monstre frappe un joueur : PUISSANCE = dégât du jeu de base x attaque-monstres, puis la défense du
-  # joueur (Résistance + Armure de son équipement) s'applique. false = ces coups ne sont pas touchés.
-  monstres-contre-joueurs: true
-  attaque-monstres: 1.0
-  # Défense d'un monstre qui n'en a pas reçu d'un autre plugin : ses points d'armure du jeu de base x cette valeur.
-  defense-par-point-d-armure: 2.0
-  # false = la formule ne touche que les coups portés avec une arme de vorace-item et les coups reçus par un joueur
-  #         qui porte au moins un objet de vorace-item. Le reste suit le jeu de base (épée en diamant, armure en fer...) :
-  #         à garder si le serveur a encore les armes et armures du jeu de base.
-  # true  = la formule s'applique à tous les coups des joueurs (à mains nues : Attaque = attaque-mains-nues, scale
-  #         FOR D) et à tous les coups qu'ils reçoivent. Conseillé pour Babel, où tout l'équipement vient de vorace-item.
-  formule-partout: false
-  attaque-mains-nues: 1.0
-  # Un point d'Armure magique compte plus qu'un point d'Armure physique.
-  coefficient-armure-magique: 2.0
-  # Montre les dégâts de chaque coup au-dessus de la barre d'objets (pratique pour régler l'équilibrage).
-  afficher-degats: false
-
-# Stats des joueurs tant qu'aucun plugin de classes ne les fournit (voir le README, « Pour les autres plugins »).
-# Elles se règlent aussi joueur par joueur : /vitem profil <joueur> <stat> <valeur>
+# Conditions de niveau des objets, tant qu'aucun plugin de classes ne fournit le niveau des joueurs.
+# Il se règle aussi joueur par joueur : /vitem profil <joueur> niveau <valeur>
 profil-par-defaut:
-  force: 0
-  intelligence: 0
-  constitution: 0
-  agilite: 0
-  resistance-physique: 0
-  resistance-magique: 0
-  # chances en %
-  critique: 0
-  esquive: 0
   # true = le niveau d'un joueur est son niveau d'expérience du jeu de base ; false = la valeur ci-dessous.
   niveau-minecraft: true
   niveau: 1
-
-# Mana et stamina dépensés par les compétences d'armes (jauges de vorace-item, remplacées par celles du plugin des
-# classes s'il en fournit).
-ressources:
-  actif: true
-  mana: 50
-  # régénération par seconde
-  regeneration-mana: 1
-  stamina: 100
-  regeneration-stamina: 5
-  # Montre les jauges au-dessus de la barre d'objets quand elles changent.
-  barre-d-action: true
 
 # Qualité des objets fabriqués : du score de fabrication (0 à 100) au grade.
 qualite:
@@ -81,27 +28,16 @@ qualite:
   bruit-stats: 0.05
   # Rang le plus haut qu'un Chef-d'œuvre peut atteindre en gagnant un rang.
   rang-max-par-grade: legendaire
-  # Loi de la forge de vorace-item (le bouton « Fabriquer ») : le résultat d'un débutant, en %.
+  # Loi du bouton « Fabriquer » du plugin des métiers (Qualite#scoreBouton) : le résultat d'un débutant, en %.
   bouton:
     brute: 45
     correcte: 50
     fine: 5
 
-forge:
-  # Rang le plus haut que la forge de vorace-item sait fabriquer (au-dessus : plugin des métiers, ou /vitem donner).
-  rang-max: rare
-  # Multiplicateur du coût des recettes à la forge (1.25 = +25 % de matériaux).
-  surcout: 1.0
-  # Blocs qui ouvrent la forge d'un clic droit (exemple : [SMITHING_TABLE]). Vide = seulement /vitem forge.
-  blocs: []
-
-atelier:
-  # Blocs qui ouvrent l'atelier (réparer, améliorer, sertir) d'un clic droit (exemple : [GRINDSTONE]).
-  blocs: []
-
 durabilite:
-  # Durabilité perdue par l'arme à chaque coup porté, et par chaque pièce d'armure à chaque coup reçu.
-  usure-par-coup: 1
+  # Durabilité perdue par un objet de vorace-item chaque fois que le jeu l'userait (coup porté avec l'arme, coup reçu
+  # par une pièce d'armure, flèche tirée...). Le jeu de base, lui, ne touche jamais à ces objets.
+  usure-par-utilisation: 1
   # À la mort : part de la durabilité restante perdue par chaque arme et armure.
   perte-a-la-mort: 0.4
 
@@ -112,23 +48,9 @@ reparation:
   plancher: 0.5
 
 amelioration:
-  niveau-max: 10
-  # Part ajoutée aux stats de rang (Attaque, Puissance, Armure) par niveau.
+  # Part ajoutée aux stats de rang (Attaque, Puissance, Armure) par niveau d'amélioration de l'objet (le niveau est
+  # posé par le plugin qui améliore les objets).
   bonus-par-niveau: 0.03
-  # Chance de réussite, en %, de +1, +2, +3... (la dernière valeur sert pour les niveaux suivants).
-  chances: [100, 100, 90, 80, 70, 60, 50, 40, 30, 20]
-  # true = un échec fait perdre un niveau à l'objet.
-  echec-baisse-le-niveau: false
-
-gemmes:
-  # true = une gemme sertie peut être retirée à l'atelier (elle est rendue).
-  retirable: false
-
-butin:
-  # Les monstres lâchent des objets selon butins.yml.
-  actif: true
-  # Place la plus haute, dans la fourchette de stats, d'un objet lâché par un monstre (0.5 = au mieux le milieu).
-  position-max: 0.5
 
 pack:
   # Dossier (relatif au serveur) où vorace-item écrit sa partie du pack de ressources. Il doit faire partie des

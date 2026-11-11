@@ -1,9 +1,12 @@
 # vorace-item
 
-Des **objets RPG** pour serveurs Paper : stats, rareté, armes assemblées pièce par pièce, forge, atelier, compétences
-d'armes et butin des monstres. Fait partie de [VoracePlugin](https://github.com/VoracePlugin) et s'appuie sur
+La **création des objets RPG** pour serveurs Paper : stats, rangs, qualité, armes assemblées pièce par pièce,
+durabilité. Fait partie de [VoracePlugin](https://github.com/VoracePlugin) et s'appuie sur
 [vorace-core](https://github.com/VoracePlugin/vorace-core) (plugin `Vorace`) pour le pack de ressources.
-C'est le rôle de MMOItems, en libre et gratuit.
+
+vorace-item **crée les objets et leur donne leurs stats, rien d'autre**. Le combat (formule de dégâts, mana, stamina),
+les compétences, la fabrication (forge, atelier, gestes des métiers) et le butin des monstres sont faits par d'autres
+plugins, qui créent les objets et lisent leurs stats avec l'API (voir « Pour les autres plugins »).
 
 > **Code écrit par une IA.** Comme vorace-core, vorace-item est écrit par Claude (l'IA d'Anthropic) ; ORA et Antoine
 > testent et décident de ce qui est ajouté.
@@ -14,17 +17,15 @@ C'est le rôle de MMOItems, en libre et gratuit.
 
 ## Installation
 
-1. Mets `Vorace-x.y.z.jar` ([vorace-core](https://github.com/VoracePlugin/vorace-core), 1.2.1 ou plus) et
+1. Mets `Vorace-x.y.z.jar` ([vorace-core](https://github.com/VoracePlugin/vorace-core), 1.3.1 ou plus) et
    `VoraceItem-x.y.z.jar` dans `plugins/`. Les deux `.jar` sont dans l'onglet
    [Actions](https://github.com/VoracePlugin/vorace-item/actions) (« Compilation », fichier `VoraceItem`).
-2. Il faut **Paper 1.21.4 ou plus** : les armes assemblées et le temps de recharge visible sur les objets
-   n'existent pas avant.
+2. Il faut **Paper 1.21.4 ou plus** : les armes assemblées n'existent pas avant.
 3. Lance le serveur. Le dossier `plugins/VoraceItem` est créé avec des exemples : une épée modulaire en cuivre, fer
    et acier, une dague, un bâton, deux pièces d'armure, trois armures complètes (hoplite de cuivre, chevalier de
    fer, gardien d'acier : casque en 3D, corps dessiné comme les armures du jeu), deux gemmes, une pierre
    d'amélioration.
-4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple, `/vitem forge` pour forger, `/vitem atelier` pour
-   réparer, améliorer et sertir.
+4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple.
 
 **Arcs** : un arc dessiné (`apparence.texture: <chemin>`) se bande en main comme celui du jeu si
 `ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent.
@@ -50,14 +51,11 @@ fusionne tout seul avec les autres packs. Si tu as changé les `sources` dans `p
 |---|---|
 | **Rareté** | Les 7 rangs de Babel (Commun, Peu commun, Rare, Épique, Légendaire, Mythique, Divin) : couleur du nom, lignes bonus, emplacements de gemmes. |
 | **Stats** | Attaque physique, Puissance magique, Armure physique, Armure magique, et les 38 modificateurs de Babel (critique, pénétration, vol de vie, vitesse...). |
-| **Exemplaires** | Chaque objet a son rang, sa place dans la fourchette de stats, sa qualité, son fabricant, ses gemmes, son usure. |
+| **Exemplaires** | Chaque objet a son rang, sa place dans la fourchette de stats, sa qualité, son fabricant, ses gemmes, son amélioration, son usure. |
+| **Qualité** | Du score de fabrication (donné par le plugin des métiers) au grade, au rang et à la place dans la fourchette. |
 | **Armes modulaires** | Une arme = une pièce par emplacement (lame, garde, poignée, pommeau), chacune dans le matériau de son choix. Le pack les assemble en un seul objet : toutes les combinaisons existent sans être dessinées une par une. |
-| **Combat** | La formule de Babel : `Dégâts = Puissance² ÷ (Puissance + Défense)`, scale sur deux stats, critique physique, esquive. |
+| **Équipement porté** | Total des stats de ce que porte un joueur (à sa place, non cassé, conditions de niveau et de classe remplies) ; vie max, vitesses, recul et chance passent par les attributs du jeu. |
 | **Durabilité** | Un objet usé est « cassé », pas détruit. Il se répare, et s'use un peu pour de bon à chaque réparation. |
-| **Forge** | Menu de fabrication : choix des pièces, matériaux demandés, qualité du résultat. |
-| **Atelier** | Réparer, améliorer (+1, +2...) avec une pierre, sertir une gemme. |
-| **Compétences d'armes** | Un clic lance la compétence : mana ou stamina, temps de recharge affiché sur l'objet. |
-| **Butin** | Les monstres lâchent des armes assemblées avec les pièces des matériaux de leur étage. |
 
 ## Les fichiers
 
@@ -65,14 +63,12 @@ Tout se règle dans `plugins/VoraceItem`, puis `/vitem recharger`. Chaque fichie
 
 | Fichier | Contenu |
 |---|---|
-| `config.yml` | Combat, mana et stamina, qualité, forge, atelier, durabilité, amélioration, butin. |
+| `config.yml` | Qualité, durabilité, réparation, amélioration, niveau par défaut des joueurs. |
 | `raretes.yml` | Les rangs : couleur, multiplicateur, lignes bonus, gemmes. |
 | `modificateurs.yml` | Les stats et modificateurs : nom affiché, valeurs des lignes bonus. |
 | `types.yml` | Les types d'objets (épée, dague, bâton, plastron, gemme...) et leurs valeurs par défaut. |
 | `objets/*.yml` | Les **modèles** d'objets. |
-| `materiaux/*.yml` | Les matériaux de forge et leurs **pièces**. |
-| `competences.yml` | Les compétences d'armes. |
-| `butins.yml` | Les tables de butin et les monstres qui les utilisent. |
+| `materiaux/*.yml` | Les matériaux et leurs **pièces**. |
 | `ressources/modeles`, `ressources/textures` | Les modèles 3D (`.json` de Blockbench) et les textures (`.png`). |
 
 ### Un modèle d'objet
@@ -89,10 +85,8 @@ dague_de_chasse:
     critical-strike-chance: 4 # modificateurs fixes
   durabilite: 180
   conditions: { niveau: 5, classes: [assassin] }
-  competences:
-    clic-droit: ruee          # aussi : clic-gauche, accroupi-clic-droit, accroupi-clic-gauche
   gemmes: 1
-  recette: { IRON_INGOT: 1, LEATHER: 1, STICK: 1 }   # la forge sait le fabriquer
+  recette: { IRON_INGOT: 1, LEATHER: 1, STICK: 1 }   # lue par le plugin des métiers
   description:
     - "Courte, légère, faite pour finir le travail."
 ```
@@ -197,93 +191,35 @@ vorace-item ne décide pas **comment** une pièce se fabrique : c'est le plugin 
 `VoraceItemAPI.creerPiece` quand la pièce est faite, puis `VoraceItemAPI.assemblerPieces` quand le joueur monte son
 arme. Pour essayer sans lui : `/vitem piece <joueur> <pièce> [score]` puis `/vitem monter <joueur>`.
 
-### Combat
+### Équipement porté
 
-```
-PUISSANCE = (Attaque ou Puissance de l'arme + scale1 × stat1 + scale2 × stat2) × multiplicateur de compétence
-DÉFENSE   = Résistance + Armure du même type
-DÉGÂTS    = PUISSANCE² ÷ (PUISSANCE + DÉFENSE)
-```
+- Un objet ne compte que **porté à sa place**, **non cassé**, et si le joueur remplit ses **conditions** (niveau,
+  classe). Le niveau et les classes viennent du plugin des classes (voir plus bas). En attendant : le niveau
+  d'expérience du jeu (ou `profil-par-defaut.niveau`), la permission `voraceitem.classe.<classe>`, ou
+  `/vitem profil Antoine niveau 40`, `/vitem profil Antoine classes guerrier,spadassin`.
+- `VoraceItemAPI.total(joueur, "critical-strike-chance")` donne le total d'une stat sur l'équipement : c'est ce que lit
+  le plugin du combat. Dans `modificateurs.yml`, `[appliqué]` marque ce que vorace-item applique lui-même (attributs
+  du jeu, durabilité) et `[combat]` ce qui revient au plugin du combat.
+- Les scales des armes (`FOR B`, `AGI D`...) sont des données de l'objet, lues par le plugin du combat. Lettres :
+  S 1,5 ; A 1,2 ; B 1,0 ; C 0,75 ; D 0,5 ; E 0,25.
 
-Ordre : esquive (20 % au plus) → Puissance → Défense → formule → critique × 1,25 (physique seulement) → réduction
-des dégâts → arrondi, 1 au minimum. Lettres de scale : S 1,5 ; A 1,2 ; B 1,0 ; C 0,75 ; D 0,5 ; E 0,25.
-Frapper sans attendre la recharge de l'arme donne moins de dégâts, comme dans le jeu de base.
+### Durabilité, réparation, amélioration, gemmes
 
-- **Stats des joueurs** (FOR, INT, CON, AGI, niveau, classe, résistances) : elles viennent du plugin des classes
-  (voir plus bas). En attendant, ce sont les valeurs de `profil-par-defaut` (`config.yml`), réglables joueur par
-  joueur : `/vitem profil Antoine force 50`, `/vitem profil Antoine classes guerrier,spadassin`.
-- **Monstres** : leur défense est donnée par un autre plugin, ou par deux valeurs écrites sur le monstre
-  (`voraceitem:resistance_physique`, `voraceitem:resistance_magique`), sinon par leur armure du jeu de base. Quand un
-  monstre frappe un joueur, sa Puissance est son dégât du jeu de base × `combat.attaque-monstres`.
-- Un objet ne compte que **porté à sa place**, **non cassé**, et si le joueur remplit ses **conditions**.
-- **Avec le jeu de base** : par défaut, la formule ne touche que les coups portés avec une arme de vorace-item et les
-  coups reçus par un joueur qui porte au moins un objet de vorace-item ; une épée en diamant ou une armure en fer
-  gardent leurs règles. Sur un serveur où tout l'équipement vient de vorace-item (Babel), mets
-  `combat.formule-partout: true` : tous les coups suivent la formule, même à mains nues.
-- `combat.actif: false` : vorace-item ne touche plus aux dégâts.
-- Les modificateurs que vorace-item applique lui-même sont notés `[appliqué]` dans `modificateurs.yml` ; les autres
-  sont additionnés et laissés aux autres plugins.
-
-### Durabilité, atelier
-
-- L'arme s'use à chaque coup porté, l'armure à chaque coup reçu. À 0, l'objet est **cassé** : il reste dans
-  l'inventaire, ses stats ne comptent plus. À la mort, armes et armures perdent 40 % de leur durabilité restante.
-- **Réparer** remet la durabilité au maximum et retire pour de bon 0,5 % de la durabilité d'origine. Sous la moitié
-  de sa durabilité d'origine, un objet ne se répare plus.
-- **Améliorer** : une pierre d'amélioration (type `pierre`) fait passer l'objet à +1, +2... (+3 % de stats de rang
-  par niveau, chances réglables). La pierre est consommée même en cas d'échec.
-- **Sertir** : une gemme (type `gemme`) ajoute ses modificateurs à l'objet, dans un emplacement libre.
+- Chaque fois que le jeu userait un objet de vorace-item (coup porté avec l'arme, coup reçu par une pièce d'armure,
+  flèche tirée...), le jeu n'y touche pas : l'objet perd à la place `durabilite.usure-par-utilisation` points de sa
+  durabilité. À 0, l'objet est **cassé** : il reste dans l'inventaire, ses stats ne comptent plus. À la mort, les
+  objets perdent 40 % de leur durabilité restante.
+- **Réparer** (`VoraceItemAPI.reparer`, appelé par le plugin des métiers) remet la durabilité au maximum et retire pour
+  de bon 0,5 % de la durabilité d'origine. Sous la moitié de sa durabilité d'origine, un objet ne se répare plus.
+- **Amélioration et gemmes** : le plugin qui améliore ou sertit pose le niveau (`amelioration`) ou la gemme (`gemmes`)
+  dans les données de l'objet (`VoraceItemAPI.exemplaire`, puis `VoraceItemAPI.enregistrer`) ; vorace-item en tient
+  compte dans les stats (+3 % de stats de rang par niveau) et la description.
 - L'enclume, la meule, la table d'enchantement et l'établi du jeu de base ne touchent pas aux objets de vorace-item.
-
-### Forge
-
-`/vitem forge` (ou un bloc : `forge.blocs` dans `config.yml`) liste les armes modulaires et les modèles qui ont une
-`recette`. Pour une arme modulaire, le joueur choisit chaque pièce ; le menu montre l'aperçu et les matériaux.
-
-La forge de vorace-item est le **bouton « Fabriquer »** du cahier des métiers de Babel : le résultat d'un débutant
-(45 % Brute, 50 % Correcte, 5 % Fine), jamais au-dessus du rang `forge.rang-max` (Rare). Le travail à la main (gestes,
-mini-jeux, maîtrise) appartient au plugin des métiers, qui crée ses objets par l'API ci-dessous.
-
-### Compétences d'armes
-
-```yaml
-entaille:
-  nom: "Entaille"
-  recharge: 6          # secondes, affichées sur l'objet
-  stamina: 15
-  effets:
-    - { type: son, son: entity.player.attack.sweep }
-    - { type: degats, cible: cone, rayon: 3.5, angle: 100, multiplicateur: 1.6 }
-```
-
-Effets : `degats`, `projectile`, `ruee`, `saut`, `soin`, `effet` (de potion), `son`, `particules`, `message`,
-`commande`. Ce sont des compétences simples, attachées à un objet ; celles des classes viendront du plugin des classes.
-Les objets d'exemple n'ont pas de compétence : celles de Babel viendront avec la liste d'Antoine.
-
-### Butin
-
-```yaml
-tables:
-  etage_5:
-    chance: 0.08
-    rangs: { commun: 90, peu_commun: 10 }
-    entrees:
-      - { poids: 10, kit: epee, materiaux: [cuivre, fer] }   # arme assemblée avec les pièces de ces matériaux
-      - { poids: 1, modele: dague_de_chasse }
-      - { poids: 4, objet: IRON_NUGGET, quantite: 2-5 }
-mobs:
-  "vorace:kobold": etage_5    # un mob de vorace-mob
-  skeleton: etage_5           # un monstre du jeu de base
-```
-
-Seuls les monstres tués par un joueur lâchent ce butin. La Chance du joueur augmente la chance de 1 % par point.
 
 ## Commandes
 
 | Commande | Rôle | Permission |
 |---|---|---|
-| `/vitem forge` | Ouvrir la forge | `voraceitem.forge` (tous) |
-| `/vitem atelier` | Réparer, améliorer, sertir | `voraceitem.atelier` (tous) |
 | `/vitem donner <joueur> <modèle> [rang] [place 0-100] [quantité]` | Donner un objet | `voraceitem.admin` |
 | `/vitem assembler <joueur> <kit> <hasard\|pièce,pièce,...> [rang] [place]` | Donner une arme modulaire (`hasard:fer+cuivre` limite les matériaux) | `voraceitem.admin` |
 | `/vitem piece <joueur> <pièce> [score 0-100]` | Donner une pièce seule (`fer/lame_droite`) ; son score de qualité reste caché | `voraceitem.admin` |
@@ -291,14 +227,12 @@ Seuls les monstres tués par un joueur lâchent ce butin. La Chance du joueur au
 | `/vitem catalogue` | Tous les modèles, un clic pour en prendre un | `voraceitem.admin` |
 | `/vitem info` | Données de l'objet tenu en main, avec ses fourchettes | `voraceitem.admin` |
 | `/vitem reparer`, `/vitem nommer <nom>` | Réparer ou nommer l'objet tenu en main | `voraceitem.admin` |
-| `/vitem profil <joueur> [stat valeur \| classes a,b \| raz]` | Stats d'essai d'un joueur | `voraceitem.admin` |
-| `/vitem butin <table> [joueur]` | Tirer le butin d'une table | `voraceitem.admin` |
-| `/vitem competence <compétence> [joueur]` | Lancer une compétence | `voraceitem.admin` |
+| `/vitem profil <joueur> [niveau valeur \| classes a,b \| raz]` | Niveau et classes d'essai d'un joueur (conditions des objets) | `voraceitem.admin` |
 | `/vitem pack`, `/vitem recharger` | Refaire le pack, relire les fichiers | `voraceitem.admin` |
 | `/vitem essai` | Essai automatique | `voraceitem.admin` |
 
-`voraceitem.forge.tout` permet de forger au-dessus de `forge.rang-max`. `voraceitem.classe.<classe>` donne une classe
-au joueur pour les conditions des objets (tant qu'aucun plugin de classes ne le fait).
+`voraceitem.classe.<classe>` donne une classe au joueur pour les conditions des objets (tant qu'aucun plugin de
+classes ne le fait).
 
 ## Pour les autres plugins
 
@@ -320,17 +254,12 @@ if (montage.objet() != null) { /* retirer les quatre pièces, donner montage.obj
 
 double[] fourchette = VoraceItemAPI.fourchette("dague_de_chasse", null, "attaque", "rare");   // ou « rebut »
 Exemplaire ex = VoraceItemAPI.exemplaire(objet);       // rang, qualité, fabricant, pièces, gemmes, usure de combat
-double critique = VoraceItemAPI.total(joueur, "critical-strike-chance");
-VoraceItemAPI.frapper(joueur, cible, 1.8, null, "ma_competence");   // un coup avec la formule de dégâts
+double critique = VoraceItemAPI.total(joueur, "critical-strike-chance");   // plugin du combat
 ```
 
-- **`ProfilJoueur`** et **`RessourcesJoueur`** : le plugin des classes fournit les stats, le niveau, les classes, le
-  mana et la stamina des joueurs en s'enregistrant auprès du serveur
-  (`Bukkit.getServicesManager().register(ProfilJoueur.class, ...)`).
-- **`VoraceItemAPI.defenseMonstres(...)`** : le plugin des monstres fournit leur défense.
-- Événements : `VoraceItemDegatsEvent` (dégâts modifiables, type d'attaque et élément du coup : c'est là que se
-  branchent les altérations), `VoraceItemCompetenceEvent`, `VoraceItemCreeEvent` (forge, butin),
-  `VoraceItemRepareEvent` (avec l'usure de combat, pour l'apprentissage des recettes par la réparation).
+- **`ProfilJoueur`** : le plugin des classes fournit le niveau et les classes des joueurs (conditions des objets) en
+  s'enregistrant auprès du serveur (`Bukkit.getServicesManager().register(ProfilJoueur.class, ...)`).
+- Événement : `VoraceItemRepareEvent` (avec l'usure de combat, pour l'apprentissage des recettes par la réparation).
 - Les données d'un exemplaire sont dans l'objet (`PersistentDataContainer`, espace de noms `voraceitem` :
   `modele`, `rang`, `position`, `grade`, `score`, `exemplaire_id`, `fabricant`, `pieces`, `bonus`, `gemmes`,
   `amelioration`, `durabilite`...).
@@ -339,7 +268,7 @@ VoraceItemAPI.frapper(joueur, cible, 1.8, null, "ma_competence");   // un coup a
 
 ```
 gradle build tests                                                  # vorace-core pris sur JitPack
-gradle build tests -PvoraceCore=../vorace-core/build/libs/Vorace-1.2.1.jar
+gradle build tests -PvoraceCore=../vorace-core/build/libs/Vorace-1.3.1.jar
 ```
 
 Java 21, API Paper 1.21.4. Sans accès à repo.papermc.io : `./construire-local.sh <classpath> <Vorace-*.jar> tests`.

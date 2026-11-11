@@ -1,10 +1,7 @@
 package fr.vorace.item;
 
-import fr.vorace.item.butin.Butins;
-import fr.vorace.item.combat.Equipement;
-import fr.vorace.item.combat.Formule;
-import fr.vorace.item.combat.Usure;
-import fr.vorace.item.competences.Competences;
+import fr.vorace.item.equipement.Equipement;
+import fr.vorace.item.equipement.Usure;
 import fr.vorace.item.definitions.Catalogue;
 import fr.vorace.item.definitions.ModeleObjet;
 import fr.vorace.item.definitions.Modificateurs;
@@ -14,12 +11,9 @@ import fr.vorace.item.exemplaire.Exemplaire;
 import fr.vorace.item.exemplaire.Exemplaires.Signature;
 import fr.vorace.item.exemplaire.Qualite;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Pig;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -38,9 +32,9 @@ import java.util.zip.ZipFile;
 
 /**
  * Essai automatique sur un vrai serveur (« /vitem essai »), avec les objets d'exemple : création et relecture d'un
- * exemplaire, arme modulaire, fourchettes de stats, qualité, réparation, gemmes, butin, pack de ressources. Si un
- * joueur est connecté (le faux joueur de l'essai automatique suffit), le combat et les compétences sont essayés sur
- * un animal posé devant lui. Chaque ligne commence par « ESSAI OK » ou « ESSAI ECHEC ».
+ * exemplaire, arme modulaire, fourchettes de stats, qualité, réparation, gemmes, amélioration, pack de ressources. Si
+ * un joueur est connecté (le faux joueur de l'essai automatique suffit), l'équipement porté, l'usure et les conditions
+ * sont essayés sur lui. Chaque ligne commence par « ESSAI OK » ou « ESSAI ECHEC ».
  */
 public final class Essai {
 
@@ -62,8 +56,8 @@ public final class Essai {
             objets();
             pack();
             Player joueur = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
-            if (joueur != null) combat(joueur);
-            else lignes.add("ESSAI INFO : aucun joueur connecté, combat et compétences non essayés");
+            if (joueur != null) equipement(joueur);
+            else lignes.add("ESSAI INFO : aucun joueur connecté, équipement non essayé");
         } catch (Throwable t) {
             verifier(false, "erreur inattendue : " + t);
             plugin.getLogger().log(java.util.logging.Level.WARNING, "Essai", t);
@@ -112,11 +106,13 @@ public final class Essai {
             ModeleObjet rubis = c.modele("rubis_taille");
             if (rubis != null) {
                 ItemStack gemme = plugin.exemplaires().creer(rubis, rubis.rang(), false, 0.5, null, Signature.AUCUNE, 2);
+                // la gemme est posée par un autre plugin (métiers) dans les données de l'objet, puis enregistrée
                 double avant = plugin.exemplaires().stats(relu).getOrDefault("physical-damage", 0.0);
-                boolean serti = plugin.atelier().sertir(relu, gemme);
+                Exemplaire avecGemme = plugin.exemplaires().lire(relu);
+                avecGemme.gemmes.add(rubis.id());
+                boolean enregistre = fr.vorace.item.api.VoraceItemAPI.enregistrer(relu, avecGemme);
                 double apres = plugin.exemplaires().stats(relu).getOrDefault("physical-damage", 0.0);
-                verifier(serti && gemme.getAmount() == 1 && apres > avant, "une gemme sertie ajoute son modificateur (" + Textes.nombre(avant) + " → " + Textes.nombre(apres) + ")");
-                verifier(!plugin.atelier().sertir(relu, gemme), "pas de seconde gemme quand il n'y a plus d'emplacement libre");
+                verifier(gemme != null && enregistre && apres > avant, "une gemme posée dans l'objet ajoute son modificateur (" + Textes.nombre(avant) + " → " + Textes.nombre(apres) + ")");
             }
         }
 
@@ -185,16 +181,6 @@ public final class Essai {
         Qualite.Resultat chef = q.calculer(95, rare, 1.0, 0, new Random(1));
         verifier(chef.grade() == Qualite.Grade.CHEF_D_OEUVRE && chef.rang().id().equals("epique"), "un Chef-d'œuvre Rare peut sortir Épique");
 
-        // butin
-        Butins.Table table = plugin.butins().tables().get("etage_5");
-        verifier(table != null, "la table de butin d'exemple « etage_5 » est chargée");
-        if (table != null) {
-            int armes = 0;
-            for (int i = 0; i < 40; i++) {
-                for (ItemStack o : plugin.butins().tirer(table, null, 0, true)) if ("epee".equals(plugin.exemplaires().modele(o))) armes++;
-            }
-            verifier(armes > 0, "la table lâche des épées assemblées (" + armes + " sur 40 tirages)");
-        }
     }
 
     private void pack() throws Exception {
@@ -215,7 +201,7 @@ public final class Essai {
         verifier(dedans, "le pack construit par vorace-core contient l'épée modulaire");
     }
 
-    private void combat(Player p) {
+    private void equipement(Player p) {
         Catalogue c = plugin.catalogue();
         ModeleObjet epee = c.modele("epee");
         if (epee == null || epee.kit() == null) return;
@@ -230,57 +216,32 @@ public final class Essai {
         plugin.equipementChange(p);
         Equipement.Bilan bilan = plugin.equipement().bilan(p);
         verifier(bilan.arme() != null && Math.abs(bilan.total(Modificateurs.ATTAQUE) - 19) < 1e-6, "l'épée en main compte dans l'équipement (attaque " + Textes.nombre(bilan.total(Modificateurs.ATTAQUE)) + ")");
-
-        Location devant = p.getLocation().add(p.getLocation().getDirection().setY(0).normalize().multiply(2));
-        Pig cible = p.getWorld().spawn(devant, Pig.class, z -> {
-            z.setAI(false);
-            z.setSilent(true);
-            z.getAttribute(Attribute.MAX_HEALTH).setBaseValue(500);
-            z.setHealth(500);
-            z.getAttribute(Attribute.ARMOR).setBaseValue(5);
-        });
         try {
-            double puissance = Formule.puissance(19, epee.scales(), st -> plugin.profil().stat(p, st), 0, 1);
-            double attendu = Formule.arrondir(Formule.degats(puissance, 5 * plugin.reglages().defenseParArmureVanilla));
-            double infliges = plugin.combat().frapper(p, cible, 1, null, null);
-            double perdus = 500 - cible.getHealth();
-            boolean critique = infliges > attendu;
-            verifier(infliges > 0 && Math.abs(perdus - infliges) < 0.01 && (critique || Math.abs(infliges - attendu) < 0.01),
-                "un coup suit la formule : puissance " + Textes.nombre(puissance) + ", défense " + Textes.nombre(5 * plugin.reglages().defenseParArmureVanilla)
-                    + ", " + Textes.nombre(infliges) + " dégât(s)" + (critique ? " (critique)" : ""));
-
-            cible.setHealth(500);
-            cible.setNoDamageTicks(0);
-            Competences.Lancer l = plugin.competences().lancer(p, "entaille_tournoyante", null, false);
-            verifier(l == Competences.Lancer.FAIT && cible.getHealth() < 500, "la compétence « Entaille tournoyante » touche la cible ("
-                + Textes.nombre(500 - cible.getHealth()) + " dégât(s))");
-
-            double staminaAvant = plugin.ressources().stamina(p);
-            Competences.Lancer premier = plugin.competences().lancer(p, "entaille", p.getInventory().getItemInMainHand(), true);
-            Competences.Lancer second = plugin.competences().lancer(p, "entaille", p.getInventory().getItemInMainHand(), true);
-            verifier(premier == Competences.Lancer.FAIT && second == Competences.Lancer.RECHARGE && plugin.ressources().stamina(p) < staminaAvant,
-                "une compétence coûte de la stamina puis se recharge");
-            if (!epee.competences().isEmpty())                       // les objets d'exemple n'ont plus de compétence (0.10.3)
-                verifier(p.getCooldown(p.getInventory().getItemInMainHand()) > 0, "le temps de recharge s'affiche sur l'arme");
-
             // usure : l'arme perd de la durabilité, comptée comme usure de combat
             Exemplaire avantUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
             plugin.usure().user(p, EquipmentSlot.HAND, 5, true);
             Exemplaire apresUsure = plugin.exemplaires().lire(p.getInventory().getItemInMainHand());
             verifier(apresUsure.durabilite == avantUsure.durabilite - 5 && apresUsure.usureCombat == 5, "l'arme s'use (" + avantUsure.durabilite + " → " + apresUsure.durabilite + ")");
 
-            // amélioration : la première pierre réussit toujours avec les réglages d'exemple
-            ModeleObjet pierre = c.modele("pierre_d_amelioration");
-            if (pierre != null && plugin.reglages().chanceAmelioration(1) >= 1) {
-                ItemStack objet = p.getInventory().getItemInMainHand();
-                ItemStack pierres = plugin.exemplaires().creer(pierre, pierre.rang(), false, 0.5, null, Signature.AUCUNE, 2);
-                boolean change = plugin.atelier().ameliorer(p, objet, pierres);
-                p.getInventory().setItemInMainHand(objet);
-                plugin.equipementChange(p);
-                double attaque = plugin.equipement().bilan(p).total(Modificateurs.ATTAQUE);
-                verifier(change && pierres.getAmount() == 1 && Math.abs(attaque - Math.round(19 * (1 + plugin.reglages().ameliorationBonus))) < 1e-6,
-                    "une pierre d'amélioration passe l'épée à +1 (attaque " + Textes.nombre(attaque) + ")");
-            }
+            // le jeu veut user l'arme (un coup porté) : le jeu n'y touche pas, l'objet perd sa durabilité de vorace-item
+            ItemStack enMain = p.getInventory().getItemInMainHand();
+            int avantJeu = plugin.exemplaires().lire(enMain).durabilite;
+            org.bukkit.event.player.PlayerItemDamageEvent usureDuJeu = new org.bukkit.event.player.PlayerItemDamageEvent(p, enMain, 3);
+            Bukkit.getPluginManager().callEvent(usureDuJeu);
+            int apresJeu = plugin.exemplaires().lire(p.getInventory().getItemInMainHand()).durabilite;
+            verifier(usureDuJeu.isCancelled() && apresJeu == avantJeu - plugin.reglages().usureParUtilisation,
+                "l'usure du jeu est remplacée par celle de vorace-item (" + avantJeu + " → " + apresJeu + ")");
+
+            // amélioration : le niveau est posé par un autre plugin dans les données de l'objet
+            ItemStack objet = p.getInventory().getItemInMainHand();
+            Exemplaire ameliore = plugin.exemplaires().lire(objet);
+            ameliore.amelioration = 1;
+            fr.vorace.item.api.VoraceItemAPI.enregistrer(objet, ameliore);
+            p.getInventory().setItemInMainHand(objet);
+            plugin.equipementChange(p);
+            double attaque = plugin.equipement().bilan(p).total(Modificateurs.ATTAQUE);
+            verifier(Math.abs(attaque - Math.round(19 * (1 + plugin.reglages().ameliorationBonus))) < 1e-6,
+                "une épée à +1 gagne " + Textes.nombre(plugin.reglages().ameliorationBonus * 100) + " % d'attaque (attaque " + Textes.nombre(attaque) + ")");
 
             // casque 3D : porté sur la tête sans dessin d'armure ; plastron d'exemple : son dessin, sur le torse
             ModeleObjet casque3d = c.modele("casque_acier"), cuirasse = c.modele("plastron_acier");
@@ -302,10 +263,9 @@ public final class Essai {
                 verifier(brut != null && brut.contains("voraceitem:geo/exemple/fer_b.geo.json") && brut.equals(apres) && plugin.exemplaires().lire(it) != null,
                     "armure 3D du fer : custom_data.armor_model_api posé et gardé après réécriture (" + apres + ")");
             }
-            // armure : un coup reçu d'une créature est réduit par la défense du joueur
+            // plastron porté : son armure compte dans l'équipement, sa vie max passe par l'attribut du jeu
             ModeleObjet plastron = c.modele("plastron_cuir_cloute");
-            org.bukkit.Difficulty difficulte = p.getWorld().getDifficulty();
-            if (plastron != null && p.getGameMode() == org.bukkit.GameMode.SURVIVAL && difficulte != org.bukkit.Difficulty.PEACEFUL) {
+            if (plastron != null) {
                 ItemStack avantTorse = p.getInventory().getChestplate();
                 double vieAvant = p.getHealth();
                 double armureAvant = plugin.equipement().bilan(p).total(Modificateurs.ARMURE);
@@ -316,16 +276,6 @@ public final class Essai {
                     double vieMax = p.getAttribute(Attribute.MAX_HEALTH).getValue();
                     verifier(Math.abs(plugin.equipement().bilan(p).total(Modificateurs.ARMURE) - armureAvant - 14) < 1e-6 && Math.abs(vieMax - (p.getAttribute(Attribute.MAX_HEALTH).getBaseValue() + 6)) < 1e-6,
                         "le plastron porté ajoute son armure (+14) et sa vie max (+6)");
-                    p.setHealth(Math.min(vieMax, 20));
-                    p.setNoDamageTicks(0);
-                    double defense = plugin.combat().defense(p, false);
-                    // le jeu de base ajuste d'abord le coup d'une créature à la difficulté du monde
-                    double force = difficulte == org.bukkit.Difficulty.EASY ? Math.min(10 / 2.0 + 1, 10) : difficulte == org.bukkit.Difficulty.HARD ? 15 : 10;
-                    double attendu2 = Formule.arrondir(Formule.degats(force * plugin.reglages().attaqueMonstres, defense));
-                    double avantCoup = p.getHealth();
-                    p.damage(10, cible);
-                    double recu = avantCoup - p.getHealth();
-                    verifier(Math.abs(recu - attendu2) < 0.01, "un coup de " + Textes.nombre(force) + " reçu avec " + Textes.nombre(defense) + " de défense fait " + Textes.nombre(recu) + " dégât(s)");
                 } finally {
                     p.getInventory().setChestplate(avantTorse);
                     plugin.equipementChange(p);
@@ -338,20 +288,19 @@ public final class Essai {
             ModeleObjet lame = c.modele("lame_du_veilleur");
             if (lame != null && plugin.profil() == plugin.profilParDefaut()) {
                 p.getInventory().setItemInMainHand(plugin.exemplaires().creer(lame, lame.rang(), false, 0, null, Signature.AUCUNE, 1));
-                plugin.profilParDefaut().fixer(p, "niveau", 1.0);
+                plugin.profilParDefaut().fixerNiveau(p, 1);
                 plugin.profilParDefaut().fixerClasses(p, null);
                 plugin.equipementChange(p);
                 boolean refusee = plugin.equipement().bilan(p).arme() == null;
-                plugin.profilParDefaut().fixer(p, "niveau", 50.0);
+                plugin.profilParDefaut().fixerNiveau(p, 50);
                 plugin.profilParDefaut().fixerClasses(p, "guerrier");
                 plugin.equipementChange(p);
                 boolean acceptee = plugin.equipement().bilan(p).arme() != null;
-                plugin.profilParDefaut().fixer(p, "niveau", null);
+                plugin.profilParDefaut().fixerNiveau(p, null);
                 plugin.profilParDefaut().fixerClasses(p, null);
                 verifier(refusee && acceptee, "la Lame du Veilleur ne compte que pour un guerrier de niveau 40 ou plus");
             }
         } finally {
-            cible.remove();
             p.getInventory().setItemInMainHand(avantMain);
             plugin.equipementChange(p);
         }

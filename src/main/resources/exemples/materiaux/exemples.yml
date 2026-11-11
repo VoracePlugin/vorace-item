@@ -14,7 +14,7 @@
 #     base             : stats de référence apportées (rang Commun, avant le palier)
 #     modificateurs    : modificateurs fixes apportés (facultatif ; les exemples n'en ont pas : les modificateurs
 #                        viennent des lignes bonus tirées au hasard, orientées par « lignes-bonus » du matériau)
-#     cout             : ce que la forge demande pour cette pièce
+#     cout             : ce que demande la fabrication de cette pièce (lu par le plugin des métiers)
 #     durabilite       : durabilité apportée à l'arme
 #
 # Les pièces d'exemple sont dessinées par outils/exemples-pieces.py (dépôt vorace-item).
