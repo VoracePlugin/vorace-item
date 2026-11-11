@@ -8,9 +8,6 @@ vorace-item **crée les objets et leur donne leurs stats, rien d'autre**. Le com
 les compétences, la fabrication (forge, atelier, gestes des métiers) et le butin des monstres sont faits par d'autres
 plugins, qui créent les objets et lisent leurs stats avec l'API (voir « Pour les autres plugins »).
 
-> **Code écrit par une IA.** Comme vorace-core, vorace-item est écrit par Claude (l'IA d'Anthropic) ; ORA et Antoine
-> testent et décident de ce qui est ajouté.
->
 > **Version 0.9.** Tout ce qui est décrit ici est codé et essayé sur un vrai serveur Paper 1.21.4 avec un faux
 > joueur. Ce qui reste à voir avec un vrai joueur : la tenue des armes modulaires en main (réglages d'affichage) et
 > l'équilibrage des chiffres.
