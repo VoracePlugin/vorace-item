@@ -1,5 +1,15 @@
 # Journal des changements
 
+## 0.14.0 (novembre 2026) : armes de poing
+
+- Cinq types d'armes de poing (Pugiliste de Babel), toutes de type Impact, rythme d'une arme légère : **bandes de
+  combat** (Force B, Agilité D), **gantelets** (Force B, Constitution D), **cestes** (Force A, Agilité E),
+  **brassards de garde** (Constitution B, Force D), **bandes rituelles** (Intelligence B, Force D, avec une
+  Puissance magique pour les coups de souffle).
+- Une arme d'exemple de chaque type (bandes de lin, gantelets de fer, cestes de laiton, brassards de cuir ferré,
+  bandes du souffle) : une paire par objet, une icône dans l'inventaire et rien dans la main, puisque ce sont les
+  poings qui frappent (`apparence.affichage` à l'échelle 0 en main). Icônes dessinées par `outils/exemples-poings.py`.
+
 ## 0.13.1 (novembre 2026) : retours de l'essai en jeu
 
 - **Arme en seconde main** : sans réglage pour la main gauche, le jeu reprenait celui de la main droite en miroir,

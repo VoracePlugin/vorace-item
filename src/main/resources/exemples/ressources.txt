@@ -78,3 +78,8 @@ textures/exemple/fer/lame_droite.png
 textures/exemple/fer/lame_large.png
 textures/exemple/fer/poignee_cuir.png
 textures/exemple/fer/pommeau_rond.png
+textures/exemple/poing/bandes_de_combat.png
+textures/exemple/poing/gantelets.png
+textures/exemple/poing/cestes.png
+textures/exemple/poing/brassards_de_garde.png
+textures/exemple/poing/bandes_rituelles.png

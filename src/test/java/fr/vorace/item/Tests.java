@@ -307,7 +307,10 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions) et 2 bâtons et une flèche (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3 + 5 * 3, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions), 2 bâtons et une flèche, 5 armes de poing (" + fichiers.size() + " fichiers)");
+        byte[] poing = fichiers.get("assets/voraceitem/models/item/objet/gantelets_de_fer.json");
+        verifier(poing != null && new String(poing, StandardCharsets.UTF_8).contains("firstperson_righthand")
+            && fichiers.containsKey("assets/voraceitem/textures/item/exemple/poing/gantelets.png"), "armes de poing : icône dans l'inventaire, rien dans la main");
         byte[] arc = fichiers.get("assets/voraceitem/items/objet/arc_court_if.json");
         verifier(arc != null && new String(arc, StandardCharsets.UTF_8).contains("minecraft:using_item") && new String(arc, StandardCharsets.UTF_8).contains("arc_court_if_tension_2")
             && fichiers.containsKey("assets/voraceitem/textures/item/exemple/bois/arc_court_if_tension_1.png"), "l'arc d'if se bande en main (trois images de tension)");

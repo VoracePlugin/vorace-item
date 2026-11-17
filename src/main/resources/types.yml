@@ -137,3 +137,48 @@ materiau:
   nom: "Matériau"
   categorie: materiau
   materiau: paper
+
+# ----------------------------------------------------------------- armes de poing (Pugiliste de Babel)
+# Portées par paire : un objet, les deux mains. Invisibles en main (ce sont les poings qui frappent) : seule l'icône
+# se voit, dans l'inventaire. Rythme d'une arme légère (animation 0,3 s : 3,3 coups par seconde).
+bandes_de_combat:
+  nom: "Bandes de combat"
+  categorie: arme
+  materiau: leather
+  type-attaque: Impact
+  scales: { force: B, agilite: D }
+  vitesse-attaque: 3.3
+  lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, attack-speed, max-stamina, stamina-regeneration]
+gantelets:
+  nom: "Gantelets"
+  categorie: arme
+  materiau: leather
+  type-attaque: Impact
+  scales: { force: B, constitution: D }
+  vitesse-attaque: 3.3
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, max-health, damage-reduction, durability-loss-reduction]
+cestes:
+  nom: "Cestes"
+  categorie: arme
+  materiau: leather
+  type-attaque: Impact
+  scales: { force: A, agilite: E }
+  vitesse-attaque: 3.3
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, lifesteal, durability-loss-reduction]
+brassards_de_garde:
+  nom: "Brassards de garde"
+  categorie: arme
+  materiau: leather
+  type-attaque: Impact
+  scales: { constitution: B, force: D }
+  vitesse-attaque: 3.3
+  lignes-bonus: [physical-damage, max-health, damage-reduction, tenacity, knockback-resistance, health-regeneration]
+bandes_rituelles:
+  nom: "Bandes rituelles"
+  categorie: arme
+  materiau: leather
+  type-attaque: Impact
+  # physique (Impact) pour les coups, et une Puissance magique pour les coups de souffle (ki)
+  scales: { intelligence: B, force: D }
+  vitesse-attaque: 3.3
+  lignes-bonus: [physical-damage, magic-damage, max-mana, mana-regeneration, fire-damage, cooldown-reduction]
