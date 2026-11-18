@@ -37,6 +37,13 @@ public final class VoraceItem extends JavaPlugin {
     /** Exemples installés une seule fois : ressource du .jar → fichier dans plugins/VoraceItem. */
     private static final List<String> EXEMPLES = List.of("objets/exemples.yml", "materiaux/exemples.yml");
 
+    /**
+     * Lots d'exemples ajoutés après coup : installés une fois sur un serveur déjà lancé (donnees/exemples.txt garde la
+     * liste des lots posés), sans toucher aux fichiers qui existent déjà. Lot → fichier d'objets, dossier de ressources.
+     */
+    private static final java.util.LinkedHashMap<String, String[]> LOTS = new java.util.LinkedHashMap<>(java.util.Map.of(
+        "poings", new String[] {"objets/poings.yml", "textures/exemple/poing/"}));
+
     private Vorace core;
     private Reglages reglages;
     private volatile Catalogue catalogue;
@@ -115,7 +122,7 @@ public final class VoraceItem extends JavaPlugin {
         reglages = new Reglages(getConfig());
         List<String> problemes = new ArrayList<>();
         Path dossier = getDataFolder().toPath();
-        catalogue = Catalogue.charger(dossier, problemes);
+        catalogue = Catalogue.charger(dossier, problemes, typesParDefaut());
         qualite = Qualite.lire(catalogue.raretes(), getConfig().getConfigurationSection("qualite"));
         equipement.toutOublier();
         genererPack(problemes);
@@ -152,21 +159,49 @@ public final class VoraceItem extends JavaPlugin {
             saveDefaultConfig();
             reloadConfig();
             Path liste = dossier.resolve("donnees/exemples.txt");
-            if (!Files.isRegularFile(liste) && getConfig().getBoolean("exemples", true)) {
+            if (!getConfig().getBoolean("exemples", true)) return;
+            List<String> poses = Files.isRegularFile(liste) ? new java.util.ArrayList<>(Files.readAllLines(liste)) : new java.util.ArrayList<>();
+            poses.replaceAll(String::trim);
+            boolean premier = !poses.contains("exemples");
+            List<String> ajoutes = new java.util.ArrayList<>();
+            if (premier) {
                 for (String f : EXEMPLES) copier("exemples/" + f, dossier.resolve(f));
-                try (InputStream index = getResource("exemples/ressources.txt")) {
-                    if (index != null) {
-                        for (String ligne : new String(index.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).split("\n")) {
-                            String f = ligne.trim();
-                            if (!f.isEmpty()) copier("exemples/ressources/" + f, dossier.resolve("ressources").resolve(f));
-                        }
+                ajoutes.add("exemples");
+            }
+            for (var lot : LOTS.entrySet()) {
+                if (poses.contains(lot.getKey())) continue;
+                copier("exemples/" + lot.getValue()[0], dossier.resolve(lot.getValue()[0]));
+                ajoutes.add(lot.getKey());
+            }
+            if (ajoutes.isEmpty()) return;
+            try (InputStream index = getResource("exemples/ressources.txt")) {
+                if (index != null) {
+                    for (String ligne : new String(index.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).split("\n")) {
+                        String f = ligne.trim();
+                        if (f.isEmpty()) continue;
+                        boolean voulu = premier;
+                        for (String l : ajoutes) if (LOTS.containsKey(l) && f.startsWith(LOTS.get(l)[1])) voulu = true;
+                        if (voulu) copier("exemples/ressources/" + f, dossier.resolve("ressources").resolve(f));
                     }
                 }
-                Files.createDirectories(liste.getParent());
-                Files.writeString(liste, "exemples\n");
             }
+            poses.addAll(ajoutes);
+            Files.createDirectories(liste.getParent());
+            Files.writeString(liste, String.join("\n", poses) + "\n");
+            if (!premier) getLogger().info("Nouveaux exemples installés : " + String.join(", ", ajoutes));
         } catch (IOException e) {
             getLogger().warning("Impossible de créer les fichiers de départ : " + e.getMessage());
+        }
+    }
+
+    /** Les types livrés avec le plugin : ceux qui manquent au types.yml du serveur (ajoutés depuis) sont pris d'ici. */
+    private org.bukkit.configuration.file.YamlConfiguration typesParDefaut() {
+        try (InputStream in = getResource("types.yml")) {
+            if (in == null) return null;
+            return org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(
+                new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            return null;
         }
     }
 

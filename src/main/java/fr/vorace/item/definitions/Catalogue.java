@@ -83,6 +83,14 @@ public final class Catalogue {
 
     /** Charge le dossier de vorace-item. Les erreurs (non bloquantes) vont dans « problemes ». */
     public static Catalogue charger(Path dossier, List<String> problemes) {
+        return charger(dossier, problemes, null);
+    }
+
+    /**
+     * Pareil ; {@code typesParDefaut} (types.yml du plugin) donne les types qui manquent au types.yml du dossier (types
+     * ajoutés par une nouvelle version, sans écraser ceux que le serveur a réglés).
+     */
+    public static Catalogue charger(Path dossier, List<String> problemes, YamlConfiguration typesParDefaut) {
         Raretes raretes = Raretes.lire(yaml(dossier.resolve("raretes.yml")), problemes);
         Modificateurs mods = Modificateurs.lire(yaml(dossier.resolve("modificateurs.yml")), problemes);
         Catalogue c = new Catalogue(raretes, mods);
@@ -90,6 +98,13 @@ public final class Catalogue {
         YamlConfiguration types = yaml(dossier.resolve("types.yml"));
         for (String id : types.getKeys(false)) {
             if (types.isConfigurationSection(id)) c.types.put(Textes.cle(id), TypeObjet.lire(Textes.cle(id), types.getConfigurationSection(id)));
+        }
+        if (typesParDefaut != null) {
+            for (String id : typesParDefaut.getKeys(false)) {
+                if (typesParDefaut.isConfigurationSection(id) && !c.types.containsKey(Textes.cle(id))) {
+                    c.types.put(Textes.cle(id), TypeObjet.lire(Textes.cle(id), typesParDefaut.getConfigurationSection(id)));
+                }
+            }
         }
         if (!c.types.containsKey("materiau")) {
             c.types.put("materiau", new TypeObjet("materiau", "Matériau", "materiau", "aucun", "paper", "physique", "", Map.of(), 0, List.of(), true));

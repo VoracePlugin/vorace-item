@@ -43,6 +43,7 @@ public final class Tests {
             scales();
             List<String> problemes = new ArrayList<>();
             Catalogue c = Catalogue.charger(dossier, problemes);
+            typesAjoutes(dossier);
             catalogue(c, problemes);
             calcul(c);
             description(c);
@@ -341,10 +342,29 @@ public final class Tests {
     // ------------------------------------------------------------------ outils
 
     /** Copie dans un dossier temporaire les fichiers que le plugin installe au premier lancement. */
+    /** Un serveur au types.yml d'avant les armes de poing : les types livrés avec le plugin complètent le sien. */
+    private static void typesAjoutes(Path exemples) throws IOException {
+        Path d = Files.createTempDirectory("vorace-item-types");
+        try {
+            for (String f : List.of("raretes.yml", "modificateurs.yml")) copier(f, d.resolve(f));
+            Files.writeString(d.resolve("types.yml"), "epee:\n  nom: \"Épée du serveur\"\n  categorie: arme\n  materiau: iron_sword\n");
+            org.bukkit.configuration.file.YamlConfiguration defaut;
+            try (InputStream in = Tests.class.getResourceAsStream("/types.yml")) {
+                defaut = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(in, StandardCharsets.UTF_8));
+            }
+            Catalogue c = Catalogue.charger(d, new ArrayList<>(), defaut);
+            verifier(c.type("gantelets") != null && c.type("epee") != null && "Épée du serveur".equals(c.type("epee").nom()),
+                "types ajoutés par une nouvelle version (gantelets) pris du plugin, ceux du serveur gardés");
+        } finally {
+            supprimer(d);
+        }
+    }
+
     private static Path installerExemples() throws IOException {
         Path d = Files.createTempDirectory("vorace-item-tests");
         for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml")) copier(f, d.resolve(f));
         copier("exemples/objets/exemples.yml", d.resolve("objets/exemples.yml"));
+        copier("exemples/objets/poings.yml", d.resolve("objets/poings.yml"));
         copier("exemples/materiaux/exemples.yml", d.resolve("materiaux/exemples.yml"));
         try (InputStream index = Tests.class.getResourceAsStream("/exemples/ressources.txt")) {
             if (index == null) throw new IOException("exemples/ressources.txt introuvable");

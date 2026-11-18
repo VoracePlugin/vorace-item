@@ -1,5 +1,12 @@
 # Journal des changements
 
+## 0.14.1 (novembre 2026) : les nouveautés arrivent aussi sur un serveur déjà lancé
+
+- Les types livrés avec le plugin qui manquent au `types.yml` du serveur (ajoutés par une nouvelle version, comme les
+  armes de poing) sont pris dans le plugin ; ceux que le serveur a réglés restent les siens.
+- Exemples par lots : les armes de poing sont dans `objets/poings.yml` et s'installent seules sur un serveur qui a déjà
+  ses exemples (`donnees/exemples.txt` garde la liste des lots posés ; aucun fichier existant n'est remplacé).
+
 ## 0.14.0 (novembre 2026) : armes de poing
 
 - Cinq types d'armes de poing (Pugiliste de Babel), toutes de type Impact, rythme d'une arme légère : **bandes de
