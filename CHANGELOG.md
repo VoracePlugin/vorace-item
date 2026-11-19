@@ -1,5 +1,14 @@
 # Journal des changements
 
+## 0.14.3 (novembre 2026) : gantelets redessinés
+
+- Gantelets de fer refaits (34 cubes) : main en plaques, quatre jointures, doigts repliés, pouce, sangles de cuir,
+  canon d'avant-bras évasé et creux au coude. Plus larges que la manche d'un plastron du jeu (qui recouvre tout le bras
+  avec 1 unité de marge et cachait tout sauf les jointures).
+- Main gauche : un modèle « <modèle>_gauche » à côté du modèle 3D sert dans la main gauche (gantelet retourné, le pouce
+  du bon côté). `outils/poings-3d.py` fait les deux et un aperçu calculé.
+- Lot d'exemples « poings-3d-2 » : les gantelets de la 0.14.2 sont remplacés s'ils n'ont pas été retouchés.
+
 ## 0.14.2 (novembre 2026) : armes de poing en 3D
 
 - Gantelets de fer en 3D autour du poing (`outils/poings-3d.py`, 17 cubes, style des armes de vorace-item) : en main

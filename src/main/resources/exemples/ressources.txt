@@ -85,3 +85,4 @@ textures/exemple/poing/brassards_de_garde.png
 textures/exemple/poing/bandes_rituelles.png
 textures/exemple/poing/gantelets_3d.png
 modeles/exemple/poing/gantelets.json
+modeles/exemple/poing/gantelets_gauche.json

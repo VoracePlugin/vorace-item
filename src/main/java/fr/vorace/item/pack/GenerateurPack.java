@@ -145,6 +145,22 @@ public final class GenerateurPack {
                 simple.addProperty("type", "minecraft:model");
                 simple.addProperty("model", NS + ":item/objet/" + m.id());
                 JsonObject repos = arc ? arcQuiSeBande(m, simple, textures, sortie, problemes) : simple;
+                // modèle 3D avec une version « _gauche » (gantelet retourné) : elle sert dans la main gauche
+                if (m.apparence().modele() != null && Files.isRegularFile(modeles.resolve(m.apparence().modele() + "_gauche.json"))) {
+                    JsonObject g = lire(modeles.resolve(m.apparence().modele() + "_gauche.json"));
+                    if (g == null) {
+                        problemes.add(m.id() + " : modèle de la main gauche illisible (ressources/modeles/" + m.apparence().modele() + "_gauche.json)");
+                    } else {
+                        relierTextures(g, textures, sortie, problemes, m.id());
+                        if (m.apparence().affichage() != null) {
+                            JsonObject display = g.has("display") && g.get("display").isJsonObject() ? g.getAsJsonObject("display") : new JsonObject();
+                            for (Map.Entry<String, JsonElement> e : m.apparence().affichage().entrySet()) display.add(e.getKey(), e.getValue().deepCopy());
+                            g.add("display", display);
+                        }
+                        sortie.put("assets/" + NS + "/models/item/objet/" + m.id() + "_gauche.json", octets(g));
+                        repos = mainGauche(repos, NS + ":item/objet/" + m.id() + "_gauche");
+                    }
+                }
                 // modèle 3D avec une texture : la texture sert d'icône dans l'inventaire (casque en 3D, dessin à plat)
                 if (m.apparence().modele() != null && m.apparence().texture() != null) {
                     String t = copierTexture(m.apparence().texture(), textures, sortie);
@@ -325,6 +341,27 @@ public final class GenerateurPack {
      * Définition d'un arc qui se bande (comme l'arc du jeu) : au repos son dessin, en main tirée les trois images de
      * tension selon la durée du tir (0 ; 0,65 ; 0,9 seconde... en part de 20 ticks).
      */
+    /** Dans la main gauche (première et troisième personne, pantin de Vorace), un autre modèle. */
+    static JsonObject mainGauche(JsonObject ailleurs, String modeleGauche) {
+        JsonObject g = new JsonObject();
+        g.addProperty("type", "minecraft:model");
+        g.addProperty("model", modeleGauche);
+        JsonArray quand = new JsonArray();
+        quand.add("thirdperson_lefthand");
+        quand.add("firstperson_lefthand");
+        JsonObject cas = new JsonObject();
+        cas.add("when", quand);
+        cas.add("model", g);
+        JsonArray cases = new JsonArray();
+        cases.add(cas);
+        JsonObject s = new JsonObject();
+        s.addProperty("type", "minecraft:select");
+        s.addProperty("property", "minecraft:display_context");
+        s.add("cases", cases);
+        s.add("fallback", ailleurs);
+        return s;
+    }
+
     /** Dans l'inventaire (« gui »), le modèle à plat de l'icône ; partout ailleurs, le modèle de l'objet. */
     static JsonObject icone(JsonObject ailleurs, String modeleIcone) {
         JsonObject plat = new JsonObject();

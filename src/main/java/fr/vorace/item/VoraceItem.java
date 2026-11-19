@@ -38,20 +38,24 @@ public final class VoraceItem extends JavaPlugin {
     private static final List<String> EXEMPLES = List.of("objets/exemples.yml", "materiaux/exemples.yml");
 
     /**
-     * Lots d'exemples ajoutés après coup : installés une fois sur un serveur déjà lancé (donnees/exemples.txt garde la
-     * liste des lots posés), sans toucher aux fichiers qui existent déjà. Lot → fichier d'objets, dossier de ressources.
+     * Lot d'exemples ajouté après coup : installé une fois sur un serveur déjà lancé (donnees/exemples.txt garde la
+     * liste des lots posés). Son fichier d'objets (ou null), les fichiers d'une version précédente à remplacer s'ils
+     * n'ont pas été retouchés (chemin dans le dossier du plugin → empreinte SHA-256) et les ressources à copier
+     * (débuts de chemin dans ressources/). Aucun autre fichier existant n'est remplacé.
      */
-    /**
-     * Lot d'exemples ajouté par une version : son fichier d'objets, la empreinte SHA-256 de la version précédente de ce
-     * fichier (remplacée si le serveur ne l'a pas modifiée, null sinon) et les ressources à copier.
-     */
-    private record Lot(String fichier, String ancien, String... ressources) {}
+    private record Lot(String fichier, Map<String, String> anciens, String... ressources) {}
 
     private static final java.util.LinkedHashMap<String, Lot> LOTS = new java.util.LinkedHashMap<>();
     static {
-        LOTS.put("poings", new Lot("objets/poings.yml", null, "textures/exemple/poing/"));
+        LOTS.put("poings", new Lot("objets/poings.yml", Map.of(), "textures/exemple/poing/"));
         // gantelets en 3D : poings.yml de la 0.14.1 remplacé s'il n'a pas été retouché
-        LOTS.put("poings-3d", new Lot("objets/poings.yml", "c3043f43a601e28af53e153f952f6aaf2cd57353550d8c5f59fc435b647a5c46",
+        LOTS.put("poings-3d", new Lot("objets/poings.yml",
+            Map.of("objets/poings.yml", "c3043f43a601e28af53e153f952f6aaf2cd57353550d8c5f59fc435b647a5c46"),
+            "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
+        // gantelets redessinés (plus grands que la manche d'un plastron, main gauche à part) : ceux de la 0.14.2 remplacés
+        LOTS.put("poings-3d-2", new Lot(null, Map.of(
+                "ressources/modeles/exemple/poing/gantelets.json", "ed7ed7d615398a073f862d9eca7ebe5b1d9e3c63ac708b979caa5bb7fb86e898",
+                "ressources/textures/exemple/poing/gantelets_3d.png", "05c2942bd121ddf0c35fa2a93143edc2f029be19b661e40b0d725c007f477af3"),
             "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
     }
 
@@ -181,10 +185,13 @@ public final class VoraceItem extends JavaPlugin {
             }
             for (var lot : LOTS.entrySet()) {
                 if (poses.contains(lot.getKey())) continue;
-                Path cible = dossier.resolve(lot.getValue().fichier());
-                if (!premier && lot.getValue().ancien() != null && Files.isRegularFile(cible)
-                    && lot.getValue().ancien().equals(empreinte(Files.readAllBytes(cible)))) Files.delete(cible);
-                copier("exemples/" + lot.getValue().fichier(), cible);
+                if (!premier) {
+                    for (Map.Entry<String, String> ancien : lot.getValue().anciens().entrySet()) {
+                        Path f = dossier.resolve(ancien.getKey());
+                        if (Files.isRegularFile(f) && ancien.getValue().equals(empreinte(Files.readAllBytes(f)))) Files.delete(f);
+                    }
+                }
+                if (lot.getValue().fichier() != null) copier("exemples/" + lot.getValue().fichier(), dossier.resolve(lot.getValue().fichier()));
                 ajoutes.add(lot.getKey());
             }
             if (ajoutes.isEmpty()) return;

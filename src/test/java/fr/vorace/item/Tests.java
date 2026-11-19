@@ -308,7 +308,7 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3 + 4 * 3 + 5, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions), 2 bâtons et une flèche, 5 armes de poing dont les gantelets en 3D (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3 + 4 * 3 + 6, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions), 2 bâtons et une flèche, 5 armes de poing dont les gantelets en 3D (" + fichiers.size() + " fichiers)");
         byte[] poing = fichiers.get("assets/voraceitem/models/item/objet/gantelets_de_fer.json");
         verifier(poing != null && new String(poing, StandardCharsets.UTF_8).contains("firstperson_righthand")
             && fichiers.containsKey("assets/voraceitem/textures/item/exemple/poing/gantelets.png"), "armes de poing : icône dans l'inventaire, rien dans la main");
