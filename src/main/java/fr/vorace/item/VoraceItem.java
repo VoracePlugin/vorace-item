@@ -177,6 +177,18 @@ public final class VoraceItem extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // menus ouverts (assemblage, réparation...) : les objets posés dans leurs cases sont rendus avant l'arrêt
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            org.bukkit.inventory.Inventory haut = p.getOpenInventory().getTopInventory();
+            if (!(haut.getHolder() instanceof fr.vorace.item.interfaces.Menu menu)) continue;
+            for (int libre : menu.libres()) {
+                org.bukkit.inventory.ItemStack o = haut.getItem(libre);
+                if (o == null || o.getType().isAir()) continue;
+                haut.setItem(libre, null);
+                fr.vorace.item.interfaces.EcouteurMenus.rendre(p, o);
+            }
+            p.closeInventory();
+        }
         if (equipement == null) return;
         // arrêt du serveur : les modificateurs d'attributs restent sur les joueurs (sinon un joueur qui avait de la vie
         // en plus grâce à son équipement la perdrait au chargement de sa sauvegarde) ; plugin arrêté seul : on les retire

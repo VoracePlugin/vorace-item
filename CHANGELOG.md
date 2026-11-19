@@ -1,5 +1,12 @@
 # Journal des changements
 
+## 0.14.11 (novembre 2026) : sécurité
+
+- Nos objets ne passent plus dans les machines du jeu (fourneaux et combustible, alambic, tailleur de pierre, métier à
+  tisser, table de cartographie, balise, marchand, fabricateur, entonnoirs vers ces machines, composteur, feu de camp) :
+  une arme reposant sur une épée ou un lingot ne se fond pas, ne paie pas une balise, ne s'échange pas.
+- Arrêt du plugin avec un menu ouvert (assemblage, réparation...) : les objets posés dans ses cases sont rendus.
+
 ## 0.14.10 (novembre 2026)
 
 - Gantelets et brassards raccourcis : canon des gantelets et plaques évasées jusqu'au tiers de l'avant-bras (z 14,25),
