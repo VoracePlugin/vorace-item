@@ -1,5 +1,6 @@
 # ----------------------------------------------------------------- armes de poing (Pugiliste de Babel)
-# Une paire par objet. Icône dans l'inventaire ; rien dans la main (outils/exemples-poings.py dessine les icônes).
+# Une paire par objet. Icône dans l'inventaire (outils/exemples-poings.py) ; en main, les gantelets ont un modèle 3D
+# autour du poing (outils/poings-3d.py), les autres sont encore invisibles en main.
 bandes_de_lin:
   nom: "Bandes de lin"
   type: bandes_de_combat
@@ -29,12 +30,8 @@ gantelets_de_fer:
   rang: commun
   etage: 2
   apparence:
+    modele: exemple/poing/gantelets   # en 3D autour du poing (outils/poings-3d.py) ; l'icône reste le dessin à plat
     texture: exemple/poing/gantelets
-    affichage:   # invisibles en main : ce sont les poings qui frappent
-      thirdperson_righthand: { scale: [0, 0, 0] }
-      thirdperson_lefthand: { scale: [0, 0, 0] }
-      firstperson_righthand: { scale: [0, 0, 0] }
-      firstperson_lefthand: { scale: [0, 0, 0] }
   stats:
     attaque: 16
   modificateurs:

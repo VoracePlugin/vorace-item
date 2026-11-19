@@ -347,7 +347,8 @@ public final class Tests {
         Path d = Files.createTempDirectory("vorace-item-types");
         try {
             for (String f : List.of("raretes.yml", "modificateurs.yml")) copier(f, d.resolve(f));
-            Files.writeString(d.resolve("types.yml"), "epee:\n  nom: \"Épée du serveur\"\n  categorie: arme\n  materiau: iron_sword\n");
+            Files.writeString(d.resolve("types.yml"), "epee:\n  nom: \"Épée du serveur\"\n  categorie: arme\n  materiau: iron_sword\n"
+                + "cestes:\n  nom: \"Cestes du serveur\"\n  categorie: arme\n");
             org.bukkit.configuration.file.YamlConfiguration defaut;
             try (InputStream in = Tests.class.getResourceAsStream("/types.yml")) {
                 defaut = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(in, StandardCharsets.UTF_8));
@@ -355,6 +356,8 @@ public final class Tests {
             Catalogue c = Catalogue.charger(d, new ArrayList<>(), defaut);
             verifier(c.type("gantelets") != null && c.type("epee") != null && "Épée du serveur".equals(c.type("epee").nom()),
                 "types ajoutés par une nouvelle version (gantelets) pris du plugin, ceux du serveur gardés");
+            verifier(c.type("gantelets").parPaire() && c.type("cestes").parPaire() && "Cestes du serveur".equals(c.type("cestes").nom())
+                && !c.type("epee").parPaire(), "armes de poing portées par paire, même un type déjà sur le serveur");
         } finally {
             supprimer(d);
         }

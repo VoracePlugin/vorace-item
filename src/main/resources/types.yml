@@ -146,6 +146,7 @@ bandes_de_combat:
   categorie: arme
   materiau: leather
   type-attaque: Impact
+  par-paire: true
   scales: { force: B, agilite: D }
   vitesse-attaque: 3.3
   lignes-bonus: [physical-damage, critical-strike-chance, critical-strike-power, attack-speed, max-stamina, stamina-regeneration]
@@ -154,6 +155,7 @@ gantelets:
   categorie: arme
   materiau: leather
   type-attaque: Impact
+  par-paire: true
   scales: { force: B, constitution: D }
   vitesse-attaque: 3.3
   lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, max-health, damage-reduction, durability-loss-reduction]
@@ -162,6 +164,7 @@ cestes:
   categorie: arme
   materiau: leather
   type-attaque: Impact
+  par-paire: true
   scales: { force: A, agilite: E }
   vitesse-attaque: 3.3
   lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, lifesteal, durability-loss-reduction]
@@ -170,6 +173,7 @@ brassards_de_garde:
   categorie: arme
   materiau: leather
   type-attaque: Impact
+  par-paire: true
   scales: { constitution: B, force: D }
   vitesse-attaque: 3.3
   lignes-bonus: [physical-damage, max-health, damage-reduction, tenacity, knockback-resistance, health-regeneration]
@@ -178,6 +182,7 @@ bandes_rituelles:
   categorie: arme
   materiau: leather
   type-attaque: Impact
+  par-paire: true
   # physique (Impact) pour les coups, et une Puissance magique pour les coups de souffle (ki)
   scales: { intelligence: B, force: D }
   vitesse-attaque: 3.3

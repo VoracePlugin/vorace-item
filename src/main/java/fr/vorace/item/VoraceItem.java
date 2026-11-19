@@ -41,8 +41,19 @@ public final class VoraceItem extends JavaPlugin {
      * Lots d'exemples ajoutés après coup : installés une fois sur un serveur déjà lancé (donnees/exemples.txt garde la
      * liste des lots posés), sans toucher aux fichiers qui existent déjà. Lot → fichier d'objets, dossier de ressources.
      */
-    private static final java.util.LinkedHashMap<String, String[]> LOTS = new java.util.LinkedHashMap<>(java.util.Map.of(
-        "poings", new String[] {"objets/poings.yml", "textures/exemple/poing/"}));
+    /**
+     * Lot d'exemples ajouté par une version : son fichier d'objets, la empreinte SHA-256 de la version précédente de ce
+     * fichier (remplacée si le serveur ne l'a pas modifiée, null sinon) et les ressources à copier.
+     */
+    private record Lot(String fichier, String ancien, String... ressources) {}
+
+    private static final java.util.LinkedHashMap<String, Lot> LOTS = new java.util.LinkedHashMap<>();
+    static {
+        LOTS.put("poings", new Lot("objets/poings.yml", null, "textures/exemple/poing/"));
+        // gantelets en 3D : poings.yml de la 0.14.1 remplacé s'il n'a pas été retouché
+        LOTS.put("poings-3d", new Lot("objets/poings.yml", "c3043f43a601e28af53e153f952f6aaf2cd57353550d8c5f59fc435b647a5c46",
+            "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
+    }
 
     private Vorace core;
     private Reglages reglages;
@@ -170,7 +181,10 @@ public final class VoraceItem extends JavaPlugin {
             }
             for (var lot : LOTS.entrySet()) {
                 if (poses.contains(lot.getKey())) continue;
-                copier("exemples/" + lot.getValue()[0], dossier.resolve(lot.getValue()[0]));
+                Path cible = dossier.resolve(lot.getValue().fichier());
+                if (!premier && lot.getValue().ancien() != null && Files.isRegularFile(cible)
+                    && lot.getValue().ancien().equals(empreinte(Files.readAllBytes(cible)))) Files.delete(cible);
+                copier("exemples/" + lot.getValue().fichier(), cible);
                 ajoutes.add(lot.getKey());
             }
             if (ajoutes.isEmpty()) return;
@@ -180,7 +194,9 @@ public final class VoraceItem extends JavaPlugin {
                         String f = ligne.trim();
                         if (f.isEmpty()) continue;
                         boolean voulu = premier;
-                        for (String l : ajoutes) if (LOTS.containsKey(l) && f.startsWith(LOTS.get(l)[1])) voulu = true;
+                        for (String l : ajoutes) {
+                            if (LOTS.containsKey(l)) for (String r : LOTS.get(l).ressources()) if (f.startsWith(r)) voulu = true;
+                        }
                         if (voulu) copier("exemples/ressources/" + f, dossier.resolve("ressources").resolve(f));
                     }
                 }
@@ -202,6 +218,14 @@ public final class VoraceItem extends JavaPlugin {
                 new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8));
         } catch (IOException e) {
             return null;
+        }
+    }
+
+    static String empreinte(byte[] octets) {
+        try {
+            return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(octets));
+        } catch (java.security.NoSuchAlgorithmException e) {
+            return "";
         }
     }
 

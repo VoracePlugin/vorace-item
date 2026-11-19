@@ -50,6 +50,7 @@ public final class Exemplaires {
     private final Random hasard = new Random();
     private final Set<String> signales = new HashSet<>();
 
+    private final NamespacedKey kPaire = cle("paire");
     private final NamespacedKey kModele = cle("modele"), kRang = cle("rang"), kRebut = cle("rebut"), kPosition = cle("position"),
         kGrade = cle("grade"), kScore = cle("score"), kId = cle("exemplaire_id"), kFabricant = cle("fabricant"),
         kFabricantUuid = cle("fabricant_uuid"), kCree = cle("cree_ts"), kPieces = cle("pieces"), kBonus = cle("bonus"),
@@ -295,6 +296,8 @@ public final class Exemplaires {
         entier(p, kUsure, ex.usureCombat, 0);
         entier(p, kReparations, ex.reparations, 0);
         texte(p, kNom, ex.nom);
+        // arme portée par paire (armes de poing) : le pantin de Vorace la met dans les deux mains
+        if (m != null && m.type().parPaire()) p.set(kPaire, PersistentDataType.BYTE, (byte) 1); else p.remove(kPaire);
         if (m != null) afficher(meta, m, ex);
         objet.setItemMeta(meta);
         if (m != null) armure3d(objet, m);

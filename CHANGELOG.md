@@ -1,5 +1,14 @@
 # Journal des changements
 
+## 0.14.2 (novembre 2026) : armes de poing en 3D
+
+- Gantelets de fer en 3D autour du poing (`outils/poings-3d.py`, 17 cubes, style des armes de vorace-item) : en main
+  à la troisième personne, à la première personne, et dans les deux mains du pantin de Vorace pendant les animations.
+  L'icône d'inventaire reste le dessin à plat. Les quatre autres armes de poing suivront une fois ce modèle validé.
+- Types : `par-paire: true` sur les armes de poing ; l'objet porte la clé `voraceitem:paire`, que le pantin de Vorace
+  lit pour les mettre dans les deux mains. Repris même sur un type déjà présent dans le `types.yml` du serveur.
+- Lot d'exemples « poings-3d » : `objets/poings.yml` de la 0.14.1 est remplacé s'il n'a pas été retouché.
+
 ## 0.14.1 (novembre 2026) : les nouveautés arrivent aussi sur un serveur déjà lancé
 
 - Les types livrés avec le plugin qui manquent au `types.yml` du serveur (ajoutés par une nouvelle version, comme les

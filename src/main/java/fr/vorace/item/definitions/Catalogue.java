@@ -101,13 +101,19 @@ public final class Catalogue {
         }
         if (typesParDefaut != null) {
             for (String id : typesParDefaut.getKeys(false)) {
-                if (typesParDefaut.isConfigurationSection(id) && !c.types.containsKey(Textes.cle(id))) {
+                if (!typesParDefaut.isConfigurationSection(id)) continue;
+                TypeObjet deja = c.types.get(Textes.cle(id));
+                if (deja == null) {
                     c.types.put(Textes.cle(id), TypeObjet.lire(Textes.cle(id), typesParDefaut.getConfigurationSection(id)));
+                } else if (!deja.parPaire() && typesParDefaut.getBoolean(id + ".par-paire") && !types.contains(id + ".par-paire")) {
+                    // réglage ajouté par une nouvelle version à un type que le serveur a déjà : on le reprend
+                    c.types.put(deja.id(), new TypeObjet(deja.id(), deja.nom(), deja.categorie(), deja.emplacement(), deja.materiau(),
+                        deja.nature(), deja.typeAttaque(), deja.scales(), deja.vitesseAttaque(), deja.lignesBonus(), deja.empilable(), true));
                 }
             }
         }
         if (!c.types.containsKey("materiau")) {
-            c.types.put("materiau", new TypeObjet("materiau", "Matériau", "materiau", "aucun", "paper", "physique", "", Map.of(), 0, List.of(), true));
+            c.types.put("materiau", new TypeObjet("materiau", "Matériau", "materiau", "aucun", "paper", "physique", "", Map.of(), 0, List.of(), true, false));
         }
 
         for (Path f : fichiers(dossier.resolve("materiaux"))) {

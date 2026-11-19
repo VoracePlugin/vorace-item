@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public record TypeObjet(String id, String nom, String categorie, String emplacement, String materiau, String nature,
                         String typeAttaque, Map<String, String> scales, double vitesseAttaque, List<String> lignesBonus,
-                        boolean empilable) {
+                        boolean empilable, boolean parPaire) {
 
     public static TypeObjet lire(String id, ConfigurationSection s) {
         String categorie = Textes.cle(s.getString("categorie", "arme"));
@@ -34,7 +34,7 @@ public record TypeObjet(String id, String nom, String categorie, String emplacem
             Textes.cle(s.getString("nature", "physique")).startsWith("mag") ? "magique" : "physique",
             s.getString("type-attaque", ""), scales(s.getConfigurationSection("scales")),
             s.getDouble("vitesse-attaque", arme ? 1.6 : 0), s.getStringList("lignes-bonus"),
-            s.getBoolean("empilable", !arme && !armure));
+            s.getBoolean("empilable", !arme && !armure), s.getBoolean("par-paire", false));
     }
 
     public boolean estArme() { return categorie.equals("arme"); }
