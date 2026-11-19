@@ -98,7 +98,7 @@ public final class GenerateurPack {
                 composite.addProperty("type", "minecraft:composite");
                 composite.add("models", couches);
                 JsonObject def = new JsonObject();
-                def.add("model", composite);
+                def.add("model", drapeaux(composite));
                 sortie.put("assets/" + NS + "/items/kit/" + m.id() + ".json", octets(def));
             }
             if (m.apparence().equipement() != null && equipementsFaits.add(m.apparence().equipement())) {
@@ -177,7 +177,7 @@ public final class GenerateurPack {
                     }
                 }
                 JsonObject def = new JsonObject();
-                def.add("model", repos);
+                def.add("model", drapeaux(repos));
                 sortie.put("assets/" + NS + "/items/objet/" + m.id() + ".json", octets(def));
             }
         }
@@ -341,6 +341,49 @@ public final class GenerateurPack {
      * Définition d'un arc qui se bande (comme l'arc du jeu) : au repos son dessin, en main tirée les trois images de
      * tension selon la durée du tir (0 ; 0,65 ; 0,9 seconde... en part de 20 ticks).
      */
+    /**
+     * Drapeaux de custom_model_data posés par vorace-core sur les copies d'objets qu'il envoie au client (l'objet du
+     * serveur ne les a jamais) : drapeau 0, « caché en main » (pendant une animation du pantin, l'objet est dans les
+     * mains du pantin : rien en main, l'icône reste dans l'inventaire) ; drapeau 1, « paire » (arme par paire montrée
+     * dans la main gauche : visible à la troisième personne seulement, ni à la première personne ni dans la case).
+     */
+    static JsonObject drapeaux(JsonObject normal) {
+        JsonObject vide = new JsonObject();
+        vide.addProperty("type", "minecraft:empty");
+        JsonObject cache = selonContexte(normal.deepCopy(), vide.deepCopy(), "gui", "ground", "fixed", "head");
+        JsonObject paire = selonContexte(normal.deepCopy(), vide.deepCopy(), "thirdperson_righthand", "thirdperson_lefthand");
+        JsonObject siPaire = new JsonObject();
+        siPaire.addProperty("type", "minecraft:condition");
+        siPaire.addProperty("property", "minecraft:custom_model_data");
+        siPaire.addProperty("index", 1);
+        siPaire.add("on_true", paire);
+        siPaire.add("on_false", normal);
+        JsonObject c = new JsonObject();
+        c.addProperty("type", "minecraft:condition");
+        c.addProperty("property", "minecraft:custom_model_data");
+        c.addProperty("index", 0);
+        c.add("on_true", cache);
+        c.add("on_false", siPaire);
+        return c;
+    }
+
+    /** Ce modèle dans ces réglages d'affichage, l'autre ailleurs. */
+    private static JsonObject selonContexte(JsonObject dedans, JsonObject ailleurs, String... contextes) {
+        JsonArray quand = new JsonArray();
+        for (String x : contextes) quand.add(x);
+        JsonObject cas = new JsonObject();
+        cas.add("when", quand);
+        cas.add("model", dedans);
+        JsonArray cases = new JsonArray();
+        cases.add(cas);
+        JsonObject s = new JsonObject();
+        s.addProperty("type", "minecraft:select");
+        s.addProperty("property", "minecraft:display_context");
+        s.add("cases", cases);
+        s.add("fallback", ailleurs);
+        return s;
+    }
+
     /** Dans la main gauche (première et troisième personne, pantin de Vorace), un autre modèle. */
     static JsonObject mainGauche(JsonObject ailleurs, String modeleGauche) {
         JsonObject g = new JsonObject();

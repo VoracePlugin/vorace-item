@@ -57,6 +57,12 @@ public final class VoraceItem extends JavaPlugin {
                 "ressources/modeles/exemple/poing/gantelets.json", "ed7ed7d615398a073f862d9eca7ebe5b1d9e3c63ac708b979caa5bb7fb86e898",
                 "ressources/textures/exemple/poing/gantelets_3d.png", "05c2942bd121ddf0c35fa2a93143edc2f029be19b661e40b0d725c007f477af3"),
             "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
+        // gantelets affinés (juste au-dessus de la manche d'un plastron) : ceux de la 0.14.3 remplacés
+        LOTS.put("poings-3d-3", new Lot(null, Map.of(
+                "ressources/modeles/exemple/poing/gantelets.json", "fa7082798f292adc118d13ec209dcfb482dd0c4f4b8afac81e6b249a53385a31",
+                "ressources/modeles/exemple/poing/gantelets_gauche.json", "c0d5d8425b9508295a9e020a05a3082ed389d571223e0ba7bf25cfa8006dbfcc",
+                "ressources/textures/exemple/poing/gantelets_3d.png", "0acf4fd3bf81091987f7b01bdac1185bf76c7eb0743868b0511b87327945094c"),
+            "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
     }
 
     private Vorace core;

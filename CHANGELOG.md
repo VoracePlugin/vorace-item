@@ -1,5 +1,13 @@
 # Journal des changements
 
+## 0.14.4 (novembre 2026)
+
+- Gantelets affinés (23 cubes) : juste au-dessus de la manche d'un plastron, reliefs de 1/8 à 1/4 d'unité, canon plus
+  court. Lot « poings-3d-3 » : ceux de la 0.14.3 remplacés s'ils sont intacts.
+- Définitions des objets : drapeaux de custom_model_data posés par Vorace (1.4.3) sur les copies envoyées aux clients :
+  0 « caché en main » (pendant une animation du pantin : rien en main, l'icône reste), 1 « paire » (arme par paire
+  dans la main gauche : vue à la troisième personne seulement).
+
 ## 0.14.3 (novembre 2026) : gantelets redessinés
 
 - Gantelets de fer refaits (34 cubes) : main en plaques, quatre jointures, doigts repliés, pouce, sangles de cuir,

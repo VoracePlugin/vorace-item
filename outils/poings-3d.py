@@ -7,7 +7,7 @@ x 6 à 10 (x = 10 : dehors, dos de la main ; x = 6 : dedans, paume), y 4 à 8 (y
 (z = 8 : bout du poing, le coude vers z = 14).
 
 La manche d'un plastron du jeu recouvre tout le bras avec 1 unité de marge (x 5 à 11, y 3 à 9, z 7 à 21) : tout ce qui
-est en dessous est caché. Le gantelet la dépasse partout d'au moins 1/8 d'unité.
+est en dessous est caché. Le gantelet la dépasse partout d'au moins 1/16 d'unité, sans plus : il reste fin.
 
 La main gauche est le même gantelet retourné (x → 16 - x), dans un second modèle « <nom>_gauche » que le pack choisit
 pour la main gauche.
@@ -58,40 +58,31 @@ def anneau(m, ep, z0, z1, palette, ton, nom):
 
 
 def gantelets():
-    """Gantelets de fer, main droite : main en plaques, jointures, doigts repliés, pouce, sangle, canon évasé."""
+    """Gantelets de fer, main droite, fins : juste au-dessus de la manche d'un plastron (marge 1 1/8), reliefs de
+    1/8 à 1/4 d'unité. Main en plaques, jointures, doigts repliés, pouce, sangle, canon court au bord creux."""
     e = []
-    # main : bloc de base et plaque du dos de la main (dehors, +x) avec son arête
-    e.append(autour(1.25, 6.875, 10.5, FER, 1, "main"))
-    e.append(boite([11.25, 3.5, 7.5], [11.75, 8.5, 10.25], FER, 3, "dos"))
-    e.append(boite([11.75, 5.5, 7.75], [12.125, 6.5, 10.0], FER, 4, "arete"))
-    # jointures : quatre bosses sur le bout du poing, alignées d'avant en arrière, qui débordent sur le dos de la main
-    for y0, y1 in ((2.875, 4.375), (4.5, 6.0), (6.125, 7.625), (7.75, 9.25)):
-        e.append(boite([6.5, y0, 6.25], [11.875, y1, 7.0], FER, 3, "jointure"))
-        e.append(boite([7.0, y0 + 0.25, 5.875], [11.5, y1 - 0.25, 6.25], FER, 4, "jointure"))
-    # doigts repliés côté paume (dedans, -x) : quatre phalanges séparées par des creux sombres
-    e.append(boite([4.5, 3.0, 7.25], [4.75, 9.0, 9.25], SOMBRE, 1, "creux", filets=False))
-    for y0, y1 in ((2.875, 4.25), (4.375, 5.875), (6.125, 7.625), (7.75, 9.125)):
-        e.append(boite([4.25, y0, 7.0], [4.75, y1, 9.0], FER, 2, "doigt"))
-    # pouce : sur le devant (+y), côté paume, replié sur les doigts
-    e.append(boite([4.5, 9.25, 7.75], [7.5, 10.125, 10.0], FER, 2, "pouce"))
-    e.append(boite([4.25, 9.375, 7.25], [6.25, 10.0, 8.0], FER, 3, "pouce"))
+    # main : bloc de base, plaque du dos de la main (dehors, +x)
+    e.append(autour(1.125, 6.875, 10.375, FER, 2, "main"))
+    e.append(boite([11.125, 3.75, 7.375], [11.375, 8.25, 10.125], FER, 3, "dos"))
+    # jointures : quatre bosses fines sur le bout du poing
+    for y0, y1 in ((3.0, 4.25), (4.375, 5.625), (6.375, 7.625), (7.75, 9.0)):
+        e.append(boite([6.0, y0, 6.625], [11.125, y1, 7.0], FER, 3, "jointure"))
+    # doigts repliés côté paume (dedans, -x) : quatre plaques séparées par des creux
+    for y0, y1 in ((3.0, 4.25), (4.375, 5.625), (6.375, 7.625), (7.75, 9.0)):
+        e.append(boite([4.625, y0, 7.125], [4.875, y1, 8.875], FER, 2, "doigt"))
+    # pouce : sur le devant (+y), côté paume
+    e.append(boite([4.875, 9.125, 7.5], [7.25, 9.375, 9.75], FER, 3, "pouce"))
     # poignet : sangle de cuir et boucle
-    e.append(autour(1.125, 10.375, 11.5, CUIR, 2, "sangle"))
-    e.append(boite([7.25, 9.125, 10.5], [8.75, 9.375, 11.375], FER, 3, "boucle"))
-    # canon d'avant-bras : deux plaques qui s'évasent, et un rebord creux
-    e.append(autour(1.25, 11.375, 13.75, FER, 2, "canon"))
-    e.append(autour(1.5, 13.625, 16.5, FER, 3, "canon"))
-    e += anneau(1.75, 0.5, 16.375, 17.25, FER, 3, "rebord")
-    # plaque de garde sur le dehors du canon (+x), avec une arête
-    e.append(boite([11.5, 4.25, 12.0], [11.875, 7.75, 16.75], FER, 3, "garde"))
-    e.append(boite([11.875, 5.5, 12.5], [12.125, 6.5, 16.5], FER, 4, "garde"))
-    # sangle de cuir autour du canon, boucle devant
-    e.append(autour(1.625, 14.5, 15.25, CUIR, 1, "sangle"))
-    e.append(boite([7.25, 9.625, 14.375], [8.75, 9.875, 15.375], FER, 4, "boucle"))
-    # rivets : devant et derrière du canon
+    e.append(autour(1.0625, 10.375, 11.25, CUIR, 2, "sangle"))
+    e.append(boite([7.375, 9.0625, 10.5], [8.625, 9.25, 11.125], FER, 4, "boucle"))
+    # canon d'avant-bras, court, et son bord creux
+    e.append(autour(1.1875, 11.25, 14.375, FER, 2, "canon"))
+    e += anneau(1.3125, 0.375, 14.25, 14.875, FER, 3, "rebord")
+    # arête sur le dehors du canon, rivets devant et derrière
+    e.append(boite([11.1875, 5.5, 11.75], [11.4375, 6.5, 14.0], FER, 3, "arete"))
     for x0 in (5.5, 10.0):
-        e.append(boite([x0, 9.25, 12.25], [x0 + 0.5, 9.5, 12.75], FER, 4, "rivet", filets=False))
-        e.append(boite([x0, 2.5, 12.25], [x0 + 0.5, 2.75, 12.75], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 9.1875, 12.5], [x0 + 0.5, 9.3125, 13.0], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 2.6875, 12.5], [x0 + 0.5, 2.8125, 13.0], FER, 4, "rivet", filets=False))
     return e
 
 

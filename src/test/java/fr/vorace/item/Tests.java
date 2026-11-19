@@ -288,7 +288,12 @@ public final class Tests {
         byte[] def = fichiers.get("assets/voraceitem/items/kit/epee.json");
         verifier(def != null, "définition de l'épée modulaire");
         if (def != null) {
-            JsonObject modele = JsonParser.parseString(new String(def, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            JsonObject drapeaux = JsonParser.parseString(new String(def, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            verifier(drapeaux.get("type").getAsString().equals("minecraft:condition") && drapeaux.get("index").getAsInt() == 0
+                && drapeaux.getAsJsonObject("on_true").getAsJsonObject("fallback").get("type").getAsString().equals("minecraft:empty")
+                && drapeaux.getAsJsonObject("on_false").get("index").getAsInt() == 1,
+                "drapeaux de vorace-core : caché en main (0), paire en main gauche (1)");
+            JsonObject modele = drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_false");
             JsonArray couches = modele.getAsJsonArray("models");
             verifier(modele.get("type").getAsString().equals("minecraft:composite") && couches.size() == 4, "modèle composé de 4 couches");
             JsonObject lames = couches.get(0).getAsJsonObject();
