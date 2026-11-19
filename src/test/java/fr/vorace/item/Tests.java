@@ -43,6 +43,7 @@ public final class Tests {
             scales();
             List<String> problemes = new ArrayList<>();
             Catalogue c = Catalogue.charger(dossier, problemes);
+            typesAjoutes(dossier);
             catalogue(c, problemes);
             calcul(c);
             description(c);
@@ -287,7 +288,12 @@ public final class Tests {
         byte[] def = fichiers.get("assets/voraceitem/items/kit/epee.json");
         verifier(def != null, "définition de l'épée modulaire");
         if (def != null) {
-            JsonObject modele = JsonParser.parseString(new String(def, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            JsonObject drapeaux = JsonParser.parseString(new String(def, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
+            verifier(drapeaux.get("type").getAsString().equals("minecraft:condition") && drapeaux.get("index").getAsInt() == 0
+                && drapeaux.getAsJsonObject("on_true").getAsJsonObject("fallback").get("type").getAsString().equals("minecraft:empty")
+                && drapeaux.getAsJsonObject("on_false").get("index").getAsInt() == 1,
+                "drapeaux de vorace-core : caché en main (0), paire en main gauche (1)");
+            JsonObject modele = drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_false");
             JsonArray couches = modele.getAsJsonArray("models");
             verifier(modele.get("type").getAsString().equals("minecraft:composite") && couches.size() == 4, "modèle composé de 4 couches");
             JsonObject lames = couches.get(0).getAsJsonObject();
@@ -307,7 +313,10 @@ public final class Tests {
             verifier(m.has("display") && m.getAsJsonObject("display").has("thirdperson_righthand") && m.getAsJsonObject("display").has("gui"), "elle reçoit les réglages d'affichage du kit");
         }
         verifier(fichiers.containsKey("assets/voraceitem/textures/item/exemple/fer/lame_droite.png"), "texture de la lame copiée");
-        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions) et 2 bâtons et une flèche (" + fichiers.size() + " fichiers)");
+        verifier(fichiers.size() == 1 + 18 + 18 + 18 + 18 + 12 * 3 + 2 * 2 + 3 * 3 + 2 + 4 * 9 + 3 * 3 + 5 * 6, "épée (73 fichiers), 12 armures d'exemple (icône ou texture du casque 3D, modèle, définition), icône à plat des 2 casques 3D (image, modèle), leurs 3 dessins portés, l'armure 3D du fer, 4 arcs (dessin, 3 tensions), 2 bâtons et une flèche, 5 armes de poing en 3D (icône, modèle 3D, main gauche, texture 3D, icône à plat, définition) (" + fichiers.size() + " fichiers)");
+        byte[] poing = fichiers.get("assets/voraceitem/models/item/objet/gantelets_de_fer.json");
+        verifier(poing != null && new String(poing, StandardCharsets.UTF_8).contains("firstperson_righthand")
+            && fichiers.containsKey("assets/voraceitem/textures/item/exemple/poing/gantelets.png"), "armes de poing : icône dans l'inventaire, modèle 3D en main");
         byte[] arc = fichiers.get("assets/voraceitem/items/objet/arc_court_if.json");
         verifier(arc != null && new String(arc, StandardCharsets.UTF_8).contains("minecraft:using_item") && new String(arc, StandardCharsets.UTF_8).contains("arc_court_if_tension_2")
             && fichiers.containsKey("assets/voraceitem/textures/item/exemple/bois/arc_court_if_tension_1.png"), "l'arc d'if se bande en main (trois images de tension)");
@@ -338,10 +347,32 @@ public final class Tests {
     // ------------------------------------------------------------------ outils
 
     /** Copie dans un dossier temporaire les fichiers que le plugin installe au premier lancement. */
+    /** Un serveur au types.yml d'avant les armes de poing : les types livrés avec le plugin complètent le sien. */
+    private static void typesAjoutes(Path exemples) throws IOException {
+        Path d = Files.createTempDirectory("vorace-item-types");
+        try {
+            for (String f : List.of("raretes.yml", "modificateurs.yml")) copier(f, d.resolve(f));
+            Files.writeString(d.resolve("types.yml"), "epee:\n  nom: \"Épée du serveur\"\n  categorie: arme\n  materiau: iron_sword\n"
+                + "cestes:\n  nom: \"Cestes du serveur\"\n  categorie: arme\n");
+            org.bukkit.configuration.file.YamlConfiguration defaut;
+            try (InputStream in = Tests.class.getResourceAsStream("/types.yml")) {
+                defaut = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(new java.io.InputStreamReader(in, StandardCharsets.UTF_8));
+            }
+            Catalogue c = Catalogue.charger(d, new ArrayList<>(), defaut);
+            verifier(c.type("gantelets") != null && c.type("epee") != null && "Épée du serveur".equals(c.type("epee").nom()),
+                "types ajoutés par une nouvelle version (gantelets) pris du plugin, ceux du serveur gardés");
+            verifier(c.type("gantelets").parPaire() && c.type("cestes").parPaire() && "Cestes du serveur".equals(c.type("cestes").nom())
+                && !c.type("epee").parPaire(), "armes de poing portées par paire, même un type déjà sur le serveur");
+        } finally {
+            supprimer(d);
+        }
+    }
+
     private static Path installerExemples() throws IOException {
         Path d = Files.createTempDirectory("vorace-item-tests");
         for (String f : List.of("raretes.yml", "modificateurs.yml", "types.yml")) copier(f, d.resolve(f));
         copier("exemples/objets/exemples.yml", d.resolve("objets/exemples.yml"));
+        copier("exemples/objets/poings.yml", d.resolve("objets/poings.yml"));
         copier("exemples/materiaux/exemples.yml", d.resolve("materiaux/exemples.yml"));
         try (InputStream index = Tests.class.getResourceAsStream("/exemples/ressources.txt")) {
             if (index == null) throw new IOException("exemples/ressources.txt introuvable");

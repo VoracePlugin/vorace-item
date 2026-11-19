@@ -1,5 +1,97 @@
 # Journal des changements
 
+## 0.14.11 (novembre 2026) : sécurité
+
+- Nos objets ne passent plus dans les machines du jeu (fourneaux et combustible, alambic, tailleur de pierre, métier à
+  tisser, table de cartographie, balise, marchand, fabricateur, entonnoirs vers ces machines, composteur, feu de camp) :
+  une arme reposant sur une épée ou un lingot ne se fond pas, ne paie pas une balise, ne s'échange pas.
+- Arrêt du plugin avec un menu ouvert (assemblage, réparation...) : les objets posés dans ses cases sont rendus.
+
+## 0.14.10 (novembre 2026)
+
+- Gantelets et brassards raccourcis : canon des gantelets et plaques évasées jusqu'au tiers de l'avant-bras (z 14,25),
+  brassards jusqu'au milieu (z 15,6) avec un bord évasé. Lot « poings-3d-8 ».
+
+## 0.14.9 (novembre 2026)
+
+- Armes de poing à la première personne : posées sur le bras du joueur, là où le jeu dessine le bras à main vide, et
+  dessinées avec ce bras (modèle de Vorace 1.4.5 teinté par les couleurs de son skin que Vorace met sur la copie qu'il
+  reçoit ; drapeau 2 : bras fin). Lot « poings-3d-7 ».
+
+## 0.14.8 (novembre 2026)
+
+- Cestes de laiton redessinées en vrai poing américain : plaque plate en travers des doigts, quatre anneaux soudés aux
+  trous arrondis, barre de frappe à quatre bosses, bords qui se referment vers la poignée dans la paume. Lot
+  « poings-3d-6 ».
+
+## 0.14.7 (novembre 2026)
+
+- Cestes de laiton en vrai poing américain : plus de cuir, rien que le laiton contre le bout du poing (barre de frappe,
+  quatre bosses, anneaux des doigts, poignée contre la paume) ; le poing du joueur reste visible.
+
+## 0.14.6 (novembre 2026) : armes de poing redessinées
+
+- Une silhouette par arme : gantelets à canon évasé (quatre plaques inclinées vers le coude), dos de la main en trois
+  lames, jointures saillantes, gant de mailles ; bandes de lin en spirale avec jointures rembourrées et bouts qui
+  pendent ; cestes à coque de laiton, anneaux à pointes et garde de poignet ; brassards à attelles de fer, lacets
+  croisés et garde de coude ; bandes du souffle en spirale, inscriptions rouges, cordon à gland, deux talismans,
+  bracelet de perles.
+- Textures peintes d'après la place de chaque texel sur le cube : filet clair côté coude, sombre côté poing, mailles,
+  trame du tissu, coutures du cuir, inscriptions.
+- Lot « poings-3d-5 » : les modèles et textures de la 0.14.5 remplacés s'ils sont intacts.
+
+## 0.14.5 (novembre 2026) : les cinq armes de poing en 3D
+
+- Bandes de lin, cestes de laiton (lanières de cuir, anneaux de laiton sur les jointures), brassards de cuir ferré
+  (gant, brassard jusqu'au coude, bandes de fer, plaque de garde, lacets), bandes du souffle (inscriptions rouges,
+  cordon, talisman de papier) en 3D comme les gantelets, chacune avec son modèle de main gauche.
+- Gantelets plus détaillés (31 cubes) : dos de la main en deux lames articulées, pouce en deux plaques, canon en deux
+  lames, huit rivets.
+- Lot « poings-3d-4 » : `objets/poings.yml` et gantelets de la 0.14.4 remplacés s'ils sont intacts.
+
+## 0.14.4 (novembre 2026)
+
+- Gantelets affinés (23 cubes) : juste au-dessus de la manche d'un plastron, reliefs de 1/8 à 1/4 d'unité, canon plus
+  court. Lot « poings-3d-3 » : ceux de la 0.14.3 remplacés s'ils sont intacts.
+- Définitions des objets : drapeaux de custom_model_data posés par Vorace (1.4.3) sur les copies envoyées aux clients :
+  0 « caché en main » (pendant une animation du pantin : rien en main, l'icône reste), 1 « paire » (arme par paire
+  dans la main gauche : vue à la troisième personne seulement).
+
+## 0.14.3 (novembre 2026) : gantelets redessinés
+
+- Gantelets de fer refaits (34 cubes) : main en plaques, quatre jointures, doigts repliés, pouce, sangles de cuir,
+  canon d'avant-bras évasé et creux au coude. Plus larges que la manche d'un plastron du jeu (qui recouvre tout le bras
+  avec 1 unité de marge et cachait tout sauf les jointures).
+- Main gauche : un modèle « <modèle>_gauche » à côté du modèle 3D sert dans la main gauche (gantelet retourné, le pouce
+  du bon côté). `outils/poings-3d.py` fait les deux et un aperçu calculé.
+- Lot d'exemples « poings-3d-2 » : les gantelets de la 0.14.2 sont remplacés s'ils n'ont pas été retouchés.
+
+## 0.14.2 (novembre 2026) : armes de poing en 3D
+
+- Gantelets de fer en 3D autour du poing (`outils/poings-3d.py`, 17 cubes, style des armes de vorace-item) : en main
+  à la troisième personne, à la première personne, et dans les deux mains du pantin de Vorace pendant les animations.
+  L'icône d'inventaire reste le dessin à plat. Les quatre autres armes de poing suivront une fois ce modèle validé.
+- Types : `par-paire: true` sur les armes de poing ; l'objet porte la clé `voraceitem:paire`, que le pantin de Vorace
+  lit pour les mettre dans les deux mains. Repris même sur un type déjà présent dans le `types.yml` du serveur.
+- Lot d'exemples « poings-3d » : `objets/poings.yml` de la 0.14.1 est remplacé s'il n'a pas été retouché.
+
+## 0.14.1 (novembre 2026) : les nouveautés arrivent aussi sur un serveur déjà lancé
+
+- Les types livrés avec le plugin qui manquent au `types.yml` du serveur (ajoutés par une nouvelle version, comme les
+  armes de poing) sont pris dans le plugin ; ceux que le serveur a réglés restent les siens.
+- Exemples par lots : les armes de poing sont dans `objets/poings.yml` et s'installent seules sur un serveur qui a déjà
+  ses exemples (`donnees/exemples.txt` garde la liste des lots posés ; aucun fichier existant n'est remplacé).
+
+## 0.14.0 (novembre 2026) : armes de poing
+
+- Cinq types d'armes de poing (Pugiliste de Babel), toutes de type Impact, rythme d'une arme légère : **bandes de
+  combat** (Force B, Agilité D), **gantelets** (Force B, Constitution D), **cestes** (Force A, Agilité E),
+  **brassards de garde** (Constitution B, Force D), **bandes rituelles** (Intelligence B, Force D, avec une
+  Puissance magique pour les coups de souffle).
+- Une arme d'exemple de chaque type (bandes de lin, gantelets de fer, cestes de laiton, brassards de cuir ferré,
+  bandes du souffle) : une paire par objet, une icône dans l'inventaire et rien dans la main, puisque ce sont les
+  poings qui frappent (`apparence.affichage` à l'échelle 0 en main). Icônes dessinées par `outils/exemples-poings.py`.
+
 ## 0.13.1 (novembre 2026) : retours de l'essai en jeu
 
 - **Arme en seconde main** : sans réglage pour la main gauche, le jeu reprenait celui de la main droite en miroir,
