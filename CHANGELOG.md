@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.14.9 (novembre 2026)
+
+- Armes de poing à la première personne : posées sur le bras du joueur, là où le jeu dessine le bras à main vide, et
+  dessinées avec ce bras (modèle de Vorace 1.4.5 teinté par les couleurs de son skin que Vorace met sur la copie qu'il
+  reçoit ; drapeau 2 : bras fin). Lot « poings-3d-7 ».
+
 ## 0.14.8 (novembre 2026)
 
 - Cestes de laiton redessinées en vrai poing américain : plaque plate en travers des doigts, quatre anneaux soudés aux

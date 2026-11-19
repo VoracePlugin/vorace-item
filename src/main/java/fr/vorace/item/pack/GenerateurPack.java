@@ -161,6 +161,8 @@ public final class GenerateurPack {
                         repos = mainGauche(repos, NS + ":item/objet/" + m.id() + "_gauche");
                     }
                 }
+                // arme par paire (armes de poing) : à la première personne, le bras du joueur avec (Vorace)
+                if (m.type().parPaire() && m.apparence().modele() != null) repos = avecBras(repos);
                 // modèle 3D avec une texture : la texture sert d'icône dans l'inventaire (casque en 3D, dessin à plat)
                 if (m.apparence().modele() != null && m.apparence().texture() != null) {
                     String t = copierTexture(m.apparence().texture(), textures, sortie);
@@ -382,6 +384,47 @@ public final class GenerateurPack {
         s.add("cases", cases);
         s.add("fallback", ailleurs);
         return s;
+    }
+
+    /** Modèle du bras droit tenu, fourni par Vorace (1.4.5) ; ses carrés : 224 (bras large), 192 (bras fin). */
+    static final String BRAS_TENU = "vorace:pantin_bras/tenu_droit";
+    static final int PIXELS_BRAS = 224, PIXELS_BRAS_FIN = 192;
+
+    /**
+     * Le jeu ne dessine pas le bras à la première personne quand un objet est en main : pour une arme de poing, on
+     * dessine avec elle le modèle du bras de Vorace, teinté par les couleurs de custom_model_data que Vorace met sur la
+     * copie envoyée au joueur (son skin ; drapeau 2 : bras fin). Sans couleurs, teinte de peau par défaut.
+     */
+    static JsonObject avecBras(JsonObject arme) {
+        JsonObject bras = new JsonObject();
+        bras.addProperty("type", "minecraft:condition");
+        bras.addProperty("property", "minecraft:custom_model_data");
+        bras.addProperty("index", 2);
+        bras.add("on_true", brasTeinte(BRAS_TENU + "_fin", PIXELS_BRAS_FIN));
+        bras.add("on_false", brasTeinte(BRAS_TENU, PIXELS_BRAS));
+        JsonArray couches = new JsonArray();
+        couches.add(arme.deepCopy());
+        couches.add(bras);
+        JsonObject composite = new JsonObject();
+        composite.addProperty("type", "minecraft:composite");
+        composite.add("models", couches);
+        return selonContexte(composite, arme, "firstperson_righthand");
+    }
+
+    private static JsonObject brasTeinte(String modele, int pixels) {
+        JsonObject b = new JsonObject();
+        b.addProperty("type", "minecraft:model");
+        b.addProperty("model", modele);
+        JsonArray teintes = new JsonArray();
+        for (int i = 0; i < pixels; i++) {
+            JsonObject t = new JsonObject();
+            t.addProperty("type", "minecraft:custom_model_data");
+            t.addProperty("index", i);
+            t.addProperty("default", 0xC89678);
+            teintes.add(t);
+        }
+        b.add("tints", teintes);
+        return b;
     }
 
     /** Dans la main gauche (première et troisième personne, pantin de Vorace), un autre modèle. */

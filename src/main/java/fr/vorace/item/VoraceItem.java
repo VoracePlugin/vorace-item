@@ -94,6 +94,19 @@ public final class VoraceItem extends JavaPlugin {
             Map.entry("ressources/modeles/exemple/poing/cestes_gauche.json", "4d2d610b72e1978d1976e93ac09ead3ce57d8e8da3f37cee7e623de4a131fa5f"),
             Map.entry("ressources/textures/exemple/poing/cestes_3d.png", "ed43b076123b92a5c3a096eb81fb8d756b1cd47680f6102cb3e9c604fe097c24")),
             "modeles/exemple/poing/cestes", "textures/exemple/poing/cestes_3d"));
+        // première personne posée sur le bras du joueur : modèles de la 0.14.8 remplacés
+        LOTS.put("poings-3d-7", new Lot(null, Map.ofEntries(
+            Map.entry("ressources/modeles/exemple/poing/gantelets.json", "d6d3da68b70ef9c9ba543412b691c1bdecadca38a0bf5e6b910187a0e68245bf"),
+            Map.entry("ressources/modeles/exemple/poing/gantelets_gauche.json", "1a7cafd42e7b4731fa0d2bb2c2f46cff3d8ecaeee276e4cb0e7c7fcd9962f120"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_de_combat.json", "715cff11d25e5d354cd0eef6a74484bc2b72aedc1a033f6ad5cf285a8a85d2c4"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_de_combat_gauche.json", "a1231b0f13eb3878160a9eb60cb998921f2e2a8cfd4f96967bd6f99be1728c0d"),
+            Map.entry("ressources/modeles/exemple/poing/cestes.json", "34575b3775d7eefeb94a6d02c14546b25153ac2710714623be44dbfe869bbca4"),
+            Map.entry("ressources/modeles/exemple/poing/cestes_gauche.json", "9071816b34d73408cab75a336fd6e67ce1dca5b403945c0b11975fd836c4e9da"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde.json", "e4d20ffe56bdd4981765b52ab230d61d9418943b95c9543426aeafcd1a0fc507"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde_gauche.json", "193ca59083f633a95d70b23fec9e11ff204b85b1cf753fced6f8143eaf8f20ba"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_rituelles.json", "8a8a8d46e9ec0cc451b4967a8852ea8522774a0ee73e7a97747844bb65d76690"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_rituelles_gauche.json", "8398a24d455b2f70ccd1b66ffd71276b3d4800057d894b0581f77634d94e9d87")),
+            "modeles/exemple/poing/"));
     }
 
     private Vorace core;

@@ -378,13 +378,14 @@ def retourner(modele):
     return g
 
 
-# Réglages « en main » : neutres à la troisième personne (le modèle est déjà autour du poing) ; à la première
-# personne, l'avant-bras part du bas de l'écran vers l'avant.
+# Réglages « en main » : neutres à la troisième personne (le modèle est déjà autour du poing).
 AFFICHAGE = {
     "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
     "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
-    "firstperson_righthand": {"rotation": [18, -6, 0], "translation": [0, 1, -2], "scale": [0.85, 0.85, 0.85]},
-    "firstperson_lefthand": {"rotation": [18, 6, 0], "translation": [0, 1, -2], "scale": [0.85, 0.85, 0.85]},
+    # première personne : exactement là où le jeu dessine le bras à main vide (calcul de Vorace,
+    # PeauUV.PREMIERE_ROTATION / PREMIERE_TRANSLATION) ; vorace-item y dessine aussi le bras du joueur
+    "firstperson_righthand": {"rotation": [35.569, -21.633, 69.021], "translation": [1.387, 2.296, -6.147], "scale": [1, 1, 1]},
+    "firstperson_lefthand": {"rotation": [35.569, -21.633, 69.021], "translation": [1.387, 2.296, -6.147], "scale": [1, 1, 1]},
     "ground": {"rotation": [0, 0, 0], "translation": [0, 0, -4], "scale": [0.5, 0.5, 0.5]},
     "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, -4], "scale": [0.6, 0.6, 0.6]},
 }
