@@ -155,25 +155,23 @@ def bandes_de_combat():
 
 
 def cestes():
-    """Cestes de laiton : lanières de cuir croisées de la main à l'avant-bras, coque de laiton sur les doigts avec
-    quatre anneaux saillants et leurs pointes, garde de laiton au poignet, lanières qui pendent."""
+    """Cestes de laiton (poing américain) : rien que le laiton, contre le bout du poing ; le poing du joueur reste
+    visible. Barre de frappe sur les jointures avec quatre bosses, anneaux des doigts (séparations entre eux), poignée
+    contre la paume. Les bosses dépassent la manche d'un plastron (qui couvre la main jusqu'à 1 unité du poing)."""
     e = []
-    e.append(autour(1.0625, 6.875, 15.0, CUIR, 1, "dessous", motif="cuir"))
-    spirale(e, 9.5, 14.75, 1.25, 1.0625, 0.125, CUIR, (3, 2), "laniere", motif="cuir")
-    # coque de laiton sur les doigts et anneaux saillants
-    e.append(boite([5.25, 2.875, 6.375], [11.25, 9.125, 9.25], LAITON, 2, "coque"))
-    for y0, y1 in ((2.875, 4.375), (4.5, 6.0), (6.0, 7.5), (7.625, 9.125)):
-        e.append(boite([6.5, y0, 5.625], [11.75, y1, 6.375], LAITON, 3, "anneau"))
-        e.append(boite([7.0, y0 + 0.375, 5.5], [11.25, y1 - 0.375, 5.625], LAITON, 0, "creux", motif="plein"))
-        # pointe au milieu de chaque anneau
-        e.append(boite([11.75, (y0 + y1) / 2 - 0.25, 5.75], [12.25, (y0 + y1) / 2 + 0.25, 6.25], LAITON, 4, "pointe", motif="plein"))
-    # garde de laiton au poignet, bord relevé
-    e.append(autour(1.25, 9.25, 10.0, LAITON, 3, "garde"))
-    e += anneau(1.375, 0.25, 9.375, 9.875, LAITON, 4, "garde")
-    pouce(e, CUIR, 3, motif="cuir")
-    # lanières qui pendent
-    e.append(boite([10.25, 2.5, 12.5], [10.875, 2.625, 16.5], CUIR, 2, "pend", motif="cuir", rot=("y", -22.5, [10.5, 2.5, 12.5])))
-    e.append(boite([5.125, 2.5, 13.0], [5.75, 2.625, 16.25], CUIR, 3, "pend", motif="cuir"))
+    # barre de frappe, du côté des jointures (dehors, +x), contre le bout du poing (z = 8)
+    e.append(boite([7.75, 3.625, 6.875], [10.625, 8.375, 8.0], LAITON, 3, "barre"))
+    # la barre remonte un peu sur l'arête des jointures (dos des doigts), visible de côté
+    e.append(boite([10.0, 3.625, 8.0], [10.375, 8.375, 9.0], LAITON, 2, "barre"))
+    # une bosse par doigt
+    for y0, y1 in ((3.75, 4.875), (4.875, 6.0), (6.0, 7.125), (7.125, 8.25)):
+        e.append(boite([8.25, y0 + 0.125, 6.375], [10.25, y1 - 0.125, 6.875], LAITON, 4, "bosse"))
+    # anneaux : séparations entre les doigts, de la barre vers la paume, et bords
+    for yc in (3.6875, 4.875, 6.0, 7.125, 8.3125):
+        e.append(boite([6.25, yc - 0.125, 7.25], [7.75, yc + 0.125, 8.0], LAITON, 2, "anneau"))
+    # poignée contre la paume (dedans, -x), qui relie les anneaux
+    e.append(boite([5.625, 3.5, 7.0], [6.375, 8.5, 8.0], LAITON, 2, "poignee"))
+    e.append(boite([5.5, 4.25, 7.25], [5.625, 7.75, 7.875], LAITON, 1, "poignee"))
     return e
 
 

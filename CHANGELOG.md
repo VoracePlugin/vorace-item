@@ -1,5 +1,10 @@
 # Journal des changements
 
+## 0.14.7 (novembre 2026)
+
+- Cestes de laiton en vrai poing américain : plus de cuir, rien que le laiton contre le bout du poing (barre de frappe,
+  quatre bosses, anneaux des doigts, poignée contre la paume) ; le poing du joueur reste visible.
+
 ## 0.14.6 (novembre 2026) : armes de poing redessinées
 
 - Une silhouette par arme : gantelets à canon évasé (quatre plaques inclinées vers le coude), dos de la main en trois
