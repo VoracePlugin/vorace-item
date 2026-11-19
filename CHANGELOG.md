@@ -1,5 +1,16 @@
 # Journal des changements
 
+## 0.14.6 (novembre 2026) : armes de poing redessinées
+
+- Une silhouette par arme : gantelets à canon évasé (quatre plaques inclinées vers le coude), dos de la main en trois
+  lames, jointures saillantes, gant de mailles ; bandes de lin en spirale avec jointures rembourrées et bouts qui
+  pendent ; cestes à coque de laiton, anneaux à pointes et garde de poignet ; brassards à attelles de fer, lacets
+  croisés et garde de coude ; bandes du souffle en spirale, inscriptions rouges, cordon à gland, deux talismans,
+  bracelet de perles.
+- Textures peintes d'après la place de chaque texel sur le cube : filet clair côté coude, sombre côté poing, mailles,
+  trame du tissu, coutures du cuir, inscriptions.
+- Lot « poings-3d-5 » : les modèles et textures de la 0.14.5 remplacés s'ils sont intacts.
+
 ## 0.14.5 (novembre 2026) : les cinq armes de poing en 3D
 
 - Bandes de lin, cestes de laiton (lanières de cuir, anneaux de laiton sur les jointures), brassards de cuir ferré

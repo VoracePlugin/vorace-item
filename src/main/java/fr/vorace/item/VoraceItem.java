@@ -70,6 +70,24 @@ public final class VoraceItem extends JavaPlugin {
                 "ressources/modeles/exemple/poing/gantelets_gauche.json", "cb1175ec4919b8d32633759e640027bda748997cf300a1f106f0bd4b862a551b",
                 "ressources/textures/exemple/poing/gantelets_3d.png", "dce610b85f1b04610f6ae537a7c028a694e1dbdcef1b62211ea20bfc0696792f"),
             "modeles/exemple/poing/", "textures/exemple/poing/"));
+        // armes de poing redessinées (silhouettes, plaques évasées, spirales, motifs) : celles de la 0.14.5 remplacées
+        LOTS.put("poings-3d-5", new Lot(null, Map.ofEntries(
+            Map.entry("ressources/modeles/exemple/poing/gantelets.json", "9cde684bf70bccd60a20afd440d4d6309d3e5217f84494a564432e0d6d3cc734"),
+            Map.entry("ressources/modeles/exemple/poing/gantelets_gauche.json", "523e6557c05b0ccd5339d20790ca6c7a73ffbfc8cd67ad79019f588ccf84b91f"),
+            Map.entry("ressources/textures/exemple/poing/gantelets_3d.png", "d6fa0e4e73f04484e3f65f0410a17a99098e8b3ea244381419b897f0c7c55dc3"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_de_combat.json", "4123cf44463a50eb1690a727160edcb0f324636921f4cb565cb21863a93f4cc2"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_de_combat_gauche.json", "bc9137d6bef7355174b0e18b0071d9a5ad49a69351259082939f1b0080b559a9"),
+            Map.entry("ressources/textures/exemple/poing/bandes_de_combat_3d.png", "e23b52883cfa3b9be9dd247bf2f0a2ef4a0c3e45d508381db1caf0d0c6755711"),
+            Map.entry("ressources/modeles/exemple/poing/cestes.json", "b51f83506026037e9fef4c98611dba0133ec997ea4d21cc675e98063e4004371"),
+            Map.entry("ressources/modeles/exemple/poing/cestes_gauche.json", "c323064a92a6644319c17adf8f481cce4464e3b68849399fa4c6c1d083afe463"),
+            Map.entry("ressources/textures/exemple/poing/cestes_3d.png", "6c90643a53b81dcbc1d1a6d74046d8a3665ae5af94b4db1aaa27fe42d1c728bc"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde.json", "fee4da0611ffa293d6167598d4a2c3eb4b0bd884a7a29cefea3708583e9b425d"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde_gauche.json", "329b90bd0646dc21a3d700fb3718564f0738aadc85e6cca87e0b97d83261612d"),
+            Map.entry("ressources/textures/exemple/poing/brassards_de_garde_3d.png", "eefe660c6f1470406ebf336adddeedbbede89e20663cf203b972e63e05b1af67"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_rituelles.json", "e809b9a5226aa7e9ffcc04a5390b9ab1a15cb7c6f0ab4bc58e770cc8b0c83f8b"),
+            Map.entry("ressources/modeles/exemple/poing/bandes_rituelles_gauche.json", "3107005afc194558a6939b43b60c8f0194ec50a8b4a4bcc944b6ed59e466649e"),
+            Map.entry("ressources/textures/exemple/poing/bandes_rituelles_3d.png", "55b7607121f7abd8b7901bb3738a5d58107d2440edabe35a7eef4fa030a16abb")),
+            "modeles/exemple/poing/", "textures/exemple/poing/"));
     }
 
     private Vorace core;
