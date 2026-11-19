@@ -33,14 +33,19 @@ TEXTURES = os.path.join(RESSOURCES, "textures", "exemple", "poing")
 FER = [(62, 63, 68), (100, 102, 108), (142, 144, 150), (186, 188, 194), (226, 228, 232)]
 CUIR = [(40, 22, 16), (66, 36, 24), (94, 54, 34), (124, 76, 48), (152, 100, 66)]
 SOMBRE = [(24, 22, 24), (36, 34, 36), (50, 48, 50), (64, 62, 64), (80, 78, 80)]
+LIN = [(98, 84, 64), (140, 124, 98), (184, 168, 138), (212, 200, 174), (234, 226, 206)]
+LAITON = [(84, 62, 24), (128, 96, 40), (170, 132, 58), (204, 168, 86), (230, 204, 128)]
+ROUGE = [(70, 22, 20), (110, 34, 28), (148, 50, 38), (180, 74, 54), (206, 108, 82)]
+PAPIER = [(150, 140, 112), (190, 180, 150), (218, 210, 184), (236, 230, 208), (248, 244, 228)]
 PEAU = (198, 150, 118)
 
 ATLAS = 512          # côté de la texture ; 8 pixels par unité de modèle
 PX = 8
 
 
-def boite(de, a, palette, ton, nom="", usure=False, filets=True):
-    return {"de": list(de), "a": list(a), "palette": palette, "ton": ton, "nom": nom, "usure": usure, "filets": filets}
+def boite(de, a, palette, ton, nom="", usure=False, filets=True, glyphes=False):
+    return {"de": list(de), "a": list(a), "palette": palette, "ton": ton, "nom": nom, "usure": usure, "filets": filets,
+            "glyphes": glyphes}
 
 
 def autour(m, z0, z1, palette, ton, nom, **k):
@@ -57,33 +62,126 @@ def anneau(m, ep, z0, z1, palette, ton, nom):
             boite([x1 - ep, y0 + ep, z0], [x1, y1 - ep, z1], palette, ton, nom)]
 
 
-def gantelets():
-    """Gantelets de fer, main droite, fins : juste au-dessus de la manche d'un plastron (marge 1 1/8), reliefs de
-    1/8 à 1/4 d'unité. Main en plaques, jointures, doigts repliés, pouce, sangle, canon court au bord creux."""
-    e = []
-    # main : bloc de base, plaque du dos de la main (dehors, +x)
-    e.append(autour(1.125, 6.875, 10.375, FER, 2, "main"))
-    e.append(boite([11.125, 3.75, 7.375], [11.375, 8.25, 10.125], FER, 3, "dos"))
-    # jointures : quatre bosses fines sur le bout du poing
+M = 1.125   # marge du corps : juste au-dessus de la manche d'un plastron (1)
+
+
+def jointures(e, palette, ton, x1=11.125, z0=6.625):
+    """Quatre bosses sur le bout du poing, alignées d'avant en arrière."""
     for y0, y1 in ((3.0, 4.25), (4.375, 5.625), (6.375, 7.625), (7.75, 9.0)):
-        e.append(boite([6.0, y0, 6.625], [11.125, y1, 7.0], FER, 3, "jointure"))
-    # doigts repliés côté paume (dedans, -x) : quatre plaques séparées par des creux
+        e.append(boite([6.0, y0, z0], [x1, y1, 7.0], palette, ton, "jointure"))
+
+
+def anneaux(e, zs, m, palette, ton, nom="anneau", ep=0.5, **k):
+    for z in zs:
+        e.append(autour(m, z, z + ep, palette, ton, nom, **k))
+
+
+def gantelets():
+    """Gantelets de fer : main en plaques articulées, jointures, doigts repliés, pouce, sangle, canon en deux lames."""
+    e = []
+    e.append(autour(M, 6.875, 10.375, FER, 1, "main"))
+    # dos de la main (dehors, +x) : deux lames articulées et une arête
+    e.append(boite([11.125, 3.625, 7.25], [11.375, 8.375, 8.875], FER, 3, "dos"))
+    e.append(boite([11.125, 3.875, 8.75], [11.375, 8.125, 10.25], FER, 2, "dos"))
+    e.append(boite([11.375, 5.75, 7.5], [11.5, 6.25, 10.0], FER, 4, "arete"))
+    jointures(e, FER, 3)
+    # doigts repliés côté paume (dedans, -x)
     for y0, y1 in ((3.0, 4.25), (4.375, 5.625), (6.375, 7.625), (7.75, 9.0)):
         e.append(boite([4.625, y0, 7.125], [4.875, y1, 8.875], FER, 2, "doigt"))
-    # pouce : sur le devant (+y), côté paume
-    e.append(boite([4.875, 9.125, 7.5], [7.25, 9.375, 9.75], FER, 3, "pouce"))
+    # pouce en deux plaques, sur le devant (+y)
+    e.append(boite([4.875, 9.125, 8.375], [7.25, 9.375, 9.875], FER, 2, "pouce"))
+    e.append(boite([4.875, 9.125, 7.375], [6.5, 9.375, 8.25], FER, 3, "pouce"))
     # poignet : sangle de cuir et boucle
     e.append(autour(1.0625, 10.375, 11.25, CUIR, 2, "sangle"))
     e.append(boite([7.375, 9.0625, 10.5], [8.625, 9.25, 11.125], FER, 4, "boucle"))
-    # canon d'avant-bras, court, et son bord creux
-    e.append(autour(1.1875, 11.25, 14.375, FER, 2, "canon"))
-    e += anneau(1.3125, 0.375, 14.25, 14.875, FER, 3, "rebord")
-    # arête sur le dehors du canon, rivets devant et derrière
-    e.append(boite([11.1875, 5.5, 11.75], [11.4375, 6.5, 14.0], FER, 3, "arete"))
+    # canon d'avant-bras : deux lames qui s'évasent, bord creux
+    e.append(autour(1.1875, 11.25, 12.875, FER, 2, "canon"))
+    e.append(autour(1.25, 12.75, 14.375, FER, 3, "canon"))
+    e += anneau(1.375, 0.375, 14.25, 14.875, FER, 2, "rebord")
+    # arête sur le dehors du canon, rivets
+    e.append(boite([11.25, 5.5, 11.5], [11.5, 6.5, 14.125], FER, 4, "arete"))
     for x0 in (5.5, 10.0):
-        e.append(boite([x0, 9.1875, 12.5], [x0 + 0.5, 9.3125, 13.0], FER, 4, "rivet", filets=False))
-        e.append(boite([x0, 2.6875, 12.5], [x0 + 0.5, 2.8125, 13.0], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 9.25, 13.25], [x0 + 0.5, 9.375, 13.75], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 2.625, 13.25], [x0 + 0.5, 2.75, 13.75], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 9.1875, 11.75], [x0 + 0.5, 9.3125, 12.25], FER, 4, "rivet", filets=False))
+        e.append(boite([x0, 2.6875, 11.75], [x0 + 0.5, 2.8125, 12.25], FER, 4, "rivet", filets=False))
     return e
+
+
+def bandes_de_combat():
+    """Bandes de lin : main et poignet serrés dans des bandes, jointures rembourrées, pouce, bout de bande qui pend."""
+    e = []
+    e.append(autour(1.0625, 6.875, 13.75, LIN, 2, "bandes"))
+    anneaux(e, (7.25, 8.375, 9.5, 10.625, 11.75, 12.875), 1.1875, LIN, 3, "tour", ep=0.625)
+    # jointures rembourrées (plusieurs tours de bande)
+    e.append(boite([6.0, 3.25, 6.625], [11.25, 8.75, 6.875], LIN, 3, "rembourrage"))
+    e.append(boite([6.5, 3.625, 6.375], [11.0, 8.375, 6.625], LIN, 4, "rembourrage"))
+    # pouce bandé
+    e.append(boite([4.875, 9.0625, 7.5], [7.25, 9.4375, 9.75], LIN, 3, "pouce"))
+    # bande croisée sur le dos de la main
+    e.append(boite([11.1875, 4.5, 7.75], [11.375, 7.5, 10.5], LIN, 3, "croise"))
+    # bout de bande qui pend du poignet (derrière, -y)
+    e.append(boite([7.5, 2.625, 10.0], [8.25, 2.75, 13.5], LIN, 1, "bout"))
+    return e
+
+
+def cestes():
+    """Cestes de laiton : main et avant-bras serrés de lanières de cuir, quatre anneaux de laiton sur les jointures."""
+    e = []
+    e.append(autour(1.0625, 6.875, 14.5, CUIR, 2, "lanieres"))
+    anneaux(e, (8.0, 9.5, 11.0, 12.25, 13.5), 1.1875, CUIR, 1, "tour", ep=0.5)
+    # barre et anneaux de laiton sur les jointures
+    e.append(boite([10.75, 2.875, 6.5], [11.625, 9.125, 8.125], LAITON, 2, "barre"))
+    for y0, y1 in ((3.0, 4.375), (4.5, 5.875), (6.125, 7.5), (7.625, 9.0)):
+        e.append(boite([6.25, y0, 6.0], [11.5, y1, 6.875], LAITON, 3, "anneau"))
+        e.append(boite([6.75, y0 + 0.375, 5.875], [11.0, y1 - 0.375, 6.0], LAITON, 1, "creux", filets=False))
+    # clous de laiton sur les lanières du poignet, devant et derrière
+    for z in (11.0, 12.25, 13.5):
+        e.append(boite([7.625, 9.1875, z + 0.0625], [8.375, 9.375, z + 0.4375], LAITON, 4, "clou", filets=False))
+        e.append(boite([7.625, 2.625, z + 0.0625], [8.375, 2.8125, z + 0.4375], LAITON, 4, "clou", filets=False))
+    # pouce dans une lanière
+    e.append(boite([4.875, 9.0625, 7.5], [7.25, 9.375, 9.75], CUIR, 3, "pouce"))
+    return e
+
+
+def brassards_de_garde():
+    """Brassards de cuir ferré : gant de cuir, long brassard jusqu'au coude, trois bandes de fer, plaque de garde, lacets."""
+    e = []
+    e.append(autour(1.0625, 6.875, 10.375, CUIR, 2, "gant"))
+    jointures(e, CUIR, 3, x1=11.0)
+    e.append(boite([4.875, 9.0625, 7.5], [7.25, 9.3125, 9.75], CUIR, 3, "pouce"))
+    # brassard de cuir jusqu'au coude, bord creux
+    e.append(autour(1.1875, 10.25, 18.5, CUIR, 2, "brassard"))
+    e += anneau(1.3125, 0.375, 18.375, 18.875, CUIR, 3, "bord")
+    # bandes de fer
+    anneaux(e, (10.5, 14.125, 17.625), 1.3125, FER, 3, "bande", ep=0.625)
+    # plaque de garde (dehors, +x) avec son arête
+    e.append(boite([11.1875, 4.25, 11.25], [11.4375, 7.75, 17.5], FER, 2, "garde"))
+    e.append(boite([11.4375, 5.625, 11.5], [11.5625, 6.375, 17.25], FER, 4, "garde"))
+    # lacets sur le devant (+y)
+    for z in (11.5, 12.375, 15.0, 15.875, 16.75):
+        e.append(boite([7.25, 9.1875, z], [8.75, 9.3125, z + 0.375], CUIR, 0, "lacet", filets=False))
+    return e
+
+
+def bandes_rituelles():
+    """Bandes du souffle : bandes de lin couvertes d'inscriptions rouges, cordon rouge, talisman de papier."""
+    e = []
+    e.append(autour(1.0625, 6.875, 14.0, PAPIER, 2, "bandes", glyphes=True))
+    anneaux(e, (7.5, 9.0, 12.5), 1.1875, PAPIER, 3, "tour", ep=0.625)
+    e.append(boite([6.0, 3.25, 6.625], [11.25, 8.75, 6.875], PAPIER, 3, "rembourrage", glyphes=True))
+    e.append(boite([4.875, 9.0625, 7.5], [7.25, 9.4375, 9.75], PAPIER, 3, "pouce"))
+    # cordon rouge noué au poignet
+    anneaux(e, (10.5, 11.5), 1.25, ROUGE, 2, "cordon", ep=0.25)
+    e.append(boite([7.5, 9.25, 10.375], [8.5, 9.625, 11.875], ROUGE, 3, "noeud"))
+    e.append(boite([7.75, 9.375, 11.875], [8.25, 9.5, 13.25], ROUGE, 2, "brin"))
+    # talisman de papier sur le dehors (+x), retenu par le cordon
+    e.append(boite([11.3125, 4.625, 10.625], [11.4375, 7.375, 13.875], PAPIER, 4, "talisman", glyphes=True))
+    return e
+
+
+ARMES = {"gantelets": gantelets, "bandes_de_combat": bandes_de_combat, "cestes": cestes,
+         "brassards_de_garde": brassards_de_garde, "bandes_rituelles": bandes_rituelles}
 
 
 FACES = ("north", "south", "west", "east", "down", "up")
@@ -107,6 +205,14 @@ def peindre(img, x0, y0, w, h, b, hasard):
     if b["filets"] and h >= 4:
         d.line([x0, y0, x0 + w - 1, y0], fill=pal[min(4, ton + 1)] + (255,))
         d.line([x0, y0 + h - 1, x0 + w - 1, y0 + h - 1], fill=pal[max(0, ton - 1)] + (255,))
+    if b["glyphes"] and w >= 8 and h >= 8:
+        # inscriptions : petits signes à l'encre rouge (trait, barre, point), espacés
+        encre = ROUGE[1] + (255,)
+        for gx in range(2, w - 4, 7):
+            gy = 2 + (gx * 5 + h) % max(1, h - 6)
+            d.line([x0 + gx + 1, y0 + gy, x0 + gx + 1, y0 + gy + 3], fill=encre)
+            d.line([x0 + gx, y0 + gy + 1, x0 + gx + 2, y0 + gy + 1], fill=encre)
+            d.point((x0 + gx + 3, y0 + gy + 3), fill=encre)
     if b["usure"] and w >= 12 and h >= 12:
         for _ in range(2):
             tx, ty = hasard.randrange(2, w - 2), hasard.randrange(2, h - 5)
@@ -238,37 +344,36 @@ def manche_plastron():
     return [{"from": [5, 3, 7], "to": [11, 9, 23], "faces": {f: {"couleur": (110, 140, 185)} for f in FACES}}]
 
 
-def apercu(modele, gauche, tex, chemin):
-    # bras pendant : le z du modèle (vers le coude) monte à l'écran, le devant (+y) vient vers nous
+def apercu(modeles, tex, chemin):
+    """Une ligne par arme : dehors (dos de la main), dedans (paume, pouce), jointures, sur une manche de plastron."""
     debout = np.array([[1, 0, 0], [0, 0, 1], [0, -1, 0]], float)
-    centre = np.array([8.0, 6.0, 12.0])
-    vues = [
-        (modele["elements"] + bras_peau(), matrice(20, -35) @ debout),     # devant, dehors (dos de la main)
-        (modele["elements"] + bras_peau(), matrice(20, 55) @ debout),      # devant, dedans (paume, pouce)
-        (modele["elements"] + bras_peau(), matrice(55, -30) @ debout),     # par-dessous : les jointures
-        (modele["elements"] + manche_plastron(), matrice(20, -35) @ debout),
-        (gauche["elements"] + bras_peau(), matrice(20, 35) @ debout),      # main gauche, dehors
-    ]
-    img = Image.new("RGB", (400 * len(vues), 400), (44, 46, 54))
-    for i, (el, M) in enumerate(vues):
-        img.paste(rendre(el, tex, M, centre), (400 * i, 0))
+    centre = np.array([8.0, 6.0, 12.5])
+    vues = [matrice(20, -35) @ debout, matrice(20, 55) @ debout, matrice(55, -30) @ debout, matrice(20, -35) @ debout]
+    t = 300
+    img = Image.new("RGB", (t * len(vues), t * len(modeles)), (44, 46, 54))
+    for r, nom in enumerate(modeles):
+        for c, M in enumerate(vues):
+            el = modeles[nom]["elements"] + (manche_plastron() if c == 3 else bras_peau())
+            img.paste(rendre(el, tex[nom], M, centre, taille=t, champ=24), (t * c, t * r))
     img.save(chemin)
 
 
 def main():
     os.makedirs(MODELES, exist_ok=True)
     os.makedirs(TEXTURES, exist_ok=True)
-    modele, tex = construire("gantelets", gantelets(), AFFICHAGE)
-    gauche = retourner(modele)
-    with open(os.path.join(MODELES, "gantelets.json"), "w", encoding="utf-8") as f:
-        json.dump(modele, f, indent=1)
-    with open(os.path.join(MODELES, "gantelets_gauche.json"), "w", encoding="utf-8") as f:
-        json.dump(gauche, f, indent=1)
-    tex.save(os.path.join(TEXTURES, "gantelets_3d.png"))
-    print(len(modele["elements"]), "cubes")
+    modeles, textures = {}, {}
+    for nom, f in ARMES.items():
+        modele, tex = construire(nom, f(), AFFICHAGE)
+        with open(os.path.join(MODELES, nom + ".json"), "w", encoding="utf-8") as fo:
+            json.dump(modele, fo, indent=1)
+        with open(os.path.join(MODELES, nom + "_gauche.json"), "w", encoding="utf-8") as fo:
+            json.dump(retourner(modele), fo, indent=1)
+        tex.save(os.path.join(TEXTURES, nom + "_3d.png"))
+        modeles[nom], textures[nom] = modele, tex
+        print(nom, len(modele["elements"]), "cubes")
     if len(sys.argv) > 1:
         os.makedirs(sys.argv[1], exist_ok=True)
-        apercu(modele, gauche, tex, os.path.join(sys.argv[1], "gantelets_3d.png"))
+        apercu(modeles, textures, os.path.join(sys.argv[1], "armes_de_poing_3d.png"))
 
 
 if __name__ == "__main__":

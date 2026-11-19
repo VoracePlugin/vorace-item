@@ -86,3 +86,15 @@ textures/exemple/poing/bandes_rituelles.png
 textures/exemple/poing/gantelets_3d.png
 modeles/exemple/poing/gantelets.json
 modeles/exemple/poing/gantelets_gauche.json
+textures/exemple/poing/bandes_de_combat_3d.png
+modeles/exemple/poing/bandes_de_combat.json
+modeles/exemple/poing/bandes_de_combat_gauche.json
+textures/exemple/poing/cestes_3d.png
+modeles/exemple/poing/cestes.json
+modeles/exemple/poing/cestes_gauche.json
+textures/exemple/poing/brassards_de_garde_3d.png
+modeles/exemple/poing/brassards_de_garde.json
+modeles/exemple/poing/brassards_de_garde_gauche.json
+textures/exemple/poing/bandes_rituelles_3d.png
+modeles/exemple/poing/bandes_rituelles.json
+modeles/exemple/poing/bandes_rituelles_gauche.json

@@ -1,5 +1,14 @@
 # Journal des changements
 
+## 0.14.5 (novembre 2026) : les cinq armes de poing en 3D
+
+- Bandes de lin, cestes de laiton (lanières de cuir, anneaux de laiton sur les jointures), brassards de cuir ferré
+  (gant, brassard jusqu'au coude, bandes de fer, plaque de garde, lacets), bandes du souffle (inscriptions rouges,
+  cordon, talisman de papier) en 3D comme les gantelets, chacune avec son modèle de main gauche.
+- Gantelets plus détaillés (31 cubes) : dos de la main en deux lames articulées, pouce en deux plaques, canon en deux
+  lames, huit rivets.
+- Lot « poings-3d-4 » : `objets/poings.yml` et gantelets de la 0.14.4 remplacés s'ils sont intacts.
+
 ## 0.14.4 (novembre 2026)
 
 - Gantelets affinés (23 cubes) : juste au-dessus de la manche d'un plastron, reliefs de 1/8 à 1/4 d'unité, canon plus

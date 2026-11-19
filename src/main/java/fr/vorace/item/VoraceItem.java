@@ -63,6 +63,13 @@ public final class VoraceItem extends JavaPlugin {
                 "ressources/modeles/exemple/poing/gantelets_gauche.json", "c0d5d8425b9508295a9e020a05a3082ed389d571223e0ba7bf25cfa8006dbfcc",
                 "ressources/textures/exemple/poing/gantelets_3d.png", "0acf4fd3bf81091987f7b01bdac1185bf76c7eb0743868b0511b87327945094c"),
             "modeles/exemple/poing/", "textures/exemple/poing/gantelets_3d"));
+        // les cinq armes de poing en 3D (gantelets plus détaillés) : poings.yml et gantelets de la 0.14.4 remplacés
+        LOTS.put("poings-3d-4", new Lot("objets/poings.yml", Map.of(
+                "objets/poings.yml", "1f2dadd03d501f5306d21fdfc441727236b4bab101efd586f747af323b2937a9",
+                "ressources/modeles/exemple/poing/gantelets.json", "d0d982e81161e5b463b83cfffc8b1e69f54b352ac8a7e8251f2127e347fc575c",
+                "ressources/modeles/exemple/poing/gantelets_gauche.json", "cb1175ec4919b8d32633759e640027bda748997cf300a1f106f0bd4b862a551b",
+                "ressources/textures/exemple/poing/gantelets_3d.png", "dce610b85f1b04610f6ae537a7c028a694e1dbdcef1b62211ea20bfc0696792f"),
+            "modeles/exemple/poing/", "textures/exemple/poing/"));
     }
 
     private Vorace core;

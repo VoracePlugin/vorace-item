@@ -1,18 +1,14 @@
 # ----------------------------------------------------------------- armes de poing (Pugiliste de Babel)
-# Une paire par objet. Icône dans l'inventaire (outils/exemples-poings.py) ; en main, les gantelets ont un modèle 3D
-# autour du poing (outils/poings-3d.py), les autres sont encore invisibles en main.
+# Une paire par objet. Icône dans l'inventaire (outils/exemples-poings.py) ; en main, un modèle 3D autour du poing et
+# de l'avant-bras (outils/poings-3d.py), dans les deux mains (main gauche : modèle « _gauche » retourné).
 bandes_de_lin:
   nom: "Bandes de lin"
   type: bandes_de_combat
   rang: commun
   etage: 1
   apparence:
+    modele: exemple/poing/bandes_de_combat   # en 3D autour du poing et de l'avant-bras (outils/poings-3d.py)
     texture: exemple/poing/bandes_de_combat
-    affichage:   # invisibles en main : ce sont les poings qui frappent
-      thirdperson_righthand: { scale: [0, 0, 0] }
-      thirdperson_lefthand: { scale: [0, 0, 0] }
-      firstperson_righthand: { scale: [0, 0, 0] }
-      firstperson_lefthand: { scale: [0, 0, 0] }
   stats:
     attaque: 14
   modificateurs:
@@ -49,12 +45,8 @@ cestes_de_laiton:
   rang: peu_commun
   etage: 3
   apparence:
+    modele: exemple/poing/cestes   # en 3D autour du poing et de l'avant-bras (outils/poings-3d.py)
     texture: exemple/poing/cestes
-    affichage:   # invisibles en main : ce sont les poings qui frappent
-      thirdperson_righthand: { scale: [0, 0, 0] }
-      thirdperson_lefthand: { scale: [0, 0, 0] }
-      firstperson_righthand: { scale: [0, 0, 0] }
-      firstperson_lefthand: { scale: [0, 0, 0] }
   stats:
     attaque: 20
   modificateurs:
@@ -72,12 +64,8 @@ brassards_de_cuir_ferre:
   rang: commun
   etage: 2
   apparence:
+    modele: exemple/poing/brassards_de_garde   # en 3D autour du poing et de l'avant-bras (outils/poings-3d.py)
     texture: exemple/poing/brassards_de_garde
-    affichage:   # invisibles en main : ce sont les poings qui frappent
-      thirdperson_righthand: { scale: [0, 0, 0] }
-      thirdperson_lefthand: { scale: [0, 0, 0] }
-      firstperson_righthand: { scale: [0, 0, 0] }
-      firstperson_lefthand: { scale: [0, 0, 0] }
   stats:
     attaque: 13
   modificateurs:
@@ -95,12 +83,8 @@ bandes_du_souffle:
   rang: peu_commun
   etage: 3
   apparence:
+    modele: exemple/poing/bandes_rituelles   # en 3D autour du poing et de l'avant-bras (outils/poings-3d.py)
     texture: exemple/poing/bandes_rituelles
-    affichage:   # invisibles en main : ce sont les poings qui frappent
-      thirdperson_righthand: { scale: [0, 0, 0] }
-      thirdperson_lefthand: { scale: [0, 0, 0] }
-      firstperson_righthand: { scale: [0, 0, 0] }
-      firstperson_lefthand: { scale: [0, 0, 0] }
   stats:
     attaque: 12
     puissance: 14
