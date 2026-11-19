@@ -88,6 +88,12 @@ public final class VoraceItem extends JavaPlugin {
             Map.entry("ressources/modeles/exemple/poing/bandes_rituelles_gauche.json", "3107005afc194558a6939b43b60c8f0194ec50a8b4a4bcc944b6ed59e466649e"),
             Map.entry("ressources/textures/exemple/poing/bandes_rituelles_3d.png", "55b7607121f7abd8b7901bb3738a5d58107d2440edabe35a7eef4fa030a16abb")),
             "modeles/exemple/poing/", "textures/exemple/poing/"));
+        // cestes en vrai poing américain : ceux de la 0.14.7 remplacés
+        LOTS.put("poings-3d-6", new Lot(null, Map.ofEntries(
+            Map.entry("ressources/modeles/exemple/poing/cestes.json", "a68805e14e731ace961b3a3c9a2b73e5daf3cc3d01081f6000c6dacf55810fb1"),
+            Map.entry("ressources/modeles/exemple/poing/cestes_gauche.json", "4d2d610b72e1978d1976e93ac09ead3ce57d8e8da3f37cee7e623de4a131fa5f"),
+            Map.entry("ressources/textures/exemple/poing/cestes_3d.png", "ed43b076123b92a5c3a096eb81fb8d756b1cd47680f6102cb3e9c604fe097c24")),
+            "modeles/exemple/poing/cestes", "textures/exemple/poing/cestes_3d"));
     }
 
     private Vorace core;

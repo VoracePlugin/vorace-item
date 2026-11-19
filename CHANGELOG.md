@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.14.8 (novembre 2026)
+
+- Cestes de laiton redessinées en vrai poing américain : plaque plate en travers des doigts, quatre anneaux soudés aux
+  trous arrondis, barre de frappe à quatre bosses, bords qui se referment vers la poignée dans la paume. Lot
+  « poings-3d-6 ».
+
 ## 0.14.7 (novembre 2026)
 
 - Cestes de laiton en vrai poing américain : plus de cuir, rien que le laiton contre le bout du poing (barre de frappe,
