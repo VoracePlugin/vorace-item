@@ -107,6 +107,16 @@ public final class VoraceItem extends JavaPlugin {
             Map.entry("ressources/modeles/exemple/poing/bandes_rituelles.json", "8a8a8d46e9ec0cc451b4967a8852ea8522774a0ee73e7a97747844bb65d76690"),
             Map.entry("ressources/modeles/exemple/poing/bandes_rituelles_gauche.json", "8398a24d455b2f70ccd1b66ffd71276b3d4800057d894b0581f77634d94e9d87")),
             "modeles/exemple/poing/"));
+        // gantelets et brassards raccourcis : ceux de la 0.14.9 remplacés
+        LOTS.put("poings-3d-8", new Lot(null, Map.ofEntries(
+            Map.entry("ressources/modeles/exemple/poing/gantelets.json", "215803e22050f593bab96d75537bbaca5b8b144ce62d33839157002cc7d483c3"),
+            Map.entry("ressources/modeles/exemple/poing/gantelets_gauche.json", "4d0a741cc47900c061a5b76fec0921dfde2c2760b0c8e6ff3a551cb58cfc5cb2"),
+            Map.entry("ressources/textures/exemple/poing/gantelets_3d.png", "7e494b7526cf3cc684b0ee1d13bd215b7ab88edaebd2e1fa17648c8ae2761331"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde.json", "328c9f5c2c35c16b25e00f567279c719482346f2af646ddee5de53ee0112e491"),
+            Map.entry("ressources/modeles/exemple/poing/brassards_de_garde_gauche.json", "2b24913c53c9355e0148acfdfc2e1b3c12f7bcd2b5654704e6a18c0beef81d92"),
+            Map.entry("ressources/textures/exemple/poing/brassards_de_garde_3d.png", "a603908397074827fa291c3dd127ca414ebeb0a7ea1426e7e1e97465b187b8ea")),
+            "modeles/exemple/poing/gantelets", "modeles/exemple/poing/brassards", "textures/exemple/poing/gantelets_3d",
+            "textures/exemple/poing/brassards_de_garde_3d"));
     }
 
     private Vorace core;

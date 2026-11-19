@@ -122,16 +122,16 @@ def gantelets():
     # poignet : sangle de cuir, boucle
     e.append(autour(1.1875, 10.5, 11.5, CUIR, 2, "sangle", motif="cuir"))
     e.append(boite([7.25, 9.1875, 10.625], [8.75, 9.4375, 11.375], LAITON, 3, "boucle"))
-    # canon : base, puis quatre plaques inclinées de 22,5° qui s'ouvrent vers le coude
-    e.append(autour(1.1875, 11.5, 13.5, FER, 2, "canon"))
-    e.append(boite([4.625, 9.25, 13.25], [11.375, 9.625, 16.5], FER, 3, "evase", rot=("x", -22.5, [8, 9.25, 13.25])))
-    e.append(boite([4.625, 2.375, 13.25], [11.375, 2.75, 16.5], FER, 2, "evase", rot=("x", 22.5, [8, 2.75, 13.25])))
-    e.append(boite([11.25, 3.0, 13.25], [11.625, 9.0, 16.5], FER, 3, "evase", rot=("y", 22.5, [11.25, 6, 13.25])))
-    e.append(boite([4.375, 3.0, 13.25], [4.75, 9.0, 16.5], FER, 2, "evase", rot=("y", -22.5, [4.75, 6, 13.25])))
+    # canon court : base, puis quatre plaques inclinées de 22,5° qui s'ouvrent vers le coude
+    e.append(autour(1.1875, 11.5, 12.75, FER, 2, "canon"))
+    e.append(boite([4.625, 9.25, 12.5], [11.375, 9.625, 14.25], FER, 3, "evase", rot=("x", -22.5, [8, 9.25, 12.5])))
+    e.append(boite([4.625, 2.375, 12.5], [11.375, 2.75, 14.25], FER, 2, "evase", rot=("x", 22.5, [8, 2.75, 12.5])))
+    e.append(boite([11.25, 3.0, 12.5], [11.625, 9.0, 14.25], FER, 3, "evase", rot=("y", 22.5, [11.25, 6, 12.5])))
+    e.append(boite([4.375, 3.0, 12.5], [4.75, 9.0, 14.25], FER, 2, "evase", rot=("y", -22.5, [4.75, 6, 12.5])))
     # rivets du canon
     for x0 in (5.25, 10.25):
-        e.append(boite([x0, 9.3125, 12.0], [x0 + 0.5, 9.4375, 12.5], FER, 4, "rivet", motif="plein"))
-        e.append(boite([x0, 2.5625, 12.0], [x0 + 0.5, 2.6875, 12.5], FER, 4, "rivet", motif="plein"))
+        e.append(boite([x0, 9.3125, 11.875], [x0 + 0.5, 9.4375, 12.375], FER, 4, "rivet", motif="plein"))
+        e.append(boite([x0, 2.5625, 11.875], [x0 + 0.5, 2.6875, 12.375], FER, 4, "rivet", motif="plein"))
     return e
 
 
@@ -189,29 +189,29 @@ def cestes():
 
 
 def brassards_de_garde():
-    """Brassards de cuir ferré : gant de cuir, long brassard jusqu'au coude avec trois attelles de fer sur le dehors,
-    lacets croisés sur le dedans, bandes de fer, garde de coude évasée."""
+    """Brassards de cuir ferré : gant de cuir, brassard jusqu'au milieu de l'avant-bras avec trois attelles de fer sur le
+    dehors, lacets croisés sur le dedans, bandes de fer, bord évasé."""
     e = []
     e.append(autour(1.0625, 6.875, 10.25, CUIR_CLAIR, 2, "gant", motif="cuir"))
     doigts(e, CUIR_CLAIR, 3, motif="cuir", ext=11.125)
     pouce(e, CUIR_CLAIR, 3, motif="cuir")
     # brassard de cuir
-    e.append(autour(1.1875, 10.125, 18.75, CUIR, 2, "brassard", motif="cuir"))
+    e.append(autour(1.1875, 10.125, 15.25, CUIR, 2, "brassard", motif="cuir"))
     # attelles de fer sur le dehors (+x) et le devant
     for y0, y1 in ((3.25, 4.75), (5.25, 6.75), (7.25, 8.75)):
-        e.append(boite([11.1875, y0, 10.75], [11.5, y1, 18.0], FER, 3, "attelle"))
+        e.append(boite([11.1875, y0, 10.75], [11.5, y1, 14.75], FER, 3, "attelle"))
     for x0, x1 in ((5.5, 7.25), (8.75, 10.5)):
-        e.append(boite([x0, 9.1875, 11.0], [x1, 9.5, 17.75], FER, 2, "attelle"))
+        e.append(boite([x0, 9.1875, 11.0], [x1, 9.5, 14.5], FER, 2, "attelle"))
     # bandes de fer
-    for z in (10.25, 14.0, 17.75):
-        e.append(autour(1.375, z, z + 0.625, FER, 4 if z == 14.0 else 3, "bande"))
+    for z, t in ((10.25, 3), (12.5, 4), (14.75, 3)):
+        e.append(autour(1.375, z, z + 0.5, FER, t, "bande"))
     # lacets croisés sur le dedans (-x)
-    for z in (11.75, 13.5, 15.25):
+    for z in (11.25, 13.25):
         e.append(boite([4.6875, 4.25, z], [4.8125, 7.75, z + 0.375], CUIR_CLAIR, 3, "lacet", motif="plein", rot=("x", 22.5, [4.75, 6, z + 0.1875])))
         e.append(boite([4.6875, 4.25, z], [4.8125, 7.75, z + 0.375], CUIR_CLAIR, 2, "lacet", motif="plein", rot=("x", -22.5, [4.75, 6, z + 0.1875])))
-    # garde de coude évasée
-    e.append(boite([11.25, 3.0, 18.25], [11.625, 9.0, 20.5], FER, 3, "coude", rot=("y", 22.5, [11.25, 6, 18.25])))
-    e += anneau(1.3125, 0.375, 18.625, 19.125, CUIR, 3, "bord", motif="cuir")
+    # bord évasé côté coude, sur le dehors
+    e.append(boite([11.25, 3.0, 14.75], [11.625, 9.0, 16.25], FER, 3, "bord", rot=("y", 22.5, [11.25, 6, 14.75])))
+    e += anneau(1.3125, 0.375, 15.125, 15.625, CUIR, 3, "bord", motif="cuir")
     return e
 
 

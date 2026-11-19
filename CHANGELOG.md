@@ -1,5 +1,10 @@
 # Journal des changements
 
+## 0.14.10 (novembre 2026)
+
+- Gantelets et brassards raccourcis : canon des gantelets et plaques évasées jusqu'au tiers de l'avant-bras (z 14,25),
+  brassards jusqu'au milieu (z 15,6) avec un bord évasé. Lot « poings-3d-8 ».
+
 ## 0.14.9 (novembre 2026)
 
 - Armes de poing à la première personne : posées sur le bras du joueur, là où le jeu dessine le bras à main vide, et
