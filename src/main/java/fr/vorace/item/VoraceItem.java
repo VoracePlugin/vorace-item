@@ -128,6 +128,7 @@ public final class VoraceItem extends JavaPlugin {
     private Equipement equipement;
     private ProfilParDefaut profilParDefaut;
     private Usure usure;
+    private fr.vorace.item.equipement.Accessoires accessoires;
 
     /** Le plugin vorace-core (objets, pack, modèles). */
     public Vorace core() { return core; }
@@ -138,6 +139,7 @@ public final class VoraceItem extends JavaPlugin {
     public fr.vorace.item.exemplaire.Pieces pieces() { return pieces; }
     public Equipement equipement() { return equipement; }
     public Usure usure() { return usure; }
+    public fr.vorace.item.equipement.Accessoires accessoires() { return accessoires; }
     public ProfilParDefaut profilParDefaut() { return profilParDefaut; }
 
     /** Niveau et classes des joueurs (conditions des objets) : ceux du plugin des classes s'il en fournit, sinon le profil par défaut. */
@@ -159,17 +161,21 @@ public final class VoraceItem extends JavaPlugin {
         equipement = new Equipement(this);
         profilParDefaut = new ProfilParDefaut(this);
         usure = new Usure(this);
+        accessoires = new fr.vorace.item.equipement.Accessoires(this);
 
         installerFichiers();
         charger();
 
         Bukkit.getPluginManager().registerEvents(new EcouteurObjets(this), this);
         Bukkit.getPluginManager().registerEvents(new EcouteurMenus(this), this);
+        Bukkit.getPluginManager().registerEvents(accessoires, this);
         Bukkit.getScheduler().runTaskTimer(this, () -> { for (Player p : Bukkit.getOnlinePlayers()) equipement.appliquerAttributs(p); }, 10L, 10L);
 
         Commande commande = new Commande(this);
         var c = getCommand("vitem");
         if (c != null) { c.setExecutor(commande); c.setTabCompleter(commande); }
+        var eq = getCommand("equipement");
+        if (eq != null) { eq.setExecutor(accessoires); eq.setTabCompleter(accessoires); }
         VoraceItemAPI.initialiser(this);
         getLogger().info("vorace-item " + getPluginMeta().getVersion() + " : " + catalogue.modeles().size() + " modèle(s), "
             + catalogue.pieces().size() + " pièce(s) dans " + catalogue.materiaux().size() + " matériau(x).");
@@ -180,6 +186,8 @@ public final class VoraceItem extends JavaPlugin {
         // menus ouverts (assemblage, réparation...) : les objets posés dans leurs cases sont rendus avant l'arrêt
         for (Player p : Bukkit.getOnlinePlayers()) {
             org.bukkit.inventory.Inventory haut = p.getOpenInventory().getTopInventory();
+            // menu d'équipement ouvert : sa fermeture range la cape et les accessoires dans les données du joueur
+            if (haut.getHolder() instanceof fr.vorace.item.equipement.Accessoires.Fenetre) { p.closeInventory(); continue; }
             if (!(haut.getHolder() instanceof fr.vorace.item.interfaces.Menu menu)) continue;
             for (int libre : menu.libres()) {
                 org.bukkit.inventory.ItemStack o = haut.getItem(libre);

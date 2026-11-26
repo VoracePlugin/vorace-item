@@ -1,5 +1,17 @@
 # Journal des changements
 
+## 0.15.0 (novembre 2026) : types de l'étage 1, cape et accessoires
+
+- **Nouveaux types** : `sceptre` (Prêtre : magique, Shock, Intelligence A · Agilité E), `hache_de_combat` (Guerrier :
+  Destruction, Force A · Constitution E), `faux_de_guerre` (Guerrier, Berserker), `grimoire` (arme magique du Mage et du
+  Prêtre), `orbe`, `relique` et `lanterne` (seconde main), `cape`, `accessoire`, `apparence` (sans stat, ne se porte pas).
+  Les noms suivent les listes d'armes des classes de matsuri-classes : le Prêtre a enfin une arme à combo et la hache de
+  départ du Guerrier n'est plus refusée. Sur un serveur au `types.yml` plus ancien, ces types sont pris du plugin.
+- **Emplacements `dos` et `accessoire`** : menu `/equipement` (alias `/accessoires`, permission `voraceitem.equipement`,
+  donnée à tous) avec une case de cape et `equipement.accessoires` cases d'accessoire (2 par défaut). Les objets sont
+  gardés dans les données du joueur et comptent dans son équipement (stats, attributs). Un objet qui n'a pas le bon
+  emplacement est refusé ; à l'arrêt du plugin, un menu ouvert est rangé.
+
 ## 0.14.13 (novembre 2026) : arc tendu sur le pantin
 
 - Drapeau 5 « tendu » lu par les arcs : vorace-core 1.6 le pose sur l'arc que tient le pantin d'un joueur qui vise, pour

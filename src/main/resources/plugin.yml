@@ -12,7 +12,15 @@ commands:
     usage: /vitem [donner|assembler|piece|monter|catalogue|info|reparer|nommer|profil|pack|recharger|essai]
     aliases: [voraceitem, vi]
     permission: voraceitem.admin
+  equipement:
+    description: Ta cape et tes accessoires (emplacements que le jeu n'a pas)
+    usage: /equipement
+    aliases: [accessoires]
+    permission: voraceitem.equipement
 permissions:
+  voraceitem.equipement:
+    description: Ouvrir son menu de cape et d'accessoires
+    default: true
   voraceitem.admin:
     description: Toutes les commandes de vorace-item
     default: op

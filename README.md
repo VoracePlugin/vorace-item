@@ -24,6 +24,11 @@ plugins, qui créent les objets et lisent leurs stats avec l'API (voir « Pour l
    d'amélioration.
 4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple.
 
+**Cape et accessoires** : le jeu n'a pas ces emplacements. Chaque joueur les pose dans le menu `/equipement` (alias
+`/accessoires`) : une case pour la cape (type à l'emplacement `dos`) et `equipement.accessoires` cases d'accessoire
+(2 par défaut, de 1 à 4, emplacement `accessoire`). Ils sont gardés avec le joueur et comptent comme une pièce d'armure
+portée. Un objet qui n'est pas à sa place est refusé.
+
 **Arcs** : un arc dessiné (`apparence.texture: <chemin>`) se bande en main comme celui du jeu si
 `ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent.
 
@@ -68,7 +73,7 @@ Tout se règle dans `plugins/VoraceItem`, puis `/vitem recharger`. Chaque fichie
 | `config.yml` | Qualité, durabilité, réparation, amélioration, niveau par défaut des joueurs. |
 | `raretes.yml` | Les rangs : couleur, multiplicateur, lignes bonus, gemmes. |
 | `modificateurs.yml` | Les stats et modificateurs : nom affiché, valeurs des lignes bonus. |
-| `types.yml` | Les types d'objets (épée, dague, bâton, plastron, gemme...) et leurs valeurs par défaut. |
+| `types.yml` | Les types d'objets (épée, dague, bâton, sceptre, hache de combat, faux de guerre, grimoire, plastron, orbe, relique, lanterne, cape, accessoire, gemme...) et leurs valeurs par défaut. Un type ajouté par une nouvelle version est pris du plugin s'il manque au fichier du serveur. |
 | `objets/*.yml` | Les **modèles** d'objets. |
 | `materiaux/*.yml` | Les matériaux et leurs **pièces**. |
 | `ressources/modeles`, `ressources/textures` | Les modèles 3D (`.json` de Blockbench) et les textures (`.png`). |

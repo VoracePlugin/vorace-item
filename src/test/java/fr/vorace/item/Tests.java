@@ -374,6 +374,16 @@ public final class Tests {
                 "types ajoutés par une nouvelle version (gantelets) pris du plugin, ceux du serveur gardés");
             verifier(c.type("gantelets").parPaire() && c.type("cestes").parPaire() && "Cestes du serveur".equals(c.type("cestes").nom())
                 && !c.type("epee").parPaire(), "armes de poing portées par paire, même un type déjà sur le serveur");
+            verifier(c.type("sceptre") != null && c.type("sceptre").estArme() && c.type("sceptre").nature().equals("magique")
+                && c.type("hache_de_combat") != null && c.type("hache_de_combat").estArme() && c.type("faux_de_guerre") != null
+                && c.type("grimoire") != null && c.type("grimoire").estArme(),
+                "types de l'étage 1 : sceptre (Prêtre, magique), hache de combat et faux de guerre (Guerrier), grimoire");
+            verifier("seconde-main".equals(c.type("orbe").emplacement()) && "seconde-main".equals(c.type("relique").emplacement())
+                && "seconde-main".equals(c.type("lanterne").emplacement()) && "dos".equals(c.type("cape").emplacement())
+                && "accessoire".equals(c.type("accessoire").emplacement()) && !c.type("apparence").estArme() && !c.type("apparence").empilable(),
+                "orbe, relique et lanterne en seconde main ; cape sur le dos ; accessoire ; apparence sans emplacement");
+            verifier(fr.vorace.item.definitions.TypeObjet.emplacement("Cape").equals("dos") && fr.vorace.item.definitions.TypeObjet.emplacement("anneau").equals("accessoire")
+                && fr.vorace.item.definitions.TypeObjet.emplacement("ceinture").equals("aucun"), "emplacements lus : dos, accessoire");
         } finally {
             supprimer(d);
         }

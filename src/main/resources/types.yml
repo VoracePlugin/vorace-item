@@ -187,3 +187,83 @@ bandes_rituelles:
   scales: { intelligence: B, force: D }
   vitesse-attaque: 3.3
   lignes-bonus: [physical-damage, magic-damage, max-mana, mana-regeneration, fire-damage, cooldown-reduction]
+
+
+# ----------------------------------------------------------------- étage 1 de Babel (armes des classes, main gauche, cape, accessoires)
+# Arme principale du Prêtre (lumière) : magique, frappe courte.
+sceptre:
+  nom: "Sceptre"
+  categorie: arme
+  materiau: golden_shovel
+  nature: magique
+  type-attaque: Shock
+  scales: { intelligence: A, agilite: E }
+  vitesse-attaque: 1.4
+  lignes-bonus: [magic-damage, magic-penetration, max-mana, mana-regeneration, health-regeneration, cooldown-reduction]
+# Hache à deux mains du Guerrier (nom de la liste d'armes de la classe).
+hache_de_combat:
+  nom: "Hache de combat"
+  categorie: arme
+  materiau: iron_axe
+  type-attaque: Destruction
+  scales: { force: A, constitution: E }
+  vitesse-attaque: 0.9
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, lifesteal, durability-loss-reduction]
+# Faux de guerre : Guerrier et Berserker. Lente, large.
+faux_de_guerre:
+  nom: "Faux de guerre"
+  categorie: arme
+  materiau: iron_hoe
+  type-attaque: Cutting
+  scales: { force: B, agilite: D }
+  vitesse-attaque: 0.9
+  lignes-bonus: [physical-damage, critical-strike-power, physical-penetration, lifesteal, attack-speed]
+# Grimoire : arme principale magique (Mage, Prêtre).
+grimoire:
+  nom: "Grimoire"
+  categorie: arme
+  materiau: book
+  nature: magique
+  type-attaque: Shock
+  scales: { intelligence: A, constitution: E }
+  vitesse-attaque: 1.6
+  lignes-bonus: [magic-damage, magic-penetration, max-mana, mana-regeneration, cooldown-reduction]
+# Main gauche des lanceurs de sorts.
+orbe:
+  nom: "Orbe"
+  categorie: armure
+  emplacement: seconde-main
+  materiau: amethyst_shard
+  lignes-bonus: [max-mana, mana-regeneration, magic-damage, cooldown-reduction]
+relique:
+  nom: "Relique"
+  categorie: armure
+  emplacement: seconde-main
+  materiau: paper
+  lignes-bonus: [max-mana, mana-regeneration, magic-armor, health-regeneration]
+lanterne:
+  nom: "Lanterne"
+  categorie: armure
+  emplacement: seconde-main
+  materiau: lantern
+  lignes-bonus: [magic-armor, max-health, max-mana, dodge-rating]
+# Cape : se porte sur le dos (/equipement). Pas d'usure : elle ne prend pas les coups.
+cape:
+  nom: "Cape"
+  categorie: armure
+  emplacement: dos
+  materiau: leather_chestplate
+  lignes-bonus: [armor, magic-armor, max-health, movement-speed, dodge-rating]
+# Accessoire : anneau, amulette, fourreau, carquois… (/equipement, 2 cases par défaut : equipement.accessoires).
+accessoire:
+  nom: "Accessoire"
+  categorie: armure
+  emplacement: accessoire
+  materiau: paper
+  lignes-bonus: [max-health, max-mana, magic-armor, luck, critical-strike-chance, mana-regeneration, attack-speed]
+# Apparence : change le dessin d'un objet du même genre (écu d'Aubin sur un bouclier). Aucune stat, ne se porte pas.
+apparence:
+  nom: "Apparence"
+  categorie: materiau
+  materiau: paper
+  empilable: false
