@@ -1,5 +1,10 @@
 # Journal des changements
 
+## 0.14.13 (novembre 2026) : arc tendu sur le pantin
+
+- Drapeau 5 « tendu » lu par les arcs : vorace-core 1.6 le pose sur l'arc que tient le pantin d'un joueur qui vise, pour
+  qu'il soit dessiné bandé (un affichage d'objet n'a pas de porteur, le jeu le laisserait au repos).
+
 ## 0.14.12 (novembre 2026) : pantin permanent
 
 - Drapeau 4 « caché à la troisième personne » lu par les définitions d'objets : avec le pantin permanent de vorace-core 1.6,

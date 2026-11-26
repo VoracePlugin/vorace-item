@@ -325,6 +325,12 @@ public final class Tests {
         byte[] arc = fichiers.get("assets/voraceitem/items/objet/arc_court_if.json");
         verifier(arc != null && new String(arc, StandardCharsets.UTF_8).contains("minecraft:using_item") && new String(arc, StandardCharsets.UTF_8).contains("arc_court_if_tension_2")
             && fichiers.containsKey("assets/voraceitem/textures/item/exemple/bois/arc_court_if_tension_1.png"), "l'arc d'if se bande en main (trois images de tension)");
+        JsonObject arcNormal = JsonParser.parseString(new String(arc, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model")
+            .getAsJsonObject("on_false").getAsJsonObject("on_false").getAsJsonObject("on_false");
+        verifier(arcNormal.get("property").getAsString().equals("minecraft:custom_model_data") && arcNormal.get("index").getAsInt() == 5
+                && arcNormal.getAsJsonObject("on_true").get("model").getAsString().endsWith("arc_court_if_tension_2")
+                && arcNormal.getAsJsonObject("on_false").get("property").getAsString().equals("minecraft:using_item"),
+            "arc : drapeau 5 « tendu » (arc du pantin d'un joueur qui vise), sinon comme le jeu");
         verifier(fichiers.containsKey("assets/voraceitem/geo/exemple/fer_b.geo.json") && fichiers.containsKey("assets/voraceitem/textures/armor/exemple/fer.png"),
             "armure 3D du fer (mod Armor Model API) écrite dans le pack");
         verifier(fichiers.containsKey("assets/voraceitem/equipment/exemple/armure_acier.json")
