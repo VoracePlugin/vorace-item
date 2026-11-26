@@ -291,9 +291,14 @@ public final class Tests {
             JsonObject drapeaux = JsonParser.parseString(new String(def, StandardCharsets.UTF_8)).getAsJsonObject().getAsJsonObject("model");
             verifier(drapeaux.get("type").getAsString().equals("minecraft:condition") && drapeaux.get("index").getAsInt() == 0
                 && drapeaux.getAsJsonObject("on_true").getAsJsonObject("fallback").get("type").getAsString().equals("minecraft:empty")
-                && drapeaux.getAsJsonObject("on_false").get("index").getAsInt() == 1,
-                "drapeaux de vorace-core : caché en main (0), paire en main gauche (1)");
-            JsonObject modele = drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_false");
+                && drapeaux.getAsJsonObject("on_false").get("index").getAsInt() == 4
+                && drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_false").get("index").getAsInt() == 1,
+                "drapeaux de vorace-core : caché en main (0), caché à la troisième personne (4), paire en main gauche (1)");
+            JsonObject tiers = drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_true");
+            verifier(tiers.getAsJsonObject("fallback").get("type").getAsString().equals("minecraft:empty")
+                && tiers.getAsJsonArray("cases").get(0).getAsJsonObject().getAsJsonArray("when").toString().contains("firstperson_righthand"),
+                "caché à la troisième personne : dessiné à la première personne et dans l'inventaire, rien ailleurs");
+            JsonObject modele = drapeaux.getAsJsonObject("on_false").getAsJsonObject("on_false").getAsJsonObject("on_false");
             JsonArray couches = modele.getAsJsonArray("models");
             verifier(modele.get("type").getAsString().equals("minecraft:composite") && couches.size() == 4, "modèle composé de 4 couches");
             JsonObject lames = couches.get(0).getAsJsonObject();
