@@ -155,7 +155,7 @@ public final class VoraceItemAPI {
         return plugin == null ? null : plugin.exemplaires().modele(objet);
     }
 
-    /** Palier de 10 étages du modèle de cet objet (celui qui renchérit la réparation), 0 si ce n'est pas un objet de vorace-item. */
+    /** Palier de 10 étages du modèle de cet objet (1 pour les étages 1 à 10, 2 pour 11 à 20…), 0 si ce n'est pas un objet de vorace-item. */
     public static int palier(ItemStack objet) {
         String m = modele(objet);
         ModeleObjet mo = m == null ? null : plugin.catalogue().modele(m);
