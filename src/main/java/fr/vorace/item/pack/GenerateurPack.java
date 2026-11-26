@@ -349,7 +349,8 @@ public final class GenerateurPack {
      * mains du pantin : rien en main, l'icône reste dans l'inventaire) ; drapeau 1, « paire » (arme par paire montrée
      * dans la main gauche : visible à la troisième personne seulement, ni à la première personne ni dans la case) ; drapeau 4,
      * « caché à la troisième personne » (pantin permanent de vorace-core 1.6 : l'objet reste à la première personne et dans
-     * l'inventaire, mais plus dans la main du corps invisible du joueur en F5, où c'est le pantin qui le tient).
+     * l'inventaire, mais plus dans la main du corps invisible du joueur en F5, où c'est le pantin qui le tient). Le drapeau
+     * 5, « tendu », est lu par les arcs seulement (arcQuiSeBande).
      */
     static JsonObject drapeaux(JsonObject normal) {
         JsonObject vide = new JsonObject();
@@ -515,8 +516,20 @@ public final class GenerateurPack {
         c.addProperty("property", "minecraft:using_item");
         c.add("on_true", tir);
         c.add("on_false", repos);
-        return c;
+        // drapeau 5 de custom_model_data, « tendu » : posé par vorace-core sur l'arc que tient le pantin d'un joueur qui
+        // vise. Un affichage d'objet n'a pas de porteur (« using_item » y est toujours faux) : sans lui, l'arc du pantin
+        // resterait au repos pendant le tir.
+        JsonObject tendu = new JsonObject();
+        tendu.addProperty("type", "minecraft:condition");
+        tendu.addProperty("property", "minecraft:custom_model_data");
+        tendu.addProperty("index", TENDU);
+        tendu.add("on_true", tension[2].deepCopy());
+        tendu.add("on_false", c);
+        return tendu;
     }
+
+    /** Drapeau de custom_model_data « arc tendu » (voir arcQuiSeBande). */
+    static final int TENDU = 5;
 
     static String copierTexture(String chemin, Path textures, Map<String, byte[]> sortie) {
         if (chemin == null) return null;
