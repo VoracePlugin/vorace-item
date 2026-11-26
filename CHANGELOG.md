@@ -11,6 +11,8 @@
   donnée à tous) avec une case de cape et `equipement.accessoires` cases d'accessoire (2 par défaut). Les objets sont
   gardés dans les données du joueur et comptent dans son équipement (stats, attributs). Un objet qui n'a pas le bon
   emplacement est refusé ; à l'arrêt du plugin, un menu ouvert est rangé.
+- **API** : `VoraceItemAPI.palier(objet)` (palier de 10 étages du modèle), pour le prix de réparation du forgeron de
+  matsuri-economie.
 
 ## 0.14.13 (novembre 2026) : arc tendu sur le pantin
 

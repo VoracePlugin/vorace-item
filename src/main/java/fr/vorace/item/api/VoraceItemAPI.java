@@ -155,7 +155,14 @@ public final class VoraceItemAPI {
         return plugin == null ? null : plugin.exemplaires().modele(objet);
     }
 
-    /** Ce qui appartient à cet exemplaire (rang, qualité, fabricant, pièces, gemmes, usure), ou null. */
+    /** Palier de 10 étages du modèle de cet objet (celui qui renchérit la réparation), 0 si ce n'est pas un objet de vorace-item. */
+    public static int palier(ItemStack objet) {
+        String m = modele(objet);
+        ModeleObjet mo = m == null ? null : plugin.catalogue().modele(m);
+        return mo == null ? 0 : mo.palier();
+    }
+
+        /** Ce qui appartient à cet exemplaire (rang, qualité, fabricant, pièces, gemmes, usure), ou null. */
     public static Exemplaire exemplaire(ItemStack objet) {
         return plugin == null ? null : plugin.exemplaires().lire(objet);
     }
