@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.14.12 (novembre 2026) : pantin permanent
+
+- Drapeau 4 « caché à la troisième personne » lu par les définitions d'objets : avec le pantin permanent de vorace-core 1.6,
+  l'arme reste dessinée à la première personne et dans l'inventaire, mais plus dans la main du corps invisible du joueur en
+  F5 (c'est le pantin qui la tient) : plus d'arme en double.
+
 ## 0.14.11 (novembre 2026) : sécurité
 
 - Nos objets ne passent plus dans les machines du jeu (fourneaux et combustible, alambic, tailleur de pierre, métier à

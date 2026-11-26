@@ -347,13 +347,17 @@ public final class GenerateurPack {
      * Drapeaux de custom_model_data posés par vorace-core sur les copies d'objets qu'il envoie au client (l'objet du
      * serveur ne les a jamais) : drapeau 0, « caché en main » (pendant une animation du pantin, l'objet est dans les
      * mains du pantin : rien en main, l'icône reste dans l'inventaire) ; drapeau 1, « paire » (arme par paire montrée
-     * dans la main gauche : visible à la troisième personne seulement, ni à la première personne ni dans la case).
+     * dans la main gauche : visible à la troisième personne seulement, ni à la première personne ni dans la case) ; drapeau 4,
+     * « caché à la troisième personne » (pantin permanent de vorace-core 1.6 : l'objet reste à la première personne et dans
+     * l'inventaire, mais plus dans la main du corps invisible du joueur en F5, où c'est le pantin qui le tient).
      */
     static JsonObject drapeaux(JsonObject normal) {
         JsonObject vide = new JsonObject();
         vide.addProperty("type", "minecraft:empty");
         JsonObject cache = selonContexte(normal.deepCopy(), vide.deepCopy(), "gui", "ground", "fixed", "head");
         JsonObject paire = selonContexte(normal.deepCopy(), vide.deepCopy(), "thirdperson_righthand", "thirdperson_lefthand");
+        JsonObject tiers = selonContexte(normal.deepCopy(), vide.deepCopy(), "gui", "ground", "fixed", "head",
+            "firstperson_righthand", "firstperson_lefthand");
         JsonObject siPaire = new JsonObject();
         siPaire.addProperty("type", "minecraft:condition");
         siPaire.addProperty("property", "minecraft:custom_model_data");
@@ -364,8 +368,14 @@ public final class GenerateurPack {
         c.addProperty("type", "minecraft:condition");
         c.addProperty("property", "minecraft:custom_model_data");
         c.addProperty("index", 0);
+        JsonObject siTiers = new JsonObject();
+        siTiers.addProperty("type", "minecraft:condition");
+        siTiers.addProperty("property", "minecraft:custom_model_data");
+        siTiers.addProperty("index", 4);
+        siTiers.add("on_true", tiers);
+        siTiers.add("on_false", siPaire);
         c.add("on_true", cache);
-        c.add("on_false", siPaire);
+        c.add("on_false", siTiers);
         return c;
     }
 
