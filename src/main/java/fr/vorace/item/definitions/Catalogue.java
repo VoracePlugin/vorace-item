@@ -228,7 +228,8 @@ public final class Catalogue {
             a == null ? null : chemin(a.getString("equipement")),
             a == null ? null : chemin(a.getString("armure-3d")),
             a == null ? null : chemin(a.getString("texture-armure-3d", a.getString("armure-3d"))),
-            a == null || !a.isConfigurationSection("affichage") ? null : mainGauche(json(a.getConfigurationSection("affichage"))));
+            a == null || !a.isConfigurationSection("affichage") ? null : mainGauche(json(a.getConfigurationSection("affichage"))),
+            a == null ? null : chemin(a.getString("cape")));
         if (s.getString("materiau") != null) materiauxDesModeles.put(id, s.getString("materiau").toLowerCase(Locale.ROOT));
 
         ConfigurationSection cond = s.getConfigurationSection("conditions");

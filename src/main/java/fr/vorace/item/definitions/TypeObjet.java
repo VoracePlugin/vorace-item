@@ -13,7 +13,7 @@ import java.util.Map;
  * objets de ce type (emplacement, objet Minecraft de base, stats de scale, lignes bonus possibles).
  *
  * @param categorie     arme, armure, gemme, pierre (d'amélioration) ou materiau
- * @param emplacement   main, seconde-main, tete, torse, jambes, pieds ou aucun
+ * @param emplacement   main, seconde-main, tete, torse, jambes, pieds, dos (cape), accessoire ou aucun
  * @param nature        physique ou magique (formule de dégâts, critique possible ou non)
  * @param typeAttaque   Destruction, Impact, Cutting, Piercing, Shock (affiché sur l'objet)
  * @param scales        les deux stats de scale et leur lettre (S, A, B, C, D, E)
@@ -99,6 +99,8 @@ public record TypeObjet(String id, String nom, String categorie, String emplacem
             case "torse", "plastron", "chest" -> "torse";
             case "jambes", "jambieres", "legs" -> "jambes";
             case "pieds", "bottes", "feet" -> "pieds";
+            case "dos", "cape", "back" -> "dos";
+            case "accessoire", "anneau", "amulette", "bijou" -> "accessoire";
             default -> "aucun";
         };
     }

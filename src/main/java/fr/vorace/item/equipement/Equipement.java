@@ -22,7 +22,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Ce que porte un joueur : l'arme en main, l'objet de la seconde main et les quatre pièces d'armure. Un objet ne
+ * Ce que porte un joueur : l'arme en main, l'objet de la seconde main, les quatre pièces d'armure, la cape et les
+ * accessoires ({@link Accessoires}, menu {@code /equipement}). Un objet ne
  * compte que s'il est à sa place, s'il n'est pas cassé et si le joueur remplit ses conditions (niveau, classe).
  */
 public final class Equipement {
@@ -99,6 +100,14 @@ public final class Equipement {
             portes.add(p);
             if (place == EquipmentSlot.HAND && m.type().estArme()) arme = p;
             for (Map.Entry<String, Double> e : plugin.exemplaires().stats(ex).entrySet()) totaux.merge(e.getKey(), e.getValue(), Double::sum);
+        }
+        // cape et accessoires : posés dans /equipement (le jeu n'a pas ces emplacements)
+        if (plugin.accessoires() != null) {
+            for (Porte p : plugin.accessoires().portes(joueur)) {
+                if (totaux == null) { totaux = new LinkedHashMap<>(); portes = new ArrayList<>(); }
+                portes.add(p);
+                for (Map.Entry<String, Double> e : plugin.exemplaires().stats(p.exemplaire()).entrySet()) totaux.merge(e.getKey(), e.getValue(), Double::sum);
+            }
         }
         return totaux == null ? VIDE : new Bilan(totaux, arme, portes);
     }

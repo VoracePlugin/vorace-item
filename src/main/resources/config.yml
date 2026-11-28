@@ -17,6 +17,10 @@ profil-par-defaut:
   niveau-minecraft: true
   niveau: 1
 
+# Emplacements que le jeu n'a pas, posés dans le menu /equipement : une cape (dos) et des accessoires.
+equipement:
+  accessoires: 2   # nombre de cases d'accessoire (1 à 4)
+
 # Qualité des objets fabriqués : du score de fabrication (0 à 100) au grade.
 qualite:
   seuils:
