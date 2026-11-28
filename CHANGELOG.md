@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.14.14 (novembre 2026) : arcs en 3D qui se bandent
+
+- Un arc en 3D (clé `modele:`) se bande en main comme celui du jeu s'il a ses trois modèles de tension à côté de lui :
+  `ressources/modeles/<modele>_tension_0.json`, `_1`, `_2` (flèche encochée, corde à moitié tirée, corde tirée). Ils
+  reprennent les réglages d'affichage de l'objet, et le drapeau 5 « tendu » du pantin de vorace-core les montre aussi.
+
 ## 0.14.13 (novembre 2026) : arc tendu sur le pantin
 
 - Drapeau 5 « tendu » lu par les arcs : vorace-core 1.6 le pose sur l'arc que tient le pantin d'un joueur qui vise, pour

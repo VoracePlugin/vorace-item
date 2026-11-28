@@ -25,7 +25,8 @@ plugins, qui créent les objets et lisent leurs stats avec l'API (voir « Pour l
 4. En jeu : `/vitem catalogue` pour prendre les objets d'exemple.
 
 **Arcs** : un arc dessiné (`apparence.texture: <chemin>`) se bande en main comme celui du jeu si
-`ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent.
+`ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent ; un arc en 3D (`apparence.modele: <chemin>`)
+de même avec `ressources/modeles/<chemin>_tension_0.json`, `_1.json` et `_2.json` (corde tirée, flèche encochée).
 
 **Taille et tenue en main** : `apparence.affichage` (même format que `modulaire.affichage`, celui des réglages
 « display » de Blockbench) grandit ou tourne un objet en main, au sol ou dans un cadre. Sans réglage pour la main

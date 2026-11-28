@@ -134,6 +134,9 @@ public final class GenerateurPack {
                 boolean arc = m.apparence().modele() == null && m.apparence().texture() != null
                     && Files.isRegularFile(textures.resolve(m.apparence().texture() + "_tension_0.png"));
                 if (arc) modele.addProperty("parent", "minecraft:item/bow");
+                // un arc en 3D avec ses trois modèles de tension (<modele>_tension_0, _1, _2 : corde tirée, flèche encochée)
+                boolean arc3d = m.apparence().modele() != null
+                    && Files.isRegularFile(modeles.resolve(m.apparence().modele() + "_tension_0.json"));
                 // réglages d'affichage de l'objet (grandir un arc en main...) : ils remplacent ceux du modèle
                 if (m.apparence().affichage() != null) {
                     JsonObject display = modele.has("display") && modele.get("display").isJsonObject() ? modele.getAsJsonObject("display") : new JsonObject();
@@ -144,7 +147,8 @@ public final class GenerateurPack {
                 JsonObject simple = new JsonObject();
                 simple.addProperty("type", "minecraft:model");
                 simple.addProperty("model", NS + ":item/objet/" + m.id());
-                JsonObject repos = arc ? arcQuiSeBande(m, simple, textures, sortie, problemes) : simple;
+                JsonObject repos = arc ? arcQuiSeBande(m, simple, textures, sortie, problemes)
+                    : arc3d ? arc3dQuiSeBande(m, simple, modeles, textures, sortie, problemes) : simple;
                 // modèle 3D avec une version « _gauche » (gantelet retourné) : elle sert dans la main gauche
                 if (m.apparence().modele() != null && Files.isRegularFile(modeles.resolve(m.apparence().modele() + "_gauche.json"))) {
                     JsonObject g = lire(modeles.resolve(m.apparence().modele() + "_gauche.json"));
@@ -497,6 +501,38 @@ public final class GenerateurPack {
             tension[i].addProperty("type", "minecraft:model");
             tension[i].addProperty("model", NS + ":item/" + chemin);
         }
+        return tension(tension, repos);
+    }
+
+    /**
+     * Définition d'un arc en 3D qui se bande : ses trois modèles de tension (ressources/modeles/&lt;modele&gt;_tension_0,
+     * _1, _2), avec les mêmes réglages d'affichage que l'arc au repos.
+     */
+    private static JsonObject arc3dQuiSeBande(ModeleObjet m, JsonObject repos, Path modeles, Path textures, Map<String, byte[]> sortie, List<String> problemes) {
+        JsonObject[] tension = new JsonObject[3];
+        for (int i = 0; i < 3; i++) {
+            JsonObject mod = lire(modeles.resolve(m.apparence().modele() + "_tension_" + i + ".json"));
+            if (mod == null) {
+                problemes.add(m.id() + " : modèle de tension introuvable ou illisible (ressources/modeles/" + m.apparence().modele() + "_tension_" + i + ".json)");
+                return repos;
+            }
+            relierTextures(mod, textures, sortie, problemes, m.id());
+            if (m.apparence().affichage() != null) {
+                JsonObject display = mod.has("display") && mod.get("display").isJsonObject() ? mod.getAsJsonObject("display") : new JsonObject();
+                for (Map.Entry<String, JsonElement> e : m.apparence().affichage().entrySet()) display.add(e.getKey(), e.getValue().deepCopy());
+                mod.add("display", display);
+            }
+            String chemin = "objet/" + m.id() + "_tension_" + i;
+            sortie.put("assets/" + NS + "/models/item/" + chemin + ".json", octets(mod));
+            tension[i] = new JsonObject();
+            tension[i].addProperty("type", "minecraft:model");
+            tension[i].addProperty("model", NS + ":item/" + chemin);
+        }
+        return tension(tension, repos);
+    }
+
+    /** Tir d'un arc : au repos « repos », en main tirée les trois tensions selon la durée du tir, tendu sur le pantin. */
+    private static JsonObject tension(JsonObject[] tension, JsonObject repos) {
         JsonArray paliers = new JsonArray();
         double[] seuils = {0.65, 0.9};
         for (int i = 0; i < 2; i++) {
