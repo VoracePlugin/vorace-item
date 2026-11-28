@@ -1,5 +1,11 @@
 # Journal des changements
 
+## 0.15.1 (novembre 2026) : arcs en 3D qui se bandent
+
+- Un arc en 3D (clé `modele:`) se bande en main comme celui du jeu s'il a ses trois modèles de tension à côté de lui :
+  `ressources/modeles/<modele>_tension_0.json`, `_1`, `_2` (flèche encochée, corde à moitié tirée, corde tirée). Ils
+  reprennent les réglages d'affichage de l'objet, et le drapeau 5 « tendu » du pantin de vorace-core les montre aussi.
+
 ## 0.15.0 (novembre 2026) : types de l'étage 1, cape et accessoires
 
 - **Nouveaux types** : `sceptre` (Prêtre : magique, Shock, Intelligence A · Agilité E), `hache_de_combat` (Guerrier :
