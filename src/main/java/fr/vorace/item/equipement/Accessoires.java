@@ -193,6 +193,41 @@ public final class Accessoires implements Listener, TabExecutor {
         ecrire(p, objets);
         plugin.equipement().oublier(p);
         plugin.equipement().appliquerAttributs(p);
+        majCape(p);
+    }
+
+    // ------------------------------------------------------------------ cape portée
+
+    /**
+     * Montre la cape du dos sur le pantin de vorace-core (VoraceAPI.capePantin, vorace-core 1.8) : l'objet affiché a le
+     * modèle « porte/&lt;id&gt; » écrit par le pack (clé apparence.cape). Rien si la case est vide, si l'objet est cassé ou sans
+     * modèle de cape, ou si vorace-core est plus ancien.
+     */
+    public void majCape(Player p) {
+        ItemStack visuel = null;
+        List<ItemStack> objets = lire(p);
+        Exemplaire ex = objets.isEmpty() ? null : plugin.exemplaires().lire(objets.get(0));
+        ModeleObjet m = ex == null || ex.casse() ? null : plugin.catalogue().modele(ex.modele);
+        if (m != null && DOS.equals(m.type().emplacement()) && m.apparence().cape() != null) {
+            visuel = new ItemStack(org.bukkit.Material.PAPER);
+            org.bukkit.inventory.meta.ItemMeta meta = visuel.getItemMeta();
+            meta.setItemModel(fr.vorace.item.exemplaire.Exemplaires.cle("porte/" + m.id()));
+            visuel.setItemMeta(meta);
+        }
+        try {
+            Class.forName("fr.vorace.api.VoraceAPI").getMethod("capePantin", Player.class, ItemStack.class).invoke(null, p, visuel);
+        } catch (ReflectiveOperationException | LinkageError e) {
+            if (!capeSansCore) plugin.getLogger().info("Capes portées : il faut vorace-core 1.8 (VoraceAPI.capePantin).");
+            capeSansCore = true;
+        }
+    }
+
+    private boolean capeSansCore;
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void arrivee(org.bukkit.event.player.PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        Bukkit.getScheduler().runTaskLater(plugin, () -> { if (p.isOnline()) majCape(p); }, 40L);
     }
 
     // ------------------------------------------------------------------ /equipement

@@ -1,5 +1,13 @@
 # Journal des changements
 
+## 0.16.0 (novembre 2026) : capes portées dans le dos
+
+- **Cape portée** : `apparence.cape: <chemin>` désigne le modèle de la cape vue dans le dos (ressources/modeles/<chemin>.json,
+  dessiné dans le repère du haut du tronc du pantin de vorace-core). Le pack écrit `items/porte/<id>` ; la cape posée dans
+  la case « dos » de `/equipement` est montrée sur le pantin du joueur (VoraceAPI.capePantin, vorace-core 1.8), à la
+  fermeture du menu et à la connexion. Cassée ou retirée : elle disparaît. Avec un vorace-core plus ancien, rien ne
+  change (une ligne dans la console).
+
 ## 0.15.1 (novembre 2026) : arcs en 3D qui se bandent
 
 - Un arc en 3D (clé `modele:`) se bande en main comme celui du jeu s'il a ses trois modèles de tension à côté de lui :

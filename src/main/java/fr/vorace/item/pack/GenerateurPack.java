@@ -104,6 +104,22 @@ public final class GenerateurPack {
             if (m.apparence().equipement() != null && equipementsFaits.add(m.apparence().equipement())) {
                 ecrireEquipement(m.apparence().equipement(), equipement, sortie, problemes, m.id());
             }
+            if (m.apparence().cape() != null) {
+                // cape portée dans le dos du pantin de vorace-core : modèle dans le repère du haut du tronc (VoraceAPI.capePantin)
+                JsonObject mc = lire(modeles.resolve(m.apparence().cape() + ".json"));
+                if (mc == null) {
+                    problemes.add(m.id() + " : modèle de cape introuvable ou illisible (ressources/modeles/" + m.apparence().cape() + ".json)");
+                } else {
+                    relierTextures(mc, textures, sortie, problemes, m.id());
+                    sortie.put("assets/" + NS + "/models/item/porte/" + m.id() + ".json", octets(mc));
+                    JsonObject simple = new JsonObject();
+                    simple.addProperty("type", "minecraft:model");
+                    simple.addProperty("model", NS + ":item/porte/" + m.id());
+                    JsonObject def = new JsonObject();
+                    def.add("model", simple);
+                    sortie.put("assets/" + NS + "/items/porte/" + m.id() + ".json", octets(def));
+                }
+            }
             if (m.apparence().armure3d() != null && equipementsFaits.add("3d:" + m.apparence().armure3d())) {
                 ecrireArmure3d(m.apparence().armure3d(), m.apparence().textureArmure3d(), ressources.resolve("armure3d"), sortie, problemes, m.id());
             }

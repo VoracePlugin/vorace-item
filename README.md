@@ -33,6 +33,10 @@ portée. Un objet qui n'est pas à sa place est refusé.
 `ressources/textures/<chemin>_tension_0.png`, `_1.png` et `_2.png` existent ; un arc en 3D (`apparence.modele: <chemin>`)
 de même avec `ressources/modeles/<chemin>_tension_0.json`, `_1.json` et `_2.json` (corde tirée, flèche encochée).
 
+**Capes** : un objet de type `cape` (case « dos » de `/equipement`) avec `apparence.cape: <chemin>` se voit dans le dos du
+pantin de vorace-core 1.8 : modèle `ressources/modeles/<chemin>.json` dans le repère du haut du tronc (pivot en 8, 8, 8 ;
+accroche aux épaules en 8 ; 15,2 ; 11,6).
+
 **Taille et tenue en main** : `apparence.affichage` (même format que `modulaire.affichage`, celui des réglages
 « display » de Blockbench) grandit ou tourne un objet en main, au sol ou dans un cadre. Sans réglage pour la main
 gauche, vorace-item reprend celui de la main droite sans retourner l'arme (une lame courbe reste vers l'arrière).
